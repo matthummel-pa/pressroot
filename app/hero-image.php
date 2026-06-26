@@ -25,8 +25,8 @@ add_action('customize_register', function ($wp) {
     $wp->add_control('prt_pexels_key', ['label' => __('Pexels API key (optional)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
 
     // Custom control type (defined here so WP_Customize_Control is available).
-    if (! class_exists(__NAMESPACE__ . '\\Mh_Image_Finder_Control')) {
-        class Mh_Image_Finder_Control extends \WP_Customize_Control
+    if (! class_exists(__NAMESPACE__ . '\\Prt_Image_Finder_Control')) {
+        class Prt_Image_Finder_Control extends \WP_Customize_Control
         {
             public $type = 'prt-image-finder';
 
@@ -61,7 +61,7 @@ add_action('customize_register', function ($wp) {
         'prt_hero_bg'   => __('Find a background image (search / AI)', 'pressroot'),
         'prt_hero_img2' => __('Find a 2nd image (search / AI)', 'pressroot'),
     ] as $sid => $label) {
-        $cls = __NAMESPACE__ . '\\Mh_Image_Finder_Control';
+        $cls = __NAMESPACE__ . '\\Prt_Image_Finder_Control';
         $wp->add_control(new $cls($wp, $sid . '_finder', [
             'label'    => $label,
             'section'  => 'prt_hero_section',
