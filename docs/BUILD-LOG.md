@@ -1,4 +1,4 @@
-﻿# matthummel.com â€” Sage Theme Build Log
+# matthummel.com â€” Sage Theme Build Log
 
 A complete record of building the bespoke **Sage 11 (Roots)** WordPress theme for
 matthummel.com â€” from the decision to convert away from Kadence, through the design

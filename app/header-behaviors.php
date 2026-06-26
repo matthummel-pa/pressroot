@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Header behaviors: sticky, shrink-on-scroll, and transparent (overlay) header.

@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 How the theme is put together.
 

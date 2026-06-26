@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * "Social Icons" Gutenberg block (prt/social-links).

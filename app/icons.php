@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Blade Icons helper layer for the theme.

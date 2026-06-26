@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Dynamic Blade-powered blocks:

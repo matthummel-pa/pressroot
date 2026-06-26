@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * "Bar item" blocks â€” drop-in blocks that render the SAME items configured in the

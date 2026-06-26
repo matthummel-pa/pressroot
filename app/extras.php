@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Extras Customizer: base font size, line heights, link underline,

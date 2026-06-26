@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Customizer housekeeping (runs last, priority 999).

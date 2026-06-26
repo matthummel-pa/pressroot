@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Self-host Google Fonts. Downloads the active families' woff2 files into

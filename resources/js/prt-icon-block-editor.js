@@ -1,4 +1,4 @@
-﻿(function (wp) {
+(function (wp) {
   if (!wp || !wp.blocks) return;
   var el = wp.element.createElement, Fragment = wp.element.Fragment, __ = wp.i18n.__;
   var be = wp.blockEditor || wp.editor, IC = be.InspectorControls, ubp = be.useBlockProps;

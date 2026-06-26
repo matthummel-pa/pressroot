@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * In-Customizer image finder for the hero images.

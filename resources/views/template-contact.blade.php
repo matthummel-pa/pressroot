@@ -1,4 +1,4 @@
-﻿{{--
+{{--
   Template Name: Contact
 --}}
 

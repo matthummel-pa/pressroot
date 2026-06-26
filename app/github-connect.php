@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * "Connect with GitHub" using the OAuth Device Flow (no redirect URL, no client

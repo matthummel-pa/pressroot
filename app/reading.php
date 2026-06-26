@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Reading UX on single posts: auto table of contents, reading-progress bar,

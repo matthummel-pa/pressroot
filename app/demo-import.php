@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Starter Sites â€” one-click demo import. Each starter site composes pages from

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Dark mode: a header toggle that flips the CSS-variable palette,

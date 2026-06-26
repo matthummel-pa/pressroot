@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Blade Icons configuration.

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Theme Tools: Style Kit presets + Import / Export / Reset of all theme settings.

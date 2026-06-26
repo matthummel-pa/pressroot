@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Layout engine: per-content-type width preset + custom width + sidebar,

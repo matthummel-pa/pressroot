@@ -1,4 +1,4 @@
-﻿@php
+@php
   $tb        = \App\prt_topbar();
   $prtSoc     = \App\prt_social_links();
   $socStyle  = get_theme_mod('prt_social_style', 'icons');

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Advanced typography: assign fonts + weights per element (headings, body, nav,

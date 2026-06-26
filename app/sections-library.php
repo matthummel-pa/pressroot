@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Expanded, categorized "section" pattern library on top of the base patterns in

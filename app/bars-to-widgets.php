@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Bars -> widgets consolidation. The top bar, message bar, and navbar are now

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Menu item icons + "mega" columns dropdown, both driven by CSS classes you add

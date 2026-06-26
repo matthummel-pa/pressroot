@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Footer builder (colors, social, sticky header) + content controls

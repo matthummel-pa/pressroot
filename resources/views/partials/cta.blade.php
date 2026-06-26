@@ -1,4 +1,4 @@
-﻿@php
+@php
   $cta_heading = apply_filters('matthummel/cta_heading', __('Have a project in mind?', 'pressroot'));
   $cta_text    = apply_filters('matthummel/cta_text', __('Whether itâ€™s a new website, a redesign, or a custom WordPress build, Iâ€™d love to help bring it to life.', 'pressroot'));
   $cta_url     = apply_filters('matthummel/cta_url', home_url('/contact/'));

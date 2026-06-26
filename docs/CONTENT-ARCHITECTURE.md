@@ -1,4 +1,4 @@
-﻿# Content Architecture & SEO (Rank Math)
+# Content Architecture & SEO (Rank Math)
 
 Clean silos so content is easy to find, easy to expand, and ranks well â€” with **one**
 SEO plugin (Rank Math) and no page builders.

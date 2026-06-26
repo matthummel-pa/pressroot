@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Code highlighting for core/code blocks: Prism syntax highlighting, line

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Full admin "Theme Settings" page â€” premium-style tabbed options panel.

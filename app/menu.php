@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Off-canvas popout menu + social icon system.

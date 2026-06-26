@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Theme Options - colors, fonts, layout width, header CTA, footer text.

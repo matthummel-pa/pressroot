@@ -1,4 +1,4 @@
-﻿@if (is_singular('projects'))
+@if (is_singular('projects'))
   @include('partials.cta')
 @endif
 

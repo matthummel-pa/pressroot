@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Block patterns (Callout, CTA band, Stat strip, FAQ) + a "Card" block style.

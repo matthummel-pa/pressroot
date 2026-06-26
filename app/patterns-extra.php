@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Additional premium starter patterns (Hero, Pricing, Testimonials, Logo cloud,

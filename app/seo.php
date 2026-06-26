@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Lightweight SEO + JSON-LD schema. Outputs Open Graph + Twitter meta, an

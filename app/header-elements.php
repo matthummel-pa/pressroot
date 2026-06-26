@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Extra header/navigation controls (added to the Customizer "Navigation" section):

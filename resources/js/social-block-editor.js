@@ -1,4 +1,4 @@
-﻿/* Social Icons block editor (no build step â€” uses global wp.* packages). */
+/* Social Icons block editor (no build step â€” uses global wp.* packages). */
 (function (wp) {
   if (!wp || !wp.blocks) return;
 

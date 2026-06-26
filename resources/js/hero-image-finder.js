@@ -1,4 +1,4 @@
-﻿/* Hero image finder â€” Customizer control behavior.
+/* Hero image finder â€” Customizer control behavior.
  * Searches Openverse / Unsplash / Pexels and generates AI images (Pollinations),
  * imports the chosen image into the Media Library, and sets the linked setting.
  */

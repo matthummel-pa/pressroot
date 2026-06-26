@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Navigation Customizer panel: full flexbox control for the main menu,

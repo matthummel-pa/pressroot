@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Hero layout + site-wide scroll animations.

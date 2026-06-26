@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * GitHub feature blocks (reuse App\Github cached engine + auth token):

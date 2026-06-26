@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Announcement bar: scheduled (optional start/end date), dismissible, themable.

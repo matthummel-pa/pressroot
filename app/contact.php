@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Plugin-free contact form handler + small archive tweak.

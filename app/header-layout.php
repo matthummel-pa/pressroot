@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Header Layout Customizer: full-width menu toggle, header width/height/gap,

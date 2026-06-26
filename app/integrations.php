@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Integrations & custom code:

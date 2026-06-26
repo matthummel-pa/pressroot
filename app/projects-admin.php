@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Projects custom admin area: "Project Details" meta box (GitHub owner/repo,

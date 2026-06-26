@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * White-label + onboarding:
