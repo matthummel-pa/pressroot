@@ -23,16 +23,21 @@ add_action('customize_register', function ($wp) {
         $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => 'sanitize_key']);
         $wp->add_control($id, ['label' => $label, 'section' => 'prt_nav_section', 'type' => 'select', 'choices' => $choices]);
     };
+    // postMessage variant — updates preview instantly without a full reload.
+    $selPM = function ($wp, $id, $label, $choices, $default) {
+        $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => 'sanitize_key', 'transport' => 'postMessage']);
+        $wp->add_control($id, ['label' => $label, 'section' => 'prt_nav_section', 'type' => 'select', 'choices' => $choices]);
+    };
 
     $align = ['none' => __('Default', 'pressroot'), 'left' => __('Left', 'pressroot'), 'center' => __('Center', 'pressroot'), 'right' => __('Right', 'pressroot')];
     $sel($wp, 'prt_logo_align', __('Logo position', 'pressroot'), $align, 'none');
     $sel($wp, 'prt_darkicon_align', __('Dark-mode icon position', 'pressroot'), $align, 'none');
     $sel($wp, 'prt_popbtn_align', __('Menu (popout) button position', 'pressroot'), $align, 'none');
     $sel($wp, 'prt_cta_align', __('Header button (CTA) position', 'pressroot'), $align, 'none');
-    // Navbar social: dedicated show/hide + L/C/R position (theme-options driven).
+    // Navbar social: show/hide uses refresh; position uses postMessage for instant preview.
     $wp->add_setting('prt_nav_social', ['default' => true, 'sanitize_callback' => 'wp_validate_boolean']);
     $wp->add_control('prt_nav_social', ['label' => __('Show social icons in navigation bar', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
-    $sel($wp, 'prt_nav_social_align', __('Navigation social position', 'pressroot'), $align, 'none');
+    $selPM($wp, 'prt_nav_social_align', __('Navigation social position', 'pressroot'), $align, 'none');
     // Hide social icons on mobile (<=640px) per bar.
     $wp->add_setting('prt_social_nav_hide_mobile', ['default' => false, 'sanitize_callback' => 'wp_validate_boolean']);
     $wp->add_control('prt_social_nav_hide_mobile', ['label' => __('Hide navigation social on mobile', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
@@ -47,12 +52,12 @@ add_action('customize_register', function ($wp) {
     $wp->add_control('prt_navcta_hide_mobile', ['label' => __('Hide navbar button on mobile', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
     $wp->add_setting('prt_navcta_hide_tablet', ['default' => false, 'sanitize_callback' => 'wp_validate_boolean']);
     $wp->add_control('prt_navcta_hide_tablet', ['label' => __('Hide navbar button on tablet', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
-    // Keep the top bar on one line at tablet widths (641â€“1024px) instead of wrapping.
+    // Keep the top bar on one line at tablet widths (641–1024px) instead of wrapping.
     $wp->add_setting('prt_topbar_oneline_tablet', ['default' => false, 'sanitize_callback' => 'wp_validate_boolean']);
-    $wp->add_control('prt_topbar_oneline_tablet', ['label' => __('Keep top bar on one line (tablet)', 'pressroot'), 'description' => __('Prevents the top bar from wrapping at 641â€“1024px.', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
+    $wp->add_control('prt_topbar_oneline_tablet', ['label' => __('Keep top bar on one line (tablet)', 'pressroot'), 'description' => __('Prevents the top bar from wrapping at 641–1024px.', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
     // Shrink the logo area on mobile so the header fits on one row.
     $wp->add_setting('prt_logo_shrink_mobile', ['default' => false, 'sanitize_callback' => 'wp_validate_boolean']);
-    $wp->add_control('prt_logo_shrink_mobile', ['label' => __('Shrink logo on mobile (fit one row)', 'pressroot'), 'description' => __('Smaller logo mark + name and hides the tagline at â‰¤640px.', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
+    $wp->add_control('prt_logo_shrink_mobile', ['label' => __('Shrink logo on mobile (fit one row)', 'pressroot'), 'description' => __('Smaller logo mark + name and hides the tagline at ≤640px.', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
     // Hide the "Menu" text on the popout button on mobile (icon only).
     $wp->add_setting('prt_menu_label_hide_mobile', ['default' => false, 'sanitize_callback' => 'wp_validate_boolean']);
     $wp->add_control('prt_menu_label_hide_mobile', ['label' => __('Hide "Menu" label on mobile (icon only)', 'pressroot'), 'section' => 'prt_nav_section', 'type' => 'checkbox']);
@@ -177,7 +182,7 @@ add_action('prt_head_end', function () {
         // Distribute each suffix across BOTH base selectors. Appending e.g. " a svg"
         // to a comma-grouped base only qualifies the LAST member, so the first
         // (".top-bar-social.is-icons", the <ul>) would match bare and inherit the
-        // descendant's display:block â€” collapsing the list to a stack. This helper
+        // descendant's display:block — collapsing the list to a stack. This helper
         // keeps every rule scoped to the intended element on both bars.
         $bases = ['.top-bar-social.is-icons', '.social.is-icons'];
         $grp = function ($suffix) use ($bases) {
@@ -256,7 +261,7 @@ add_action('prt_head_end', function () {
         $css .= '.prt-ann .prt-ann-inner{' . $mw . '}';
     }
 
-    // Per-breakpoint bar widths (tablet 641â€“1024px, mobile â‰¤640px). Navbar = .banner.
+    // Per-breakpoint bar widths (tablet 641–1024px, mobile ≤640px). Navbar = .banner.
     $tabletW = '';
     foreach ([['prt_topbar_width_tablet', '.top-bar .top-bar-inner'], ['prt_nav_width_tablet', '.banner'], ['prt_msgbar_width_tablet', '.prt-ann .prt-ann-inner']] as $r) {
         $v = $bw(get_theme_mod($r[0], '0'));
@@ -298,6 +303,27 @@ add_action('prt_head_end', function () {
 }, 14);
 
 
+/* ── postMessage preview handler for nav social position ─────────────────── */
+add_action('customize_preview_init', function () {
+    wp_add_inline_script(
+        'customize-preview',
+        "(function(){
+            var alignMap = { left: 'margin-right:auto;', right: 'margin-left:auto;', center: 'margin-left:auto;margin-right:auto;' };
+            wp.customize('prt_nav_social_align', function(setting){
+                setting.bind(function(val){
+                    var el = document.getElementById('prt-nav-social-pos');
+                    if (!el) {
+                        el = document.createElement('style');
+                        el.id = 'prt-nav-social-pos';
+                        document.head.appendChild(el);
+                    }
+                    el.textContent = alignMap[val] ? '.banner .social{' + alignMap[val] + '}' : '';
+                });
+            });
+        })();"
+    );
+});
+
 /** Block widget columns for the off-canvas popout (Appearance -> Widgets). */
 add_action('widgets_init', function () {
     for ($i = 1; $i <= 4; $i++) {
@@ -312,7 +338,7 @@ add_action('widgets_init', function () {
         ]);
     }
     // The top bar, message bar, and navigation bar are configured via Theme Options
-    // (Customizer), not widgets â€” so no bar widget areas are registered here.
+    // (Customizer), not widgets — so no bar widget areas are registered here.
 });
 
 /** Popout block-column layout (only when popout widgets exist). */

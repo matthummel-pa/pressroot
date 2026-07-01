@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Full admin "Theme Settings" page â€” premium-style tabbed options panel.
+ * Full admin "Theme Settings" page — premium-style tabbed options panel.
  * Reads/writes the SAME theme mods the Customizer uses (single source of truth).
  */
 
@@ -47,12 +47,12 @@ function prt_admin_schema()
 
     $layoutFields = [];
     foreach ($labels as $t => $lab) {
-        $layoutFields[] = ['key' => "prt_layout_{$t}_width", 'label' => "{$lab} â€” width preset", 'type' => 'select', 'choices' => $w];
-        $layoutFields[] = ['key' => "prt_layout_{$t}_maxwidth", 'label' => "{$lab} â€” custom width", 'type' => 'select', 'choices' => prt_width_options(true)];
-        $layoutFields[] = ['key' => "prt_layout_{$t}_sidebar", 'label' => "{$lab} â€” show sidebar", 'type' => 'checkbox'];
+        $layoutFields[] = ['key' => "prt_layout_{$t}_width", 'label' => "{$lab} — width preset", 'type' => 'select', 'choices' => $w];
+        $layoutFields[] = ['key' => "prt_layout_{$t}_maxwidth", 'label' => "{$lab} — custom width", 'type' => 'select', 'choices' => prt_width_options(true)];
+        $layoutFields[] = ['key' => "prt_layout_{$t}_sidebar", 'label' => "{$lab} — show sidebar", 'type' => 'checkbox'];
     }
 
-    return [
+    return apply_filters('matthummel/admin_schema', [
         'general' => ['icon' => 'dashicons-admin-settings', 'label' => __('General', 'pressroot'), 'fields' => [
             ['key' => 'prt_cta_text', 'label' => __('Header button text', 'pressroot'), 'type' => 'text'],
             ['key' => 'prt_cta_url', 'label' => __('Header button URL', 'pressroot'), 'type' => 'text'],
@@ -105,7 +105,7 @@ function prt_admin_schema()
             ['key' => 'prt_gh_client_id', 'label' => __('GitHub OAuth Client ID', 'pressroot'), 'type' => 'text', 'desc' => __('Public Client ID from your GitHub OAuth App (Device Flow enabled). Needed for "Connect with GitHub".', 'pressroot')],
             ['key' => 'prt_gh_connect', 'label' => __('GitHub connection', 'pressroot'), 'type' => 'github_connect'],
         ], 'note' => __('Per-project owner/repo, eyebrow and demo URL are set on each project via the Project Details box.', 'pressroot')],
-    ];
+    ]);
 }
 
 /** Top-level admin menu. */
@@ -215,7 +215,7 @@ function prt_render_settings_page()
         </span>
         <div>
           <h1><?php esc_html_e('Theme Settings', 'pressroot'); ?></h1>
-          <p><?php esc_html_e('Matt Hummel â€” Sage theme options', 'pressroot'); ?></p>
+          <p><?php esc_html_e('Matt Hummel — Sage theme options', 'pressroot'); ?></p>
         </div>
         <a class="button" href="<?php echo esc_url(admin_url('customize.php')); ?>"><?php esc_html_e('Open Customizer', 'pressroot'); ?></a>
       </div>

@@ -1,3 +1,7 @@
+{{--
+  Template Name: Blog
+--}}
+
 @extends('layouts.app')
 
 @section('content')
@@ -6,22 +10,32 @@
 <div class="blog-page-header">
   <div class="container">
     <span class="eyebrow">The Blog</span>
-    <h1 class="display-xl blog-index-title">{!! get_the_archive_title() !!}</h1>
-    @if (get_the_archive_description())
-      <p class="lead">{!! strip_tags(get_the_archive_description()) !!}</p>
-    @else
-      <p class="lead">WordPress tutorials, Power Platform guides, and dev notes from Gettysburg, PA.</p>
-    @endif
+    <h1 class="display-xl blog-index-title">{{ get_the_title() ?: 'Blog' }}</h1>
+    @php $excerpt = strip_tags(get_the_excerpt()); @endphp
+    <p class="lead">{{ $excerpt ?: 'Notes, tutorials, and dev writing from the blog.' }}</p>
   </div>
 </div>
 
 {{-- ── Posts ────────────────────────────────────────────────────────────────── --}}
+@php
+  $activeCat = isset($_GET['cat']) ? (int) $_GET['cat'] : 0;
+  $paged = get_query_var('paged') ?: 1;
+  $thePosts = new \WP_Query([
+    'post_type'           => 'post',
+    'posts_per_page'      => 12,
+    'paged'               => $paged,
+    'cat'                 => $activeCat ?: 0,
+    'ignore_sticky_posts' => false,
+  ]);
+@endphp
+
 <div class="container blog-index-body">
-  @if (have_posts())
+  @if ($thePosts->have_posts())
     @php $postCount = 0; @endphp
-    @while(have_posts())
+
+    @while ($thePosts->have_posts())
       @php
-        the_post();
+        $thePosts->the_post();
         $postCount++;
         $catList = get_the_category();
         $words   = str_word_count(strip_tags(get_the_content()));
@@ -93,12 +107,16 @@
       </div>{{-- close .blog-card-grid --}}
     @endif
 
-    <nav class="blog-pagination" aria-label="Posts navigation">
-      {!! get_the_posts_navigation([
-        'prev_text' => '← Older posts',
-        'next_text' => 'Newer posts →',
-      ]) !!}
-    </nav>
+    @if ($thePosts->max_num_pages > 1)
+      <nav class="blog-pagination" aria-label="Posts navigation">
+        {!! paginate_links([
+          'total'     => $thePosts->max_num_pages,
+          'current'   => $paged,
+          'prev_text' => '← Older posts',
+          'next_text' => 'Newer posts →',
+        ]) !!}
+      </nav>
+    @endif
 
   @else
     <div class="blog-empty">
@@ -107,5 +125,6 @@
     </div>
   @endif
 </div>
+@php wp_reset_postdata(); @endphp
 
 @endsection

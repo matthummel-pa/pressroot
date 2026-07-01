@@ -1,14 +1,18 @@
 @import "tailwindcss" theme(static);
+@import "./page-templates.css";
+@import "./blocks.css";
+@import "./design-language.css";
 @source "../../app/**/*.php";
 @source "../**/*.blade.php";
 @source "../**/*.js";
 
 /* ----------------------------------------------------------------------
-   Design tokens â€” Paper + Space Grotesk system (trend #3: minimalism)
+   Design tokens — Paper + Space Grotesk system (trend #3: minimalism)
    Token NAMES kept stable; values updated so all components inherit.
 ---------------------------------------------------------------------- */
 @theme {
   --color-khaki:      #fbfaf7; /* page background (Paper) */
+  --color-paper:      #fbfaf7; /* fixed warm-white — for text ON dark heroes */
   --color-cream:      #f4f2ec; /* subtle alt surface */
   --color-card:       #ffffff; /* card surface */
   --color-green:      #2f6b4e; /* brand / buttons / links (AA on Paper) */
@@ -170,7 +174,7 @@
 }
 
 /* ----------------------------------------------------------------------
-   Blog index â€” editorial post list
+   Blog index — editorial post list
 ---------------------------------------------------------------------- */
 @layer components {
   .post-list { max-width: 760px; margin: 8px auto 0; }
@@ -439,8 +443,13 @@
   html.prt-dark .top-bar { background: #1c1f24; color: #d4d2cb; }
   html.prt-dark .content-info { background: #121418; color: #d4d2cb; }
   html.prt-dark .prt-popout { background: #1c1f24; color: #f3f1ea; }
-  html.prt-dark .btn-outline { background: #1e2228; color: #f3f1ea; }
+  html.prt-dark .btn-outline { background: #1e2228; color: #f3f1ea; border-color: #2c2f36; }
+  html.prt-dark .btn-outline:hover { background: #252930; color: #f3f1ea; }
   html.prt-dark .code-block, html.prt-dark .post-prose pre { background: #0b0d11; }
+  html.prt-dark .form-error { background: #2a1515; color: #f08080; border-color: #4a2828; }
+  html.prt-dark .mini-card { background: var(--color-card); border-color: var(--color-line); }
+  html.prt-dark .pill { background: var(--color-card); border-color: var(--color-line); color: var(--color-ink); }
+  html.prt-dark body.prt-sticky-header .banner { background: rgba(21,23,27,.95); backdrop-filter: blur(12px); }
 
   .prt-theme-toggle { background: none; border: 0; cursor: pointer; color: var(--color-ink); font-size: 18px; line-height: 1; padding: 6px; display: inline-flex; align-items: center; }
   .prt-theme-toggle:hover { color: var(--color-green); }
@@ -449,7 +458,7 @@
   html.prt-dark .prt-theme-toggle .prt-icon-light { display: inline; }
 }
 
-/* Dark mode â€” UNLAYERED so it overrides the Customizer :root vars and Font Awesome */
+/* Dark mode — UNLAYERED so it overrides the Customizer :root vars and Font Awesome */
 html.prt-dark {
   --color-khaki: #15171b;
   --color-cream: #1c1f24;
