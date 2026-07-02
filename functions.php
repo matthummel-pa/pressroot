@@ -1,5 +1,4 @@
 <?php
-
 use App\Providers\ThemeServiceProvider;
 use Roots\Acorn\Application;
 

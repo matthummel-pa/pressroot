@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "wp": "wp-now start",
     "build": "vite build",
     "translate": "npm run translate:pot && npm run translate:update",
     "translate:pot": "wp i18n make-pot . ./resources/lang/sage.pot --include=\"theme.json,patterns,app,resources\"",
@@ -17,6 +18,7 @@
   },
   "devDependencies": {
     "@roots/vite-plugin": "^2.0.0",
+    "@wp-now/wp-now": "^0.1.75",
     "@tailwindcss/vite": "^4.0.0",
     "laravel-vite-plugin": "^3.0.0",
     "tailwindcss": "^4.0.0",
