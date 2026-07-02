@@ -1,0 +1,41 @@
+<?php
+
+namespace App;
+
+/**
+ * Google Fonts in the native WordPress Font Library.
+ *
+ * Registers the full Google Fonts library (1,500+ families) as a Font Collection
+ * so it appears under Appearance → Editor → Styles → Typography → "Manage fonts",
+ * browsable and filterable by category (sans-serif, serif, display, handwriting,
+ * monospace). Fonts are downloaded and self-hosted on install (GDPR-safe) — nothing
+ * is loaded from Google's servers on the front end.
+ *
+ * Uses WordPress core's own hosted catalog, so it stays current and requires no API key.
+ */
+add_action('init', function () {
+    // Font Library (WP 6.5+) must be present.
+    if (! function_exists('wp_register_font_collection')) {
+        return;
+    }
+
+    $slug = 'prt-google-fonts';
+
+    // Don't double-register if it (or a core equivalent) is already there.
+    if (function_exists('wp_get_font_collection') && wp_get_font_collection($slug)) {
+        return;
+    }
+
+    wp_register_font_collection($slug, [
+        'name'          => __('Google Fonts', 'sage'),
+        'description'   => __('The full Google Fonts library — browse and filter by type: sans-serif, serif, display, handwriting, and monospace. Installed fonts are self-hosted.', 'sage'),
+        'font_families' => 'https://s.w.org/images/fonts/wp-6.5/collections/google-fonts-with-preview.json',
+        'categories'    => [
+            ['name' => __('Sans-serif', 'sage'), 'slug' => 'sans-serif'],
+            ['name' => __('Serif', 'sage'),      'slug' => 'serif'],
+            ['name' => __('Display', 'sage'),    'slug' => 'display'],
+            ['name' => __('Handwriting', 'sage'),'slug' => 'handwriting'],
+            ['name' => __('Monospace', 'sage'),  'slug' => 'monospace'],
+        ],
+    ]);
+});

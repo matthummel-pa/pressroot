@@ -40,6 +40,15 @@ function prt_gh_blocks_attrs()
             'repo'  => ['type' => 'string', 'default' => ''],
             'count' => ['type' => 'number', 'default' => 5],
         ],
+        'gh-repo' => [
+            'owner'         => ['type' => 'string',  'default' => ''],
+            'repo'          => ['type' => 'string',  'default' => ''],
+            'showTopics'    => ['type' => 'boolean', 'default' => true],
+            'showLanguages' => ['type' => 'boolean', 'default' => true],
+            'showReleases'  => ['type' => 'boolean', 'default' => true],
+            'showReadme'    => ['type' => 'boolean', 'default' => true],
+            'releaseCount'  => ['type' => 'number',  'default' => 3],
+        ],
     ];
 }
 
@@ -52,7 +61,7 @@ add_action('init', function () {
         file_exists(get_theme_file_path($path)) ? filemtime(get_theme_file_path($path)) : '1',
         true
     );
-    wp_localize_script('prt-github-blocks', 'prtGithubBlocks', ['owner' => prt_gh_default_owner()]);
+    wp_localize_script('prt-github-blocks', 'mhGithubBlocks', ['owner' => prt_gh_default_owner()]);
 
     $defs = prt_gh_blocks_attrs();
     $map  = [
@@ -60,6 +69,7 @@ add_action('init', function () {
         'repo-grid'   => 'prt_render_repo_grid',
         'gh-stats'    => 'prt_render_gh_stats',
         'gh-releases' => 'prt_render_gh_releases',
+        'gh-repo'     => 'prt_render_gh_repo',
     ];
     foreach ($map as $slug => $cb) {
         register_block_type('prt/' . $slug, [
@@ -68,6 +78,7 @@ add_action('init', function () {
             'attributes'      => $defs[$slug],
             'render_callback' => __NAMESPACE__ . '\\' . $cb,
             'supports'        => ['align' => ['wide', 'full'], 'spacing' => ['margin' => true]],
+            'example'         => ['viewportWidth' => 900],
         ]);
     }
 }, 12);
@@ -199,6 +210,27 @@ function prt_render_gh_releases($a)
     return $out . '</ul>';
 }
 
+/** Full repo profile: tags, languages, version notes + changelog, README. */
+function prt_render_gh_repo($a)
+{
+    $owner = $a['owner'] ?: prt_gh_default_owner();
+    $repo  = trim((string) ($a['repo'] ?? ''));
+    if ($repo === '') {
+        return prt_gh_rest_placeholder(__('Enter a repository name.', 'pressroot'));
+    }
+    $html = Github::renderRepo($owner, $repo, [
+        'topics'       => ! empty($a['showTopics']),
+        'languages'    => ! empty($a['showLanguages']),
+        'releases'     => ! empty($a['showReleases']),
+        'readme'       => ! empty($a['showReadme']),
+        'releaseCount' => (int) ($a['releaseCount'] ?? 3),
+    ]);
+    if ($html === '') {
+        return prt_gh_rest_placeholder(sprintf(__('Could not load %s/%s.', 'pressroot'), $owner, $repo));
+    }
+    return '<div class="wp-block-prt-gh-repo">' . $html . '</div>';
+}
+
 /** Block styles. */
 add_action('prt_head_end', function () {
     echo "\n<style id=\"prt-gh-blocks\">"
@@ -213,5 +245,31 @@ add_action('prt_head_end', function () {
         . '.prt-gh-stats-head{display:flex;gap:14px;align-items:center;margin-bottom:14px;}.prt-gh-avatar{border-radius:50%;}'
         . '.prt-releases{list-style:none;margin:0;padding:0;}.prt-releases li{padding:10px 0;border-bottom:1px solid var(--color-line,#e6e2d9);display:flex;gap:10px;align-items:center;flex-wrap:wrap;}'
         . '.prt-rel-pre{font-size:11px;background:#fff3cd;color:#7a5b00;border-radius:4px;padding:1px 6px;}.prt-rel-date{font-size:12px;color:var(--color-muted,#5c636c);margin-left:auto;}'
+        // ── Full repo profile (prt/gh-repo) ─────────────────────────────
+        . '.prt-gh-repo{background:var(--color-card,#fff);border:1.5px solid var(--color-line,#ECE4F8);border-radius:22px;padding:32px;}'
+        . '.prt-ghr-title{font-family:var(--font-mono);font-size:15px;color:var(--color-ink,#1B1830);text-decoration:none;}.prt-ghr-title strong{color:var(--color-purple,#7C5CFF);}'
+        . '.prt-ghr-desc{font-family:var(--font-display);font-size:18px;line-height:1.5;color:var(--color-body,#4A4660);margin:10px 0 0;}'
+        . '.prt-ghr-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}'
+        . '.prt-ghr-topic{font-family:var(--font-mono);font-size:12px;background:var(--color-green-tint,#EFE9FF);color:var(--color-purple,#7C5CFF);border-radius:999px;padding:5px 12px;}'
+        . '.prt-ghr-stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;}'
+        . '.prt-ghr-stat{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--color-ink,#1B1830);background:var(--color-paper,#FFFDF7);border:1px solid var(--color-line,#ECE4F8);border-radius:12px;padding:8px 14px;}'
+        . '.prt-ghr-stat em{font-style:normal;font-weight:500;color:var(--color-faint,#7C75A8);font-size:13px;}'
+        . '.prt-ghr-section{margin-top:28px;padding-top:24px;border-top:1.5px solid var(--color-line,#ECE4F8);}'
+        . '.prt-ghr-sechead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}'
+        . '.prt-ghr-h{font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:.02em;text-transform:uppercase;color:var(--color-faint,#7C75A8);margin:0 0 14px;}'
+        . '.prt-ghr-changelog{font-family:var(--font-mono);font-size:13px;color:var(--color-purple,#7C5CFF);text-decoration:none;font-weight:600;}'
+        . '.prt-ghr-langbar{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--color-line,#ECE4F8);}.prt-ghr-langseg{height:100%;}'
+        . '.prt-ghr-langlist{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;}'
+        . '.prt-ghr-langitem{font-family:var(--font-mono);font-size:13px;color:var(--color-muted,#5A5676);display:inline-flex;align-items:center;gap:6px;}.prt-ghr-langitem em{font-style:normal;color:var(--color-faint,#7C75A8);}'
+        . '.prt-ghr-langdot{width:10px;height:10px;border-radius:50%;display:inline-block;}'
+        . '.prt-ghr-releases{list-style:none;margin:0;padding:0;}'
+        . '.prt-ghr-rel{padding:14px 0;border-bottom:1px solid var(--color-line,#ECE4F8);}.prt-ghr-rel:last-child{border-bottom:0;}'
+        . '.prt-ghr-relhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}.prt-ghr-relhead a{font-family:var(--font-display);color:var(--color-ink,#1B1830);text-decoration:none;font-size:16px;}'
+        . '.prt-ghr-pre{font-family:var(--font-mono);font-size:11px;background:#FFE9E0;color:#7a2e00;border-radius:6px;padding:2px 7px;}'
+        . '.prt-ghr-reldate{font-family:var(--font-mono);font-size:12px;color:var(--color-faint,#7C75A8);margin-left:auto;}'
+        . '.prt-ghr-relnotes{font-size:14.5px;line-height:1.55;color:var(--color-muted,#5A5676);margin:8px 0 0;}'
+        . '.prt-ghr-readme{margin-top:6px;}.prt-ghr-readme h4{font-family:var(--font-display);font-weight:800;font-size:19px;color:var(--color-ink,#1B1830);margin:22px 0 8px;}.prt-ghr-readme h5{font-weight:700;font-size:16px;margin:18px 0 6px;}'
+        . '.prt-ghr-readme pre{background:#1B1830;color:#EDEBFF;border-radius:12px;padding:16px;overflow:auto;font-size:13px;}.prt-ghr-readme code{font-family:var(--font-mono);}'
+        . '.prt-ghr-readme table{border-collapse:collapse;width:100%;font-size:14px;}.prt-ghr-readme th,.prt-ghr-readme td{border:1px solid var(--color-line,#ECE4F8);padding:8px 10px;text-align:left;}'
         . "</style>\n";
 }, 13);

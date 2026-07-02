@@ -19,25 +19,34 @@
       "background": true,
       "text": true,
       "palette": [
-        { "slug": "paper", "color": "#fbfaf7", "name": "Paper" },
-        { "slug": "surface", "color": "#ffffff", "name": "Surface" },
-        { "slug": "cream", "color": "#f4f2ec", "name": "Cream" },
-        { "slug": "ink", "color": "#17191e", "name": "Ink" },
-        { "slug": "body", "color": "#2b2f36", "name": "Body" },
-        { "slug": "muted", "color": "#5c636c", "name": "Muted" },
-        { "slug": "green", "color": "#2f6b4e", "name": "Brand green" },
-        { "slug": "green-ink", "color": "#255840", "name": "Green hover" },
-        { "slug": "green-tint", "color": "#eaf1ec", "name": "Green tint" },
-        { "slug": "line", "color": "#e6e2d9", "name": "Line" }
+        { "slug": "paper", "color": "#FFFDF7", "name": "Paper" },
+        { "slug": "surface", "color": "#FFFFFF", "name": "Surface" },
+        { "slug": "cream", "color": "#F6F1FF", "name": "Cream" },
+        { "slug": "ink", "color": "#1B1830", "name": "Ink" },
+        { "slug": "body", "color": "#4A4660", "name": "Body" },
+        { "slug": "muted", "color": "#5A5676", "name": "Muted" },
+        { "slug": "faint", "color": "#7C75A8", "name": "Faint" },
+        { "slug": "green", "color": "#7C5CFF", "name": "Brand (Purple)" },
+        { "slug": "green-ink", "color": "#6A4AE0", "name": "Brand hover" },
+        { "slug": "green-tint", "color": "#EFE9FF", "name": "Brand tint" },
+        { "slug": "purple", "color": "#7C5CFF", "name": "Purple" },
+        { "slug": "orange", "color": "#FF7A1A", "name": "Orange" },
+        { "slug": "lime", "color": "#C2F23D", "name": "Lime" },
+        { "slug": "sky", "color": "#38BDF8", "name": "Sky" },
+        { "slug": "pink", "color": "#FF5DA2", "name": "Pink" },
+        { "slug": "line", "color": "#ECE4F8", "name": "Line" }
       ],
       "gradients": [
-        { "slug": "green", "name": "Green", "gradient": "linear-gradient(135deg, #2f6b4e 0%, #255840 100%)" },
-        { "slug": "ink", "name": "Ink", "gradient": "linear-gradient(135deg, #17191e 0%, #2b2f36 100%)" },
-        { "slug": "paper-fade", "name": "Paper fade", "gradient": "linear-gradient(180deg, #fbfaf7 0%, #f4f2ec 100%)" }
+        { "slug": "green", "name": "Brand", "gradient": "linear-gradient(135deg,#7C5CFF,#38BDF8)" },
+        { "slug": "purple-sky", "name": "Purple to Sky", "gradient": "linear-gradient(135deg,#7C5CFF,#38BDF8)" },
+        { "slug": "orange-pink", "name": "Orange to Pink", "gradient": "linear-gradient(135deg,#FF7A1A,#FF5DA2)" },
+        { "slug": "headline", "name": "Headline Accent", "gradient": "linear-gradient(100deg,#FF7A1A,#7C5CFF,#38BDF8)" },
+        { "slug": "ink", "name": "Ink", "gradient": "linear-gradient(135deg,#1B1830,#2b2f36)" },
+        { "slug": "paper-fade", "name": "Paper fade", "gradient": "linear-gradient(180deg,#FFFDF7,#F6F1FF)" }
       ],
       "duotone": [
-        { "slug": "green-ink", "name": "Green / Ink", "colors": ["#17191e", "#2f6b4e"] },
-        { "slug": "paper-green", "name": "Paper / Green", "colors": ["#2f6b4e", "#fbfaf7"] }
+        { "slug": "green-ink", "name": "Purple / Ink", "colors": ["#1B1830", "#7C5CFF"] },
+        { "slug": "paper-green", "name": "Purple / Paper", "colors": ["#7C5CFF", "#FFFDF7"] }
       ]
     },
     "typography": {
@@ -52,16 +61,43 @@
       "dropCap": true,
       "writingMode": false,
       "fontFamilies": [
-        { "slug": "display", "name": "Geist", "fontFamily": "\"Geist\", system-ui, sans-serif" },
-        { "slug": "body", "name": "Inter", "fontFamily": "\"Inter\", system-ui, -apple-system, sans-serif" },
-        { "slug": "mono", "name": "JetBrains Mono", "fontFamily": "\"JetBrains Mono\", Menlo, Consolas, monospace" }
+        {
+          "slug": "display",
+          "name": "Outfit",
+          "fontFamily": "Outfit, ui-sans-serif, system-ui, sans-serif",
+          "fontFace": [
+            { "fontFamily": "Outfit", "fontWeight": "400 900", "fontStyle": "normal", "fontStretch": "normal", "src": ["file:./resources/fonts/Outfit-Variable.woff2"] }
+          ]
+        },
+        {
+          "slug": "body",
+          "name": "Outfit (Body)",
+          "fontFamily": "Outfit, ui-sans-serif, system-ui, sans-serif"
+        },
+        {
+          "slug": "serif",
+          "name": "Instrument Serif",
+          "fontFamily": "\"Instrument Serif\", Georgia, serif",
+          "fontFace": [
+            { "fontFamily": "Instrument Serif", "fontWeight": "400", "fontStyle": "normal", "src": ["file:./resources/fonts/InstrumentSerif-Regular.woff2"] },
+            { "fontFamily": "Instrument Serif", "fontWeight": "400", "fontStyle": "italic", "src": ["file:./resources/fonts/InstrumentSerif-Italic.woff2"] }
+          ]
+        },
+        {
+          "slug": "mono",
+          "name": "JetBrains Mono",
+          "fontFamily": "\"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+          "fontFace": [
+            { "fontFamily": "JetBrains Mono", "fontWeight": "400 600", "fontStyle": "normal", "src": ["file:./resources/fonts/JetBrainsMono-Variable.woff2"] }
+          ]
+        }
       ],
       "fontSizes": [
-        { "slug": "small", "size": "14px", "name": "Small" },
+        { "slug": "small", "size": "15px", "name": "Small" },
         { "slug": "medium", "size": "17px", "name": "Medium" },
         { "slug": "large", "size": "22px", "name": "Large" },
-        { "slug": "x-large", "size": "32px", "name": "X-Large" },
-        { "slug": "huge", "size": "clamp(40px, 6vw, 64px)", "name": "Huge" }
+        { "slug": "x-large", "size": "clamp(28px, 3vw, 34px)", "name": "X-Large" },
+        { "slug": "huge", "size": "clamp(48px, 7vw, 88px)", "name": "Huge" }
       ]
     },
     "spacing": {

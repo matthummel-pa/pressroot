@@ -30,7 +30,7 @@ function prt_social_block_attrs()
 }
 
 add_action('init', function () {
-    // Editor script (plain JS, no build step) â€” uses global wp.* packages.
+    // Editor script (plain JS, no build step) — uses global wp.* packages.
     wp_register_script(
         'prt-social-block',
         get_theme_file_uri('resources/js/social-block-editor.js'),
@@ -43,7 +43,7 @@ add_action('init', function () {
     foreach (prt_social_block_attrs() as $k => $v) {
         $defaults[$k] = $v['default'];
     }
-    wp_localize_script('prt-social-block', 'prtSocialBlock', [
+    wp_localize_script('prt-social-block', 'mhSocialBlock', [
         'attrs'    => prt_social_block_attrs(),
         'defaults' => $defaults,
         'networks' => array_map(fn ($i) => $i[0], prt_socials_map()),
@@ -100,7 +100,7 @@ function prt_social_block_render($attrs, $content = '')
 
     if (empty($items)) {
         if (defined('REST_REQUEST') && REST_REQUEST) {
-            return '<p style="opacity:.7;font-style:italic">' . esc_html__('No social links yet â€” add URLs in Customizer â†’ Theme Options â†’ Menu & Popout, or switch this block to â€œCustom linksâ€.', 'pressroot') . '</p>';
+            return '<p style="opacity:.7;font-style:italic">' . esc_html__('No social links yet — add URLs in Customizer → Theme Options → Menu & Popout, or switch this block to “Custom links”.', 'pressroot') . '</p>';
         }
         return '';
     }

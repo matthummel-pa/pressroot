@@ -5,7 +5,7 @@
  * Reorganises the Theme Options panel for a cleaner, more discoverable UI without
  * touching the source modules that register each control:
  *   - splits the overloaded "Navigation" section into focused sections
- *     (Navigation Â· Social Icons Â· Responsive), and re-parents stray controls,
+ *     (Navigation · Social Icons · Responsive), and re-parents stray controls,
  *   - orders every section logically,
  *   - adds a short description to each section.
  */
@@ -29,7 +29,7 @@ add_action('customize_register', function ($wp) {
         $wp->add_section('prt_responsive_section', [
             'title'       => __('Responsive (mobile & tablet)', 'pressroot'),
             'panel'       => 'prt_theme_options',
-            'description' => __('Per-device visibility and widths. Mobile â‰¤640px Â· tablet 641â€“1024px.', 'pressroot'),
+            'description' => __('Per-device visibility and widths. Mobile ≤640px · tablet 641–1024px.', 'pressroot'),
         ]);
     }
 
@@ -91,7 +91,7 @@ add_action('customize_register', function ($wp) {
         'prt_nav_section'         => __('Primary menu layout (flexbox) and link styling.', 'pressroot'),
         'prt_popout_section'      => __('Off-canvas menu: breakpoints, panel style, columns and item styling.', 'pressroot'),
         'prt_topbar_section'      => __('Slim utility bar above the main navigation.', 'pressroot'),
-        'prt_ann_section'         => __('Site-wide announcement bar â€” schedulable and dismissible.', 'pressroot'),
+        'prt_ann_section'         => __('Site-wide announcement bar — schedulable and dismissible.', 'pressroot'),
         'prt_headerlayout_section' => __('Header sizing, element placement, sticky/transparent behaviour and bar order.', 'pressroot'),
         'prt_layout_section'      => __('Content width and sidebar per content type.', 'pressroot'),
         'prt_content_section'     => __('Editable copy for the CTA band and page intros.', 'pressroot'),

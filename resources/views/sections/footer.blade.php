@@ -3,8 +3,8 @@
 @endif
 
 @php
-  $prtFoot = \App\prt_footer();
-  $prtFootSoc = \App\prt_social_links();
+  $mhFoot = \App\prt_footer();
+  $mhFootSoc = \App\prt_social_links();
   $cols = max(1, min(4, (int) get_theme_mod('prt_footer_cols', 3)));
   $hasFooterWidgets = false;
   for ($i = 1; $i <= $cols; $i++) {
@@ -28,17 +28,17 @@
     @php(dynamic_sidebar('sidebar-footer'))
   @endif
 
-  @if ($prtFoot['show_social'] && $prtFootSoc)
+  @if ($mhFoot['show_social'] && $mhFootSoc)
     <div class="footer-socials">
-      @foreach ($prtFootSoc as $s)
+      @foreach ($mhFootSoc as $s)
         <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank">{!! \App\prt_social_icon($s['key']) !!}</a>
       @endforeach
     </div>
   @endif
 
-  @php($prtFooterText = apply_filters('matthummel/footer_text', ''))
-  @if ($prtFooterText)
-    <p class="footer-tagline">{!! wp_kses_post($prtFooterText) !!}</p>
+  @php($mhFooterText = apply_filters('matthummel/footer_text', ''))
+  @if ($mhFooterText)
+    <p class="footer-tagline">{!! wp_kses_post($mhFooterText) !!}</p>
   @endif
 
   <p>&copy; {{ date('Y') }} {{ $siteName }}. {{ __('Built with Sage.', 'pressroot') }}</p>

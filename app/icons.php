@@ -10,7 +10,7 @@ namespace App;
 
 /**
  * Render a Blade icon to an HTML string. Never fatals if the icon/package
- * is missing â€” returns an empty string (or a generic fallback) instead.
+ * is missing — returns an empty string (or a generic fallback) instead.
  *
  * @param string $name   Icon name, e.g. "simpleicon-github", "heroicon-o-moon", "prt-arrow-up-right".
  * @param string $class  CSS class(es) for the <svg>.
@@ -68,10 +68,10 @@ function prt_social_color($key)
         'facebook'  => '#1877F2',
         'mastodon'  => '#6364FF',
         'rss'       => '#F26522',
-        'email'     => '#2f6b4e',
+        'email'     => '#7C5CFF',
     ]);
 
-    return $c[$key] ?? '#2f6b4e';
+    return $c[$key] ?? '#7C5CFF';
 }
 
 /** Render a social network's icon SVG by key. */

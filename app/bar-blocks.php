@@ -1,10 +1,10 @@
 <?php
 
 /**
- * "Bar item" blocks â€” drop-in blocks that render the SAME items configured in the
+ * "Bar item" blocks — drop-in blocks that render the SAME items configured in the
  * Customizer (and honor their show/hide toggles), so a bar's widget area can be
  * composed from them and stays in sync with the Customizer settings:
- *   prt/bar-social Â· prt/bar-cta Â· prt/bar-message Â· prt/bar-logo Â· prt/bar-nav Â· prt/bar-contact
+ *   prt/bar-social · prt/bar-cta · prt/bar-message · prt/bar-logo · prt/bar-nav · prt/bar-contact
  * Each reads theme settings; if an item is hidden/empty, the block renders nothing.
  */
 
@@ -13,12 +13,12 @@ namespace App;
 function prt_bar_blocks_defs()
 {
     return [
-        'bar-social'  => ['title' => __('Bar Â· Social links', 'pressroot'), 'icon' => 'share', 'cb' => 'prt_block_bar_social'],
-        'bar-cta'     => ['title' => __('Bar Â· Button (CTA)', 'pressroot'), 'icon' => 'button', 'cb' => 'prt_block_bar_cta'],
-        'bar-message' => ['title' => __('Bar Â· Message', 'pressroot'), 'icon' => 'megaphone', 'cb' => 'prt_block_bar_message'],
-        'bar-logo'    => ['title' => __('Bar Â· Site logo', 'pressroot'), 'icon' => 'admin-home', 'cb' => 'prt_block_bar_logo'],
-        'bar-nav'     => ['title' => __('Bar Â· Navigation menu', 'pressroot'), 'icon' => 'menu', 'cb' => 'prt_block_bar_nav'],
-        'bar-contact' => ['title' => __('Bar Â· Contact text', 'pressroot'), 'icon' => 'email', 'cb' => 'prt_block_bar_contact'],
+        'bar-social'  => ['title' => __('Bar · Social links', 'pressroot'), 'icon' => 'share', 'cb' => 'prt_block_bar_social'],
+        'bar-cta'     => ['title' => __('Bar · Button (CTA)', 'pressroot'), 'icon' => 'button', 'cb' => 'prt_block_bar_cta'],
+        'bar-message' => ['title' => __('Bar · Message', 'pressroot'), 'icon' => 'megaphone', 'cb' => 'prt_block_bar_message'],
+        'bar-logo'    => ['title' => __('Bar · Site logo', 'pressroot'), 'icon' => 'admin-home', 'cb' => 'prt_block_bar_logo'],
+        'bar-nav'     => ['title' => __('Bar · Navigation menu', 'pressroot'), 'icon' => 'menu', 'cb' => 'prt_block_bar_nav'],
+        'bar-contact' => ['title' => __('Bar · Contact text', 'pressroot'), 'icon' => 'email', 'cb' => 'prt_block_bar_contact'],
     ];
 }
 
@@ -41,7 +41,7 @@ add_action('init', function () {
             'supports'        => ['html' => false, 'spacing' => ['margin' => true]],
         ]);
     }
-    wp_localize_script('prt-bar-blocks', 'prtBarBlocks', $list);
+    wp_localize_script('prt-bar-blocks', 'mhBarBlocks', $list);
 }, 12);
 
 /** Empty-state note (only shown inside the editor preview). */
@@ -50,7 +50,7 @@ function prt_bar_rest_note($msg)
     return (defined('REST_REQUEST') && REST_REQUEST) ? '<span style="opacity:.6;font-style:italic">' . esc_html($msg) . '</span>' : '';
 }
 
-/** Social links â€” mirrors the header social style settings. */
+/** Social links — mirrors the header social style settings. */
 function prt_block_bar_social()
 {
     $links = function_exists('App\\prt_social_links') ? prt_social_links() : [];
@@ -127,7 +127,7 @@ function prt_block_bar_contact()
 /**
  * Editor-only CSS. The block/widgets editor canvas (incl. the Customizer "Widgets"
  * panel) doesn't load the theme's front-end stylesheet, so the SSR previews of the
- * bar blocks fall back to browser defaults â€” social icons render at intrinsic SVG
+ * bar blocks fall back to browser defaults — social icons render at intrinsic SVG
  * size and inherit the editor's blue link color, stacked as a bulleted list.
  * This scopes them to a sensible inline row so the preview matches the front end.
  */

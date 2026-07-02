@@ -10,16 +10,16 @@ namespace App;
 function prt_defaults()
 {
     return [
-        'prt_color_action' => '#2f6b4e',
-        'prt_color_paper'  => '#fbfaf7',
-        'prt_color_ink'    => '#17191e',
-        'prt_color_body'   => '#2b2f36',
-        'prt_font_heading' => 'Geist',
-        'prt_font_body'    => 'Inter',
-        'prt_container'    => 1180,
+        'prt_color_action' => '#7C5CFF',
+        'prt_color_paper'  => '#FFFDF7',
+        'prt_color_ink'    => '#1B1830',
+        'prt_color_body'   => '#4A4660',
+        'prt_font_heading' => 'Outfit',
+        'prt_font_body'    => 'Outfit',
+        'prt_container'    => 1240,
         'prt_show_cta'     => true,
-        'prt_cta_text'     => 'Find me on Dev.to',
-        'prt_cta_url'      => 'https://dev.to/mattbuildsapps',
+        'prt_cta_text'     => 'Find me on GitHub',
+        'prt_cta_url'      => 'https://github.com/matthummel-pa',
         'prt_footer_text'  => '',
     ];
 }
@@ -172,8 +172,8 @@ add_action('wp_enqueue_scripts', function () {
 /* Emit CSS-variable overrides AFTER app.css (fires via prt_head_end in the layout) */
 add_action('prt_head_end', function () {
     $fonts = prt_fonts();
-    $h = $fonts[prt_mod('prt_font_heading')][1] ?? $fonts['Geist'][1];
-    $b = $fonts[prt_mod('prt_font_body')][1] ?? $fonts['Inter'][1];
+    $h = $fonts[prt_mod('prt_font_heading')][1] ?? $fonts['Outfit'][1];
+    $b = $fonts[prt_mod('prt_font_body')][1] ?? $fonts['Outfit'][1];
 
     $css = ':root{'
         . '--color-green:' . prt_mod('prt_color_action') . ';'
@@ -183,12 +183,79 @@ add_action('prt_head_end', function () {
         . '--color-body:' . prt_mod('prt_color_body') . ';'
         . '--font-display:' . $h . ';'
         . '--font-body:' . $b . ';'
+        . '--prt-content-width:' . absint(prt_mod('prt_container')) . 'px;'
         . '}'
         . '.container,.rule,.banner{max-width:' . absint(prt_mod('prt_container')) . 'px}';
 
     echo "\n<style id=\"prt-customizer\">" . $css . "</style>\n";
 });
 
+
+/**
+ * One-time migration to the Paper + Space design.
+ *
+ * Flips any saved theme_mod that still holds an OLD default to the new value,
+ * so existing installs adopt the new design without clobbering choices the user
+ * deliberately customised. Runs once, then sets a flag. Use Appearance → Theme
+ * Tools → Reset (or the "Paper + Space" style kit) to force a full re-apply.
+ */
+add_action('after_setup_theme', function () {
+    if (get_option('prt_design_v2_applied')) {
+        return;
+    }
+
+    // old default => new default
+    $map = [
+        'prt_color_action' => ['#2f6b4e', '#7C5CFF'],
+        'prt_color_paper'  => ['#fbfaf7', '#FFFDF7'],
+        'prt_color_ink'    => ['#17191e', '#1B1830'],
+        'prt_color_body'   => ['#2b2f36', '#4A4660'],
+        'prt_font_heading' => ['Geist', 'Outfit'],
+        'prt_font_body'    => ['Inter', 'Outfit'],
+        'prt_btn_radius'   => ['8', '999'],
+        'prt_card_radius'  => ['16', '20'],
+        'prt_container'    => [1180, 1240],
+        'prt_popout_grad2' => ['#2f6b4e', '#7C5CFF'],
+        'prt_cta_text'     => ['Find me on Dev.to', 'Find me on GitHub'],
+        'prt_cta_url'      => ['https://dev.to/mattbuildsapps', 'https://github.com/matthummel-pa'],
+    ];
+
+    foreach ($map as $key => [$old, $new]) {
+        $current = get_theme_mod($key, null);
+        // Unset (inherits the new default already) or still on the old default → set new.
+        if ($current === null || (string) $current === (string) $old) {
+            set_theme_mod($key, $new);
+        }
+    }
+
+    // Older builds used Space Grotesk for headings; treat that as an old default too.
+    if ((string) get_theme_mod('prt_font_heading', '') === 'Space Grotesk') {
+        set_theme_mod('prt_font_heading', 'Outfit');
+    }
+
+    update_option('prt_design_v2_applied', 1);
+}, 20);
+
+/**
+ * One-time hard reset of the brand palette/fonts to Paper + Space.
+ *
+ * The conditional migration above only flips values still on the OLD defaults;
+ * if a green Style Kit had been saved, the header/logo stayed green. This forces
+ * the new palette once so the whole UI (header CTA, brand mark, links) adopts
+ * purple. Runs a single time, then never touches these again.
+ */
+add_action('after_setup_theme', function () {
+    if (get_option('prt_palette_force_v1')) {
+        return;
+    }
+    set_theme_mod('prt_color_action', '#7C5CFF');
+    set_theme_mod('prt_color_paper', '#FFFDF7');
+    set_theme_mod('prt_color_ink', '#1B1830');
+    set_theme_mod('prt_color_body', '#4A4660');
+    set_theme_mod('prt_font_heading', 'Outfit');
+    set_theme_mod('prt_font_body', 'Outfit');
+    update_option('prt_palette_force_v1', 1);
+}, 21);
 
 /** Standard content-width options (px) for select controls. */
 function prt_width_options($include_preset = false)

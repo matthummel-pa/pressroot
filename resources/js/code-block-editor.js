@@ -11,9 +11,9 @@
   wp.hooks.addFilter('blocks.registerBlockType', 'prt/code-attrs', function (settings, name) {
     if (name !== 'core/code') return settings;
     settings.attributes = Object.assign({}, settings.attributes, {
-      prtLang:  { type: 'string',  default: '' },
-      prtFile:  { type: 'string',  default: '' },
-      prtLines: { type: 'boolean', default: true }
+      mhLang:  { type: 'string',  default: '' },
+      mhFile:  { type: 'string',  default: '' },
+      mhLines: { type: 'boolean', default: true }
     });
     return settings;
   });
@@ -26,10 +26,10 @@
       return el(Fragment, {},
         el(BlockEdit, props),
         el(IC, {}, el(c.PanelBody, { title: __('Code highlighting', 'pressroot'), initialOpen: true },
-          el(c.SelectControl, { label: __('Language', 'pressroot'), value: a.prtLang,
-            options: LANGS.map(function(l){ return { label: l || 'â€” none â€”', value: l }; }), onChange: set('prtLang') }),
-          el(c.TextControl, { label: __('Filename (optional)', 'pressroot'), value: a.prtFile, onChange: set('prtFile'), placeholder: 'app.js' }),
-          el(c.ToggleControl, { label: __('Line numbers', 'pressroot'), checked: !!a.prtLines, onChange: set('prtLines') })
+          el(c.SelectControl, { label: __('Language', 'pressroot'), value: a.mhLang,
+            options: LANGS.map(function(l){ return { label: l || '— none —', value: l }; }), onChange: set('mhLang') }),
+          el(c.TextControl, { label: __('Filename (optional)', 'pressroot'), value: a.mhFile, onChange: set('mhFile'), placeholder: 'app.js' }),
+          el(c.ToggleControl, { label: __('Line numbers', 'pressroot'), checked: !!a.mhLines, onChange: set('mhLines') })
         ))
       );
     };
@@ -39,10 +39,10 @@
   wp.hooks.addFilter('blocks.getSaveContent.extraProps', 'prt/code-save', function (extra, blockType, attrs) {
     if (blockType.name !== 'core/code') return extra;
     var cls = (extra.className || '').replace(/\blanguage-\S+\b/g, '').replace(/\bline-numbers\b/g, '').trim();
-    if (attrs.prtLang)  cls += ' language-' + attrs.prtLang;
-    if (attrs.prtLines) cls += ' line-numbers';
+    if (attrs.mhLang)  cls += ' language-' + attrs.mhLang;
+    if (attrs.mhLines) cls += ' line-numbers';
     extra.className = cls.trim();
-    if (attrs.prtFile) extra['data-filename'] = attrs.prtFile; else delete extra['data-filename'];
+    if (attrs.mhFile) extra['data-filename'] = attrs.mhFile; else delete extra['data-filename'];
     return extra;
   });
 })(window.wp);

@@ -3,7 +3,7 @@
   var el = wp.element.createElement, Fragment = wp.element.Fragment, __ = wp.i18n.__;
   var be = wp.blockEditor || wp.editor, IC = be.InspectorControls, ubp = be.useBlockProps;
   var c = wp.components, SSR = wp.serverSideRender || wp.components.ServerSideRender;
-  var owner = (window.prtGithubBlocks && window.prtGithubBlocks.owner) || '';
+  var owner = (window.mhGithubBlocks && window.mhGithubBlocks.owner) || '';
 
   function setter(props){ return function(k){ return function(v){ var o={}; o[k]=v; props.setAttributes(o); }; }; }
   function preview(name, a){ return el('div', ubp ? ubp() : {}, el(SSR, { block: name, attributes: a })); }
@@ -60,6 +60,23 @@
         el(c.TextControl,{label:__('Repo','pressroot'),value:a.repo,onChange:set('repo')}),
         el(c.RangeControl,{label:__('How many','pressroot'),value:a.count,min:1,max:20,onChange:set('count')})
       )), preview('prt/gh-releases', a)); },
+    save:function(){ return null; }
+  });
+
+  wp.blocks.registerBlockType('prt/gh-repo', {
+    apiVersion:2, title:__('GitHub Repo — Full','pressroot'), icon:'media-code', category:'widgets',
+    keywords:['github','repo','readme','releases','languages','tags','changelog'], supports:{align:['wide','full']},
+    attributes:{ owner:{type:'string',default:''}, repo:{type:'string',default:''}, showTopics:{type:'boolean',default:true}, showLanguages:{type:'boolean',default:true}, showReleases:{type:'boolean',default:true}, showReadme:{type:'boolean',default:true}, releaseCount:{type:'number',default:3} },
+    edit:function(props){ var a=props.attributes, set=setter(props);
+      return el(Fragment,{}, el(IC,{}, el(c.PanelBody,{title:__('Repository','pressroot'),initialOpen:true},
+        el(c.TextControl,{label:__('Owner','pressroot'),value:a.owner,onChange:set('owner'),placeholder:owner}),
+        el(c.TextControl,{label:__('Repo','pressroot'),value:a.repo,onChange:set('repo')}),
+        el(c.ToggleControl,{label:__('Tags / topics','pressroot'),checked:!!a.showTopics,onChange:set('showTopics')}),
+        el(c.ToggleControl,{label:__('Languages used','pressroot'),checked:!!a.showLanguages,onChange:set('showLanguages')}),
+        el(c.ToggleControl,{label:__('Version notes','pressroot'),checked:!!a.showReleases,onChange:set('showReleases')}),
+        el(c.ToggleControl,{label:__('README','pressroot'),checked:!!a.showReadme,onChange:set('showReadme')}),
+        el(c.RangeControl,{label:__('Releases shown','pressroot'),value:a.releaseCount,min:1,max:10,onChange:set('releaseCount')})
+      )), preview('prt/gh-repo', a)); },
     save:function(){ return null; }
   });
 })(window.wp);

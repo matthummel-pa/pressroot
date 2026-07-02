@@ -7,7 +7,7 @@
 namespace App;
 
 /**
- * Add "â€¦ Continued" to the excerpt.
+ * Add "… Continued" to the excerpt.
  *
  * @return string
  */
@@ -16,7 +16,7 @@ add_filter('excerpt_more', function () {
 });
 
 /**
- * [prt_github owner="" repo="" show="desc,stats,intro"] â€” live cached GitHub repo data.
+ * [prt_github owner="" repo="" show="desc,stats,intro"] — live cached GitHub repo data.
  */
 add_shortcode('prt_github', function ($atts) {
     $a = shortcode_atts(['owner' => '', 'repo' => '', 'show' => 'stats,intro'], $atts);

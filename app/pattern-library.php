@@ -48,14 +48,14 @@ function prt_pattern_library_page(): void
 
         <p class="description" style="margin-bottom:1.5rem;">
             <?php esc_html_e(
-                'Pre-built block patterns for the pressroot theme. Open any page in the block editor, click the + Inserter, then choose Patterns → Matthummel to insert these layouts.',
+                'Pre-built block patterns for the matthummel theme. Open any page in the block editor, click the + Inserter, then choose Patterns → Matthummel to insert these layouts.',
                 'pressroot'
             ); ?>
         </p>
 
         <?php if (empty($theme_patterns)) : ?>
             <div class="notice notice-warning inline">
-                <p><?php esc_html_e('No pressroot patterns registered yet.', 'pressroot'); ?></p>
+                <p><?php esc_html_e('No matthummel patterns registered yet.', 'pressroot'); ?></p>
             </div>
         <?php else : ?>
 

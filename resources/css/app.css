@@ -1,35 +1,47 @@
 @import "tailwindcss" theme(static);
+@import "./brand.css";
 @import "./page-templates.css";
 @import "./blocks.css";
 @import "./design-language.css";
+@import "./pages-refresh.css";
 @source "../../app/**/*.php";
 @source "../**/*.blade.php";
 @source "../**/*.js";
 
 /* ----------------------------------------------------------------------
-   Design tokens — Paper + Space Grotesk system (trend #3: minimalism)
+   Design tokens — Paper + Space system (purple / orange / lime)
    Token NAMES kept stable; values updated so all components inherit.
+   Outfit (display + body) · Instrument Serif (accent) · JetBrains Mono.
 ---------------------------------------------------------------------- */
 @theme {
-  --color-khaki:      #fbfaf7; /* page background (Paper) */
-  --color-paper:      #fbfaf7; /* fixed warm-white — for text ON dark heroes */
-  --color-cream:      #f4f2ec; /* subtle alt surface */
-  --color-card:       #ffffff; /* card surface */
-  --color-green:      #2f6b4e; /* brand / buttons / links (AA on Paper) */
-  --color-green-ink:  #255840; /* hover */
-  --color-green-tint: #eaf1ec; /* soft fill */
-  --color-ink:        #17191e; /* headings / darkest text */
-  --color-body:       #2b2f36; /* body text */
-  --color-muted:      #5c636c; /* eyebrows / labels / meta */
-  --color-heading:    #17191e; /* display headings now ink, not khaki */
-  --color-line:       #e6e2d9; /* hairlines / card borders */
-  --color-border:     #e6e2d9;
+  --color-khaki:      #FFFDF7; /* page background (Paper) */
+  --color-paper:      #FFFDF7; /* fixed warm-white — for text ON dark heroes */
+  --color-cream:      #F6F1FF; /* subtle alt surface */
+  --color-card:       #FFFFFF; /* card surface */
+  --color-green:      #7C5CFF; /* brand / buttons / links (kept slug; now purple) */
+  --color-green-ink:  #6A4AE0; /* hover */
+  --color-green-tint: #EFE9FF; /* soft fill */
+  --color-ink:        #1B1830; /* headings / darkest text */
+  --color-body:       #4A4660; /* body text */
+  --color-muted:      #5A5676; /* eyebrows / labels / meta */
+  --color-faint:      #7C75A8; /* faint meta / placeholders */
+  --color-heading:    #1B1830; /* display headings */
+  --color-line:       #ECE4F8; /* hairlines / card borders */
+  --color-border:     #ECE4F8;
 
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-body:    "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono:    "JetBrains Mono", "Menlo", "Consolas", monospace;
+  /* Accent palette */
+  --color-purple:     #7C5CFF;
+  --color-orange:     #FF7A1A;
+  --color-lime:       #C2F23D;
+  --color-sky:        #38BDF8;
+  --color-pink:       #FF5DA2;
 
-  --radius-btn: 8px;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-serif:   "Instrument Serif", Georgia, serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "Menlo", "Consolas", monospace;
+
+  --radius-btn: 999px;
 }
 
 /* ----------------------------------------------------------------------

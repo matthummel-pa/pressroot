@@ -3,7 +3,7 @@
   var el = wp.element.createElement, __ = wp.i18n.__;
   var be = wp.blockEditor || wp.editor, ubp = be.useBlockProps;
   var SSR = wp.serverSideRender || wp.components.ServerSideRender;
-  var defs = window.prtBarBlocks || {};
+  var defs = window.mhBarBlocks || {};
 
   Object.keys(defs).forEach(function (slug) {
     var d = defs[slug];

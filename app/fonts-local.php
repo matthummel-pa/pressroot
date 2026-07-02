@@ -3,7 +3,7 @@
 /**
  * Self-host Google Fonts. Downloads the active families' woff2 files into
  * wp-content/uploads/prt-fonts/ (server-side, via the WordPress HTTP API),
- * writes a local @font-face stylesheet, and â€” when enabled â€” serves that and
+ * writes a local @font-face stylesheet, and — when enabled — serves that and
  * removes every Google Fonts request from the page.
  *
  * Appearance -> Local Fonts.

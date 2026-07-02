@@ -24,6 +24,59 @@ add_filter('block_editor_settings_all', function ($settings) {
 });
 
 /**
+ * Clear Acorn's compiled Blade views on demand: visit any admin URL with
+ * ?prt_view_clear=1. Useful when template edits don't show because the compiled
+ * views were cached (e.g. `wp acorn view:cache` / production mode).
+ */
+add_action('admin_init', function () {
+    if (empty($_GET['prt_view_clear']) || ! current_user_can('edit_theme_options')) {
+        return;
+    }
+    $dirs = [
+        WP_CONTENT_DIR . '/uploads/acorn-views',
+        WP_CONTENT_DIR . '/cache/acorn/views',
+    ];
+    if (function_exists('config')) {
+        $cfg = config('view.compiled');
+        if (is_string($cfg) && $cfg !== '') {
+            $dirs[] = $cfg;
+        }
+    }
+    $count = 0;
+    foreach (array_unique($dirs) as $dir) {
+        foreach ((array) glob(rtrim($dir, '/') . '/*.php') as $file) {
+            if (@unlink($file)) {
+                $count++;
+            }
+        }
+    }
+    wp_safe_redirect(add_query_arg('prt_views_cleared', (int) $count, admin_url()));
+    exit;
+});
+
+/**
+ * Load the compiled design stylesheet INTO the editor as a real <link>.
+ *
+ * `enqueue_block_assets` runs inside the iframed editor canvas AND inside the
+ * inserter's pattern/block preview iframes, so this is what makes patterns and
+ * blocks preview with the full Paper + Space design (CSS variables, fonts,
+ * .prt-* helpers, keyframes). The @import editor style above gets scoped to
+ * `.editor-styles-wrapper` and mangled, which is why previews looked unstyled.
+ * Editor-only: the front end already loads app.css via @vite.
+ */
+add_action('enqueue_block_assets', function () {
+    if (! is_admin()) {
+        return;
+    }
+    wp_enqueue_style(
+        'matthummel-editor-design',
+        Vite::asset('resources/css/editor.css'),
+        [],
+        null
+    );
+});
+
+/**
  * Inject scripts into the block editor.
  *
  * @return void
@@ -168,7 +221,7 @@ add_action('widgets_init', function () {
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style(
         'matthummel-fonts',
-        'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
+        'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap',
         [],
         null
     );
@@ -177,7 +230,7 @@ add_action('wp_enqueue_scripts', function () {
 add_action('admin_enqueue_scripts', function () {
     wp_enqueue_style(
         'matthummel-fonts',
-        'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap',
+        'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap',
         [],
         null
     );

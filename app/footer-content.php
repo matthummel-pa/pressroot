@@ -31,7 +31,7 @@ add_action('customize_register', function ($wp) {
     /* Footer */
     $wp->add_section('prt_footer_section', ['title' => __('Footer & Header', 'pressroot'), 'panel' => 'prt_theme_options']);
 
-    // (Sticky header lives in Header Layout â†’ prt_header_sticky; the old duplicate here was removed.)
+    // (Sticky header lives in Header Layout → prt_header_sticky; the old duplicate here was removed.)
     $wp->add_setting('prt_footer_social', ['default' => true, 'sanitize_callback' => 'wp_validate_boolean']);
     $wp->add_control('prt_footer_social', ['label' => __('Show social icons in footer', 'pressroot'), 'section' => 'prt_footer_section', 'type' => 'checkbox']);
 

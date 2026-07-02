@@ -24,9 +24,19 @@ function prt_owned_mods()
 function prt_style_kits()
 {
     return apply_filters('matthummel/style_kits', [
+        'paper_space' => [
+            'label' => __('Paper + Space', 'pressroot'),
+            'desc'  => __('Bold paper + purple/orange/lime with Outfit. The theme default.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#7C5CFF', 'prt_color_paper' => '#FFFDF7',
+                'prt_color_ink' => '#1B1830', 'prt_color_body' => '#4A4660',
+                'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Outfit',
+                'prt_btn_radius' => '999', 'prt_card_radius' => '20',
+            ],
+        ],
         'editorial' => [
-            'label' => __('Editorial', 'pressroot'),
-            'desc'  => __('Clean paper + green. The theme default.', 'pressroot'),
+            'label' => __('Editorial (green)', 'pressroot'),
+            'desc'  => __('Clean paper + green — the previous theme default.', 'pressroot'),
             'mods'  => [
                 'prt_color_action' => '#2f6b4e', 'prt_color_paper' => '#fbfaf7',
                 'prt_color_ink' => '#17191e', 'prt_color_body' => '#2b2f36',
@@ -36,7 +46,7 @@ function prt_style_kits()
         ],
         'sage_classic' => [
             'label' => __('Sage Classic', 'pressroot'),
-            'desc'  => __('Khaki + serif â€” matches matthummel.com.', 'pressroot'),
+            'desc'  => __('Khaki + serif — matches matthummel.com.', 'pressroot'),
             'mods'  => [
                 'prt_color_action' => '#4e6b4a', 'prt_color_paper' => '#dccfa6',
                 'prt_color_ink' => '#2a303b', 'prt_color_body' => '#3a3d44',

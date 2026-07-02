@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Block patterns — pressroot theme.
+ * Block patterns — matthummel theme.
  *
  * All patterns use design-language.css classes + prt/* blocks.
  * Design language: dark ink heroes, bento stats, monospace accents,
@@ -13,8 +13,8 @@ namespace App;
 add_action('init', function () {
 
     register_block_pattern_category('pressroot', [
-        'label'       => __('Pressroot', 'pressroot'),
-        'description' => __('Pre-built layouts for the Pressroot theme.', 'pressroot'),
+        'label'       => __('Matthummel', 'pressroot'),
+        'description' => __('Pre-built layouts for the matthummel.com theme.', 'pressroot'),
     ]);
 
     /* ── 1. Hero — dark with availability badge ────────────────────── */
@@ -27,7 +27,7 @@ add_action('init', function () {
 <!-- wp:paragraph {"className":"badge-available"} --><p class="badge-available">Available for projects</p><!-- /wp:paragraph -->
 <!-- wp:heading {"level":1,"className":"display-xl"} --><h1 class="wp-block-heading display-xl">I build things<br>for the web.</h1><!-- /wp:heading -->
 <!-- wp:paragraph {"className":"lead"} --><p class="lead">WordPress developer &amp; Power Platform specialist. Clean code, accessible interfaces, real results.</p><!-- /wp:paragraph -->
-<!-- wp:paragraph {"className":"code-accent"} --><p class="code-accent">npm create matthummel-theme</p><!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"code-accent"} --><p class="code-accent">npm create pressroot</p><!-- /wp:paragraph -->
 <!-- wp:buttons {"style":{"spacing":{"blockGap":"12px"}}} -->
 <div class="wp-block-buttons"><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/projects/">View work</a></div><!-- /wp:button -->
 <!-- wp:button {"className":"is-style-outline"} --><div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/blog/">Read blog →</a></div><!-- /wp:button --></div>
@@ -163,9 +163,9 @@ add_action('init', function () {
 <!-- wp:group {"className":"proj-featured"} -->
 <div class="wp-block-group proj-featured">
 <!-- wp:paragraph {"className":"proj-featured-label"} --><p class="proj-featured-label">Featured</p><!-- /wp:paragraph -->
-<!-- wp:heading {"level":3,"className":"proj-featured-title"} --><h3 class="wp-block-heading proj-featured-title">matthummel-theme</h3><!-- /wp:heading -->
+<!-- wp:heading {"level":3,"className":"proj-featured-title"} --><h3 class="wp-block-heading proj-featured-title">pressroot</h3><!-- /wp:heading -->
 <!-- wp:paragraph {"className":"proj-featured-desc"} --><p class="proj-featured-desc">A Sage 10 WordPress theme with custom Gutenberg blocks, Vite build pipeline, block patterns, and a full Customizer suite.</p><!-- /wp:paragraph -->
-<!-- wp:prt/project-card {"heading":"","excerpt":"","tags":"PHP, Sage, Gutenberg, Vite","liveUrl":"/projects/matthummel-theme/","githubUrl":"https://github.com/matthummel-pa/matthummel-theme"} /-->
+<!-- wp:prt/project-card {"heading":"","excerpt":"","tags":"PHP, Sage, Gutenberg, Vite","liveUrl":"/projects/pressroot/","githubUrl":"https://github.com/matthummel-pa/pressroot"} /-->
 </div>
 <!-- /wp:group -->
 </div><!-- /wp:column -->

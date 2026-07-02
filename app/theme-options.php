@@ -79,6 +79,16 @@ add_filter('body_class', function ($classes) {
     return $classes;
 });
 
+/**
+ * Page edit screen: offer only the Default template. The theme builds pages from
+ * block patterns and sets content width via the Customizer, not per-page Blade
+ * templates. Existing template assignments still render — this only cleans up
+ * the "Template" dropdown so authors aren't offered the internal templates.
+ */
+add_filter('theme_page_templates', function ($templates) {
+    return [];
+});
+
 /** Per-type custom width override (emitted after app.css via the prt_head_end hook). */
 add_action('prt_head_end', function () {
     $d = prt_layout_defaults();
@@ -129,7 +139,7 @@ add_action('customize_register', function ($wp) {
             'sanitize_callback' => 'sanitize_key',
         ]);
         $wp->add_control("prt_layout_{$type}_width", [
-            'label'   => sprintf(__('%s â€” width preset', 'pressroot'), $label),
+            'label'   => sprintf(__('%s — width preset', 'pressroot'), $label),
             'section' => 'prt_layout_section',
             'type'    => 'select',
             'choices' => prt_width_choices(),
@@ -140,7 +150,7 @@ add_action('customize_register', function ($wp) {
             'sanitize_callback' => 'absint',
         ]);
         $wp->add_control("prt_layout_{$type}_maxwidth", [
-            'label'       => sprintf(__('%s â€” custom width', 'pressroot'), $label),
+            'label'       => sprintf(__('%s — custom width', 'pressroot'), $label),
             'description' => __('Overrides the preset above when set. "Use preset" follows the width preset.', 'pressroot'),
             'section'     => 'prt_layout_section',
             'type'        => 'select',
@@ -152,7 +162,7 @@ add_action('customize_register', function ($wp) {
             'sanitize_callback' => 'wp_validate_boolean',
         ]);
         $wp->add_control("prt_layout_{$type}_sidebar", [
-            'label'   => sprintf(__('%s â€” show sidebar', 'pressroot'), $label),
+            'label'   => sprintf(__('%s — show sidebar', 'pressroot'), $label),
             'section' => 'prt_layout_section',
             'type'    => 'checkbox',
         ]);
@@ -188,7 +198,7 @@ function prt_palette_choices()
         'cream'  => __('Cream', 'pressroot'),
         'paper'  => __('Paper', 'pressroot'),
         'white'  => __('White', 'pressroot'),
-        'custom' => __('Customâ€¦', 'pressroot'),
+        'custom' => __('Custom…', 'pressroot'),
     ];
 }
 

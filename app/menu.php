@@ -50,8 +50,8 @@ function prt_social_links()
 function prt_popout()
 {
     $type = get_theme_mod('prt_popout_bgtype', 'solid');
-    $c1   = get_theme_mod('prt_popout_bg', '#17191e');
-    $c2   = get_theme_mod('prt_popout_grad2', '#2f6b4e');
+    $c1   = get_theme_mod('prt_popout_bg', '#1B1830');
+    $c2   = get_theme_mod('prt_popout_grad2', '#7C5CFF');
     $ang  = absint(get_theme_mod('prt_popout_angle', 160));
     $bg   = $type === 'gradient' ? "linear-gradient({$ang}deg, {$c1}, {$c2})" : $c1;
 
@@ -97,7 +97,7 @@ add_action('customize_register', function ($wp) {
     $wp->add_setting('prt_popout_bgtype', ['default' => 'solid', 'sanitize_callback' => 'sanitize_key']);
     $wp->add_control('prt_popout_bgtype', ['label' => __('Panel background', 'pressroot'), 'section' => 'prt_popout_section', 'type' => 'select', 'choices' => ['solid' => __('Solid', 'pressroot'), 'gradient' => __('Gradient', 'pressroot')]]);
 
-    foreach ([['prt_popout_bg', __('Background / gradient start', 'pressroot'), '#17191e'], ['prt_popout_grad2', __('Gradient end', 'pressroot'), '#2f6b4e'], ['prt_popout_text', __('Text / icon color', 'pressroot'), '#ffffff']] as $col) {
+    foreach ([['prt_popout_bg', __('Background / gradient start', 'pressroot'), '#1B1830'], ['prt_popout_grad2', __('Gradient end', 'pressroot'), '#7C5CFF'], ['prt_popout_text', __('Text / icon color', 'pressroot'), '#ffffff']] as $col) {
         $wp->add_setting($col[0], ['default' => $col[2], 'sanitize_callback' => 'sanitize_hex_color']);
         $wp->add_control(new \WP_Customize_Color_Control($wp, $col[0], ['label' => $col[1], 'section' => 'prt_popout_section']));
     }
@@ -105,7 +105,7 @@ add_action('customize_register', function ($wp) {
     $wp->add_setting('prt_popout_angle', ['default' => 160, 'sanitize_callback' => 'absint']);
     $wp->add_control('prt_popout_angle', ['label' => __('Gradient angle (deg)', 'pressroot'), 'section' => 'prt_popout_section', 'type' => 'number', 'input_attrs' => ['min' => 0, 'max' => 360, 'step' => 5]]);
 
-    // Social URL fields â€” each shows its Blade icon next to the network name.
+    // Social URL fields — each shows its Blade icon next to the network name.
     foreach (prt_socials_map() as $key => $info) {
         $preview = prt_social_icon($key, 'prt-soc-admin', ['width' => 16, 'height' => 16]);
         $wp->add_setting("prt_social_{$key}", ['default' => $info[1], 'sanitize_callback' => 'esc_url_raw']);

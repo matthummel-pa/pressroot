@@ -18,13 +18,13 @@ add_action('init', function () {
         'content'    => <<<'HTML'
 <!-- wp:group {"className":"prt-hero","layout":{"type":"constrained"}} -->
 <div class="wp-block-group prt-hero"><!-- wp:paragraph {"align":"center","className":"prt-eyebrow"} -->
-<p class="has-text-align-center prt-eyebrow">DEVELOPER Â· DESIGNER Â· BUILDER</p>
+<p class="has-text-align-center prt-eyebrow">DEVELOPER · DESIGNER · BUILDER</p>
 <!-- /wp:paragraph -->
 <!-- wp:heading {"textAlign":"center","level":1} -->
 <h1 class="wp-block-heading has-text-align-center">I build clean, fast software for the web</h1>
 <!-- /wp:heading -->
 <!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center">WordPress themes, web apps, and Power Platform tools â€” designed to be simple and durable.</p>
+<p class="has-text-align-center">WordPress themes, web apps, and Power Platform tools — designed to be simple and durable.</p>
 <!-- /wp:paragraph -->
 <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 <div class="wp-block-buttons"><!-- wp:button -->

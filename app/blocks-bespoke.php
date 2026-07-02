@@ -75,6 +75,45 @@ function prt_project_card_attrs(): array
     ];
 }
 
+/**
+ * Full set of block "supports" so every prt/* section block exposes the native
+ * editor controls — background & text colour, gradients, link colour, font
+ * size & family, weight/style/letter-spacing/transform, padding/margin/gap, and
+ * border colour/radius/width/style — plus alignment and an HTML anchor. The
+ * render callbacks apply these via get_block_wrapper_attributes().
+ */
+function prt_full_block_supports(array $align = ['wide', 'full']): array
+{
+    return [
+        'align'   => $align,
+        'anchor'  => true,
+        'color'   => ['background' => true, 'text' => true, 'gradients' => true, 'link' => true],
+        'typography' => [
+            'fontSize'                       => true,
+            'lineHeight'                     => true,
+            '__experimentalFontFamily'       => true,
+            '__experimentalFontWeight'       => true,
+            '__experimentalFontStyle'        => true,
+            '__experimentalLetterSpacing'    => true,
+            '__experimentalTextTransform'    => true,
+            '__experimentalDefaultControls'  => ['fontSize' => true, 'fontFamily' => true],
+        ],
+        'spacing' => [
+            'margin'                        => true,
+            'padding'                       => true,
+            'blockGap'                      => true,
+            '__experimentalDefaultControls' => ['padding' => true, 'margin' => true],
+        ],
+        '__experimentalBorder' => [
+            'color'                         => true,
+            'radius'                        => true,
+            'width'                         => true,
+            'style'                         => true,
+            '__experimentalDefaultControls' => ['color' => true, 'radius' => true, 'width' => true],
+        ],
+    ];
+}
+
 /* ── Registration ───────────────────────────────────────────────────── */
 
 add_action('init', function () {
@@ -101,42 +140,48 @@ add_action('init', function () {
         'editor_script'   => 'prt-stat-strip',
         'attributes'      => prt_stat_strip_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_stat_strip_render',
-        'supports'        => ['align' => ['wide', 'full'], 'spacing' => ['margin' => true]],
+        'supports'        => prt_full_block_supports(),
+        'example'         => ['viewportWidth' => 1000],
     ]);
     register_block_type('prt/skills-grid', [
         'api_version'     => 2,
         'editor_script'   => 'prt-skills-grid',
         'attributes'      => prt_skills_grid_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_skills_grid_render',
-        'supports'        => ['align' => ['wide', 'full'], 'spacing' => ['margin' => true, 'padding' => true]],
+        'supports'        => prt_full_block_supports(),
+        'example'         => ['viewportWidth' => 1000],
     ]);
     register_block_type('prt/timeline', [
         'api_version'     => 2,
         'editor_script'   => 'prt-timeline',
         'attributes'      => prt_timeline_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_timeline_render',
-        'supports'        => ['align' => ['wide'], 'spacing' => ['margin' => true]],
+        'supports'        => prt_full_block_supports(['wide']),
+        'example'         => ['viewportWidth' => 900],
     ]);
     register_block_type('prt/resource-group', [
         'api_version'     => 2,
         'editor_script'   => 'prt-resource-group',
         'attributes'      => prt_resource_group_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_resource_group_render',
-        'supports'        => ['spacing' => ['margin' => true]],
+        'supports'        => prt_full_block_supports(['wide']),
+        'example'         => ['viewportWidth' => 700],
     ]);
     register_block_type('prt/cta-band', [
         'api_version'     => 2,
         'editor_script'   => 'prt-cta-band',
         'attributes'      => prt_cta_band_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_cta_band_render',
-        'supports'        => ['align' => ['wide', 'full'], 'spacing' => ['margin' => true]],
+        'supports'        => prt_full_block_supports(),
+        'example'         => ['viewportWidth' => 1000],
     ]);
     register_block_type('prt/project-card', [
         'api_version'     => 2,
         'editor_script'   => 'prt-project-card',
         'attributes'      => prt_project_card_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_project_card_render',
-        'supports'        => ['spacing' => ['margin' => true]],
+        'example'         => ['viewportWidth' => 500],
+        'supports'        => prt_full_block_supports(['wide']),
     ]);
 }, 12);
 
@@ -148,7 +193,7 @@ function prt_stat_strip_render(array $attrs): string
     $stats = json_decode($a['stats'], true) ?: [];
     $cols  = max(2, min(4, absint($a['columns'])));
 
-    $out = '<div class="prt-stat-strip stat-grid" style="grid-template-columns:repeat(' . $cols . ',1fr)">';
+    $out = '<div ' . get_block_wrapper_attributes(['class' => 'prt-stat-strip stat-grid', 'style' => 'grid-template-columns:repeat(' . $cols . ',1fr)']) . '>';
     foreach ($stats as $s) {
         $out .= '<div class="stat-item">';
         $out .= '<span class="stat-number">' . esc_html($s['value'] ?? '') . '</span>';
@@ -166,8 +211,8 @@ function prt_skills_grid_render(array $attrs): string
     $cols  = max(2, min(3, absint($a['columns'])));
     $cls   = $a['style'] === 'focus' ? 'focus-card' : 'skill-card';
 
-    $out = '<div class="prt-skills-grid ' . ($a['style'] === 'focus' ? 'focus-grid' : 'skills-grid') . '" '
-         . 'style="grid-template-columns:repeat(' . $cols . ',1fr)">';
+    $gridCls = 'prt-skills-grid ' . ($a['style'] === 'focus' ? 'focus-grid' : 'skills-grid');
+    $out = '<div ' . get_block_wrapper_attributes(['class' => $gridCls, 'style' => 'grid-template-columns:repeat(' . $cols . ',1fr)']) . '>';
     foreach ($cards as $c) {
         $out .= '<div class="' . $cls . '">';
         if (! empty($c['title'])) {
@@ -187,7 +232,7 @@ function prt_timeline_render(array $attrs): string
     $a       = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_timeline_attrs()));
     $entries = json_decode($a['entries'], true) ?: [];
 
-    $out = '<div class="prt-timeline resume-timeline">';
+    $out = '<div ' . get_block_wrapper_attributes(['class' => 'prt-timeline resume-timeline']) . '>';
     foreach ($entries as $e) {
         $out .= '<article class="timeline-entry">';
         $out .= '<div class="timeline-meta"><span class="timeline-dates">' . esc_html($e['dates'] ?? '') . '</span></div>';
@@ -212,7 +257,7 @@ function prt_resource_group_render(array $attrs): string
     $a     = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_resource_group_attrs()));
     $links = json_decode($a['links'], true) ?: [];
 
-    $out  = '<div class="prt-resource-group resource-group">';
+    $out  = '<div ' . get_block_wrapper_attributes(['class' => 'prt-resource-group resource-group']) . '>';
     $out .= '<h2 class="resource-group-title">' . esc_html($a['emoji']) . ' ' . esc_html($a['heading']) . '</h2>';
     $out .= '<ul class="resource-list">';
     foreach ($links as $l) {
@@ -231,7 +276,7 @@ function prt_cta_band_render(array $attrs): string
     $fg  = $a['variant'] === 'light' ? 'var(--color-ink)' : 'var(--color-paper,#fff)';
     $btn = $a['variant'] === 'light' ? 'background:var(--color-ink);color:var(--color-paper)' : 'background:var(--color-paper,#fff);color:var(--color-ink)';
 
-    $out  = '<div class="prt-cta-band cta-card" style="background:' . $bg . ';color:' . $fg . '">';
+    $out  = '<div ' . get_block_wrapper_attributes(['class' => 'prt-cta-band cta-card', 'style' => 'background:' . $bg . ';color:' . $fg]) . '>';
     $out .= '<h2 style="color:' . $fg . '">' . esc_html($a['heading']) . '</h2>';
     if ($a['body']) {
         $out .= '<p>' . esc_html($a['body']) . '</p>';
@@ -248,7 +293,7 @@ function prt_project_card_render(array $attrs): string
     $a    = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_project_card_attrs()));
     $href = esc_url($a['link'] ?: ($a['liveUrl'] ?: '#'));
 
-    $out  = '<article class="prt-project-card project-card">';
+    $out  = '<article ' . get_block_wrapper_attributes(['class' => 'prt-project-card project-card']) . '>';
     if ($a['imageUrl']) {
         $out .= '<a href="' . $href . '" class="project-card-link" tabindex="-1" aria-hidden="true">';
         $out .= '<div class="project-card-thumb"><img src="' . esc_url($a['imageUrl']) . '" alt="' . esc_attr($a['imageAlt']) . '" loading="lazy"></div></a>';

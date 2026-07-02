@@ -118,14 +118,14 @@ function prt_gh_connect_widget()
             <button type="button" class="button prt-gh-disconnect"><?php esc_html_e('Disconnect', 'pressroot'); ?></button>
         <?php else : ?>
             <p class="description" style="margin-bottom:8px">
-                <?php esc_html_e('One-time setup: on GitHub, go to Settings â†’ Developer settings â†’ OAuth Apps â†’ New, tick "Enable Device Flow", then paste the Client ID above and save. Then click Connect.', 'pressroot'); ?>
+                <?php esc_html_e('One-time setup: on GitHub, go to Settings → Developer settings → OAuth Apps → New, tick "Enable Device Flow", then paste the Client ID above and save. Then click Connect.', 'pressroot'); ?>
             </p>
             <button type="button" class="button button-primary prt-gh-start" <?php disabled($client_id === ''); ?>><span class="dashicons dashicons-github" style="vertical-align:text-bottom"></span> <?php esc_html_e('Connect with GitHub', 'pressroot'); ?></button>
             <?php if ($client_id === '') : ?><span class="description" style="margin-left:8px"><?php esc_html_e('Enter a Client ID above and save first.', 'pressroot'); ?></span><?php endif; ?>
             <div class="prt-gh-step" style="display:none;margin-top:12px;padding:14px;border:1px solid #dcdcde;border-radius:8px;background:#fff">
                 <p style="margin:0 0 6px"><?php esc_html_e('1. Your one-time code:', 'pressroot'); ?> <strong class="prt-gh-code" style="font-size:20px;letter-spacing:2px"></strong></p>
                 <p style="margin:0 0 6px"><?php esc_html_e('2. Authorize at', 'pressroot'); ?> <a class="prt-gh-uri" href="#" target="_blank" rel="noopener">github.com/login/device</a></p>
-                <p class="prt-gh-status" style="margin:0;color:#646970"><?php esc_html_e('Waiting for authorizationâ€¦', 'pressroot'); ?></p>
+                <p class="prt-gh-status" style="margin:0;color:#646970"><?php esc_html_e('Waiting for authorization…', 'pressroot'); ?></p>
             </div>
         <?php endif; ?>
         <p class="prt-gh-error" style="color:#b32d2e;margin-top:8px;display:none"></p>
@@ -144,7 +144,7 @@ function prt_gh_connect_widget()
       function err(m){ var e=box.querySelector('.prt-gh-error'); if(e){ e.textContent=m; e.style.display='block'; } }
       var start = box.querySelector('.prt-gh-start');
       if(start) start.addEventListener('click', function(){
-        err(''); start.disabled = true; start.textContent = 'Startingâ€¦';
+        err(''); start.disabled = true; start.textContent = 'Starting…';
         post('prt_gh_device_start').then(function(res){
           if(!res.success){ err(res.data && res.data.message || 'Failed'); start.disabled=false; start.textContent='Connect with GitHub'; return; }
           var step = box.querySelector('.prt-gh-step'); step.style.display='block';
@@ -154,7 +154,7 @@ function prt_gh_connect_widget()
           var interval = (res.data.interval || 5) * 1000;
           var poll = function(){
             post('prt_gh_device_poll').then(function(p){
-              if(p.success && p.data.status === 'connected'){ box.querySelector('.prt-gh-status').textContent='Connected! Reloadingâ€¦'; setTimeout(function(){ location.reload(); }, 800); return; }
+              if(p.success && p.data.status === 'connected'){ box.querySelector('.prt-gh-status').textContent='Connected! Reloading…'; setTimeout(function(){ location.reload(); }, 800); return; }
               if(p.success && p.data.status === 'pending'){ if(p.data.interval) interval = p.data.interval*1000; setTimeout(poll, interval); return; }
               err(p.data && p.data.message || 'Authorization failed'); start.disabled=false; start.textContent='Connect with GitHub'; step.style.display='none';
             });

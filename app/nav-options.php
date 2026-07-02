@@ -46,33 +46,33 @@ add_action('customize_register', function ($wp) {
         $wp->add_control(new \WP_Customize_Color_Control($wp, $id, ['label' => $label, 'section' => 'prt_nav_section']));
     };
 
-    /* Menu container â€” flexbox */
-    $select($wp, 'prt_nav_dir', __('Menu â€” direction', 'pressroot'), $c['dir'], 'row');
-    $select($wp, 'prt_nav_justify', __('Menu â€” justify content', 'pressroot'), $c['justify'], 'flex-start');
-    $select($wp, 'prt_nav_align', __('Menu â€” align items', 'pressroot'), $c['align'], 'center');
-    $select($wp, 'prt_nav_aligncontent', __('Menu â€” align content (wrap)', 'pressroot'), $c['content'], 'stretch');
-    $select($wp, 'prt_nav_wrap', __('Menu â€” flex wrap', 'pressroot'), $c['wrap'], 'nowrap');
-    $number($wp, 'prt_nav_gap', __('Menu â€” gap (px)', 'pressroot'), 26);
+    /* Menu container — flexbox */
+    $select($wp, 'prt_nav_dir', __('Menu — direction', 'pressroot'), $c['dir'], 'row');
+    $select($wp, 'prt_nav_justify', __('Menu — justify content', 'pressroot'), $c['justify'], 'flex-start');
+    $select($wp, 'prt_nav_align', __('Menu — align items', 'pressroot'), $c['align'], 'center');
+    $select($wp, 'prt_nav_aligncontent', __('Menu — align content (wrap)', 'pressroot'), $c['content'], 'stretch');
+    $select($wp, 'prt_nav_wrap', __('Menu — flex wrap', 'pressroot'), $c['wrap'], 'nowrap');
+    $number($wp, 'prt_nav_gap', __('Menu — gap (px)', 'pressroot'), 26);
 
-    /* Menu items â€” box + type */
-    $number($wp, 'prt_nav_pad_y', __('Item â€” padding top/bottom (px)', 'pressroot'), 0);
-    $number($wp, 'prt_nav_pad_x', __('Item â€” padding left/right (px)', 'pressroot'), 0);
-    $number($wp, 'prt_nav_height', __('Item â€” min height (px, 0 = auto)', 'pressroot'), 0, 120);
-    $number($wp, 'prt_nav_font', __('Item â€” font size (px)', 'pressroot'), 15, 40);
-    $select($wp, 'prt_nav_weight', __('Item â€” font weight', 'pressroot'), $c['weight'], '500');
-    $select($wp, 'prt_nav_transform', __('Item â€” text transform', 'pressroot'), $c['transform'], 'none');
-    $number($wp, 'prt_nav_spacing', __('Item â€” letter spacing (px)', 'pressroot'), 0, 10);
-    $number($wp, 'prt_nav_radius', __('Item â€” corner radius (px)', 'pressroot'), 0, 40);
-    $color($wp, 'prt_nav_color', __('Item â€” color', 'pressroot'));
-    $color($wp, 'prt_nav_hover', __('Item â€” hover color', 'pressroot'));
+    /* Menu items — box + type */
+    $number($wp, 'prt_nav_pad_y', __('Item — padding top/bottom (px)', 'pressroot'), 0);
+    $number($wp, 'prt_nav_pad_x', __('Item — padding left/right (px)', 'pressroot'), 0);
+    $number($wp, 'prt_nav_height', __('Item — min height (px, 0 = auto)', 'pressroot'), 0, 120);
+    $number($wp, 'prt_nav_font', __('Item — font size (px)', 'pressroot'), 15, 40);
+    $select($wp, 'prt_nav_weight', __('Item — font weight', 'pressroot'), $c['weight'], '500');
+    $select($wp, 'prt_nav_transform', __('Item — text transform', 'pressroot'), $c['transform'], 'none');
+    $number($wp, 'prt_nav_spacing', __('Item — letter spacing (px)', 'pressroot'), 0, 10);
+    $number($wp, 'prt_nav_radius', __('Item — corner radius (px)', 'pressroot'), 0, 40);
+    $color($wp, 'prt_nav_color', __('Item — color', 'pressroot'));
+    $color($wp, 'prt_nav_hover', __('Item — hover color', 'pressroot'));
 
     /* Popout menu */
-    $select($wp, 'prt_pop_align', __('Popout â€” text align', 'pressroot'), $c['textalign'], 'left');
-    $number($wp, 'prt_pop_pad_y', __('Popout â€” item padding (px)', 'pressroot'), 13, 60);
-    $number($wp, 'prt_pop_font', __('Popout â€” item font size (px)', 'pressroot'), 19, 48);
-    $select($wp, 'prt_pop_weight', __('Popout â€” item weight', 'pressroot'), $c['weight'], '600');
-    $select($wp, 'prt_pop_transform', __('Popout â€” item transform', 'pressroot'), $c['transform'], 'none');
-    $number($wp, 'prt_pop_gap', __('Popout â€” gap between items (px)', 'pressroot'), 0, 40);
+    $select($wp, 'prt_pop_align', __('Popout — text align', 'pressroot'), $c['textalign'], 'left');
+    $number($wp, 'prt_pop_pad_y', __('Popout — item padding (px)', 'pressroot'), 13, 60);
+    $number($wp, 'prt_pop_font', __('Popout — item font size (px)', 'pressroot'), 19, 48);
+    $select($wp, 'prt_pop_weight', __('Popout — item weight', 'pressroot'), $c['weight'], '600');
+    $select($wp, 'prt_pop_transform', __('Popout — item transform', 'pressroot'), $c['transform'], 'none');
+    $number($wp, 'prt_pop_gap', __('Popout — gap between items (px)', 'pressroot'), 0, 40);
 }, 26);
 
 add_action('prt_head_end', function () {

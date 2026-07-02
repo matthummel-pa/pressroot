@@ -12,7 +12,7 @@
     <span class="eyebrow">The Blog</span>
     <h1 class="display-xl blog-index-title">{{ get_the_title() ?: 'Blog' }}</h1>
     @php $excerpt = strip_tags(get_the_excerpt()); @endphp
-    <p class="lead">{{ $excerpt ?: 'Notes, tutorials, and dev writing from the blog.' }}</p>
+    <p class="lead">{{ $excerpt ?: 'WordPress tutorials, Power Platform guides, and dev notes from Gettysburg, PA.' }}</p>
   </div>
 </div>
 

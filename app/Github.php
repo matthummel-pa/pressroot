@@ -5,7 +5,7 @@ namespace App;
 /**
  * Live, cached GitHub repo data for project case studies.
  * Mirrors the matthummel.com [prt_github] feature: repo metadata,
- * latest release, and a cleaned README intro â€” cached for 6 hours.
+ * latest release, and a cleaned README intro — cached for 6 hours.
  */
 class Github
 {
@@ -101,6 +101,7 @@ class Github
                     'url'        => $j['html_url'] ?? '',
                     'date'       => isset($j['published_at']) ? date_i18n(get_option('date_format'), strtotime($j['published_at'])) : '',
                     'prerelease' => ! empty($j['prerelease']),
+                    'body'       => (string) ($j['body'] ?? ''),
                 ];
             }
         }
@@ -137,6 +138,11 @@ class Github
             $data['license'] = (isset($j['license']['spdx_id']) && $j['license']['spdx_id'] !== 'NOASSERTION')
                 ? $j['license']['spdx_id'] : '';
             $data['url']     = $j['html_url'] ?? '';
+            $data['topics']  = array_values(array_filter((array) ($j['topics'] ?? []), 'is_string'));
+            $data['branch']  = $j['default_branch'] ?? 'main';
+            $data['owner']   = $owner;
+            $data['repo']    = $repo;
+            $data['homepage'] = $j['homepage'] ?? '';
         }
 
         $rel = wp_remote_get("https://api.github.com/repos/{$owner}/{$repo}/releases/latest", $jargs);
@@ -145,13 +151,34 @@ class Github
             $data['release'] = $jr['tag_name'] ?? '';
         }
 
+        // Languages breakdown (bytes per language → percentages on render).
+        $lg = wp_remote_get("https://api.github.com/repos/{$owner}/{$repo}/languages", $jargs);
+        if (! is_wp_error($lg) && wp_remote_retrieve_response_code($lg) === 200) {
+            $langs = json_decode(wp_remote_retrieve_body($lg), true);
+            $data['languages'] = is_array($langs) ? $langs : [];
+        }
+
+        // Changelog: prefer a CHANGELOG file, else fall back to the releases page.
+        $branch = $data['branch'] ?? 'main';
+        $data['changelog'] = ($data['url'] ?? "https://github.com/{$owner}/{$repo}") . '/releases';
+        foreach (['CHANGELOG.md', 'CHANGELOG', 'changelog.md', 'docs/CHANGELOG.md'] as $cl) {
+            $c = wp_remote_get("https://api.github.com/repos/{$owner}/{$repo}/contents/" . $cl, $jargs);
+            if (! is_wp_error($c) && wp_remote_retrieve_response_code($c) === 200) {
+                $cj = json_decode(wp_remote_retrieve_body($c), true);
+                $data['changelog'] = $cj['html_url'] ?? ($data['url'] . '/blob/' . $branch . '/' . $cl);
+                break;
+            }
+        }
+
         $rmHeaders = ['User-Agent' => 'matthummel.com', 'Accept' => 'application/vnd.github.html'];
         if ($token !== '') {
             $rmHeaders['Authorization'] = 'token ' . $token;
         }
         $rm = wp_remote_get("https://api.github.com/repos/{$owner}/{$repo}/readme", ['timeout' => 12, 'headers' => $rmHeaders]);
         if (! is_wp_error($rm) && wp_remote_retrieve_response_code($rm) === 200) {
-            $data['intro'] = self::readmeIntro(wp_remote_retrieve_body($rm));
+            $rmBody = wp_remote_retrieve_body($rm);
+            $data['intro']  = self::readmeIntro($rmBody);
+            $data['readme'] = self::readmeClean($rmBody);
         }
 
         $ttl = max(1, (int) (function_exists('get_theme_mod') ? get_theme_mod('prt_proj_cache_hours', 6) : 6));
@@ -181,6 +208,127 @@ class Github
         $intro = preg_replace('~<a[^>]*href="#[^"]*"[^>]*>.*?</a>~is', '', $intro);
 
         return (string) $intro;
+    }
+
+    /** Clean the FULL README html for on-page display. */
+    protected static function readmeClean(string $body): string
+    {
+        if (($h1 = stripos($body, '</h1>')) !== false) {
+            $body = substr($body, $h1 + 5);
+        }
+        $body = str_ireplace(['<h2', '</h2>', '<h3', '</h3>'], ['<h4', '</h4>', '<h5', '</h5>'], $body);
+        $body = preg_replace('#<img[^>]*(shields\.io|badge|/actions/|/workflows/)[^>]*>#i', '', $body);
+        $body = preg_replace('~<svg[^>]*>.*?</svg>~is', '', $body);
+        $body = preg_replace('~<a[^>]*href="#[^"]*"[^>]*>(.*?)</a>~is', '$1', $body);
+        return (string) $body;
+    }
+
+    /** GitHub language → dot colour. */
+    public static function langColor(string $lang): string
+    {
+        $c = [
+            'PHP' => '#4F5D95', 'JavaScript' => '#f1e05a', 'TypeScript' => '#3178c6', 'CSS' => '#563d7c',
+            'SCSS' => '#c6538c', 'HTML' => '#e34c26', 'Python' => '#3572A5', 'Go' => '#00ADD8',
+            'Rust' => '#dea584', 'Shell' => '#89e051', 'Java' => '#b07219', 'Ruby' => '#701516',
+            'Blade' => '#f7523f', 'Vue' => '#41b883', 'C' => '#555555', 'C++' => '#f34b7d',
+            'C#' => '#178600', 'Dockerfile' => '#384d54', 'MDX' => '#fcb32c', 'Astro' => '#ff5a03',
+        ];
+        return $c[$lang] ?? '#8b949e';
+    }
+
+    /**
+     * Full repo profile: tags/topics, stats, languages breakdown, version notes
+     * (releases + changelog link), and the README — all live + cached.
+     */
+    public static function renderRepo(string $owner, string $repo, array $opts = []): string
+    {
+        $o = array_merge(['topics' => true, 'stats' => true, 'languages' => true, 'releases' => true, 'readme' => true, 'releaseCount' => 3], $opts);
+        $d = self::fetch($owner, $repo);
+        if (empty($d) || empty($d['url'])) {
+            return '';
+        }
+
+        $out  = '<div class="prt-gh-repo">';
+        $out .= '<div class="prt-ghr-head"><a class="prt-ghr-title" href="' . esc_url($d['url']) . '" target="_blank" rel="noopener">' . esc_html($owner) . ' / <strong>' . esc_html($repo) . '</strong> &#8599;</a>';
+        if (! empty($d['desc'])) {
+            $out .= '<p class="prt-ghr-desc">' . esc_html($d['desc']) . '</p>';
+        }
+        $out .= '</div>';
+
+        if ($o['topics'] && ! empty($d['topics'])) {
+            $out .= '<div class="prt-ghr-topics">';
+            foreach ($d['topics'] as $t) {
+                $out .= '<span class="prt-ghr-topic">' . esc_html($t) . '</span>';
+            }
+            $out .= '</div>';
+        }
+
+        if ($o['stats']) {
+            $bits = [
+                '<span class="prt-ghr-stat">&#9733; ' . number_format((int) ($d['stars'] ?? 0)) . ' <em>stars</em></span>',
+                '<span class="prt-ghr-stat">&#11489; ' . number_format((int) ($d['forks'] ?? 0)) . ' <em>forks</em></span>',
+            ];
+            if (! empty($d['license'])) {
+                $bits[] = '<span class="prt-ghr-stat">' . esc_html($d['license']) . ' <em>license</em></span>';
+            }
+            if (! empty($d['release'])) {
+                $bits[] = '<span class="prt-ghr-stat">' . esc_html($d['release']) . ' <em>latest</em></span>';
+            }
+            $out .= '<div class="prt-ghr-stats">' . implode('', $bits) . '</div>';
+        }
+
+        if ($o['languages'] && ! empty($d['languages'])) {
+            $langs = $d['languages'];
+            arsort($langs);
+            $total = array_sum($langs) ?: 1;
+            $bar = '';
+            $list = '';
+            foreach ($langs as $lang => $bytes) {
+                $pct   = round($bytes / $total * 100, 1);
+                $color = self::langColor((string) $lang);
+                $bar  .= '<span class="prt-ghr-langseg" style="width:' . $pct . '%;background:' . esc_attr($color) . '" title="' . esc_attr($lang . ' ' . $pct . '%') . '"></span>';
+                $list .= '<span class="prt-ghr-langitem"><span class="prt-ghr-langdot" style="background:' . esc_attr($color) . '"></span>' . esc_html((string) $lang) . ' <em>' . $pct . '%</em></span>';
+            }
+            $out .= '<div class="prt-ghr-section"><h4 class="prt-ghr-h">Languages used</h4><div class="prt-ghr-langbar">' . $bar . '</div><div class="prt-ghr-langlist">' . $list . '</div></div>';
+        }
+
+        if ($o['releases']) {
+            $rels = self::fetchReleases($owner, $repo, (int) $o['releaseCount']);
+            if ($rels) {
+                $out .= '<div class="prt-ghr-section"><div class="prt-ghr-sechead"><h4 class="prt-ghr-h">Version notes</h4>';
+                if (! empty($d['changelog'])) {
+                    $out .= '<a class="prt-ghr-changelog" href="' . esc_url($d['changelog']) . '" target="_blank" rel="noopener">Full changelog &#8599;</a>';
+                }
+                $out .= '</div><ul class="prt-ghr-releases">';
+                foreach ($rels as $r) {
+                    $out .= '<li class="prt-ghr-rel"><div class="prt-ghr-relhead"><a href="' . esc_url($r['url']) . '" target="_blank" rel="noopener"><strong>' . esc_html($r['name']) . '</strong></a>';
+                    if (! empty($r['prerelease'])) {
+                        $out .= ' <span class="prt-ghr-pre">pre-release</span>';
+                    }
+                    if (! empty($r['date'])) {
+                        $out .= ' <span class="prt-ghr-reldate">' . esc_html($r['date']) . '</span>';
+                    }
+                    $out .= '</div>';
+                    if (! empty($r['body'])) {
+                        $out .= '<p class="prt-ghr-relnotes">' . esc_html(wp_trim_words(wp_strip_all_tags($r['body']), 45)) . '</p>';
+                    }
+                    $out .= '</li>';
+                }
+                $out .= '</ul></div>';
+            }
+        }
+
+        if ($o['readme'] && ! empty($d['readme'])) {
+            $allowed = [
+                'p' => [], 'a' => ['href' => [], 'rel' => [], 'title' => []], 'strong' => [], 'b' => [], 'em' => [], 'i' => [],
+                'code' => [], 'pre' => [], 'ul' => [], 'ol' => [], 'li' => [], 'br' => [], 'hr' => [],
+                'h4' => [], 'h5' => [], 'h6' => [], 'blockquote' => [], 'table' => [], 'thead' => [], 'tbody' => [],
+                'tr' => [], 'th' => [], 'td' => [], 'img' => ['src' => [], 'alt' => []],
+            ];
+            $out .= '<div class="prt-ghr-section"><h4 class="prt-ghr-h">Readme</h4><div class="prt-ghr-readme readme-prose">' . wp_kses((string) $d['readme'], $allowed) . '</div></div>';
+        }
+
+        return $out . '</div>';
     }
 
     /** Render selected parts (desc, stats, intro) as HTML. */

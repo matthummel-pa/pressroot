@@ -1,5 +1,5 @@
 @php
-  $prtSoc    = \App\prt_social_links();
+  $mhSoc    = \App\prt_social_links();
   $socIcons = get_theme_mod('prt_social_style', 'icons') === 'icons';
 @endphp
 
@@ -32,9 +32,9 @@
 
     {{-- Right cluster --}}
     <div class="header-actions">
-      @if ($prtSoc)
+      @if ($mhSoc)
         <ul class="header-social" aria-label="Social links">
-          @foreach ($prtSoc as $s)
+          @foreach ($mhSoc as $s)
             <li>
               <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank">
                 {!! \App\prt_social_icon($s['key']) !!}
@@ -77,9 +77,9 @@
     </nav>
   @endif
 
-  @if ($prtSoc)
+  @if ($mhSoc)
     <div class="prt-popout-socials">
-      @foreach ($prtSoc as $s)
+      @foreach ($mhSoc as $s)
         <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank">
           {!! \App\prt_social_icon($s['key']) !!}
         </a>

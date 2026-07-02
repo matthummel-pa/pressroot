@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Starter Sites â€” one-click demo import. Each starter site composes pages from
+ * Starter Sites — one-click demo import. Each starter site composes pages from
  * the registered block patterns, applies a Style Kit, sets the front page, and
  * builds + assigns the primary menu. Existing pages are reused, never duplicated.
  *
@@ -16,7 +16,7 @@ function prt_starter_sites()
         'portfolio' => [
             'label' => __('Developer Portfolio', 'pressroot'),
             'desc'  => __('A personal portfolio with live GitHub repos, services, stats, and a contact CTA.', 'pressroot'),
-            'kit'   => 'editorial',
+            'kit'   => 'paper_space',
             'pages' => [
                 'home'     => ['title' => __('Home', 'pressroot'), 'patterns' => ['matthummel/hero-dev', 'matthummel/services-three', 'matthummel/stats-four', 'matthummel/testimonial-single', 'matthummel/contact-cta']],
                 'about'    => ['title' => __('About', 'pressroot'), 'patterns' => ['matthummel/about-two-col', 'matthummel/feature-grid']],
@@ -75,7 +75,7 @@ function prt_starter_render()
     <div class="wrap">
         <h1><?php esc_html_e('Starter Sites', 'pressroot'); ?></h1>
         <?php if (isset($_GET['prt_demo']) && $_GET['prt_demo'] === 'done') : ?>
-            <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Starter site imported â€” pages, menu, front page, and style kit are set. View your site!', 'pressroot'); ?></p></div>
+            <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Starter site imported — pages, menu, front page, and style kit are set. View your site!', 'pressroot'); ?></p></div>
         <?php endif; ?>
         <p class="description" style="max-width:640px"><?php esc_html_e('One click builds a full set of pages from the theme\'s patterns, applies a matching Style Kit, sets the homepage, and creates the primary menu. Existing pages with the same name are reused.', 'pressroot'); ?></p>
 

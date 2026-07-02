@@ -7,7 +7,7 @@
  *  - Whatever is picked/generated is downloaded into the Media Library (self-hosted,
  *    not hot-linked) and set as the linked hero image setting.
  *
- * REST: prt/v1/img-search (GET), prt/v1/img-import (POST) â€” both admin-only.
+ * REST: prt/v1/img-search (GET), prt/v1/img-import (POST) — both admin-only.
  */
 
 namespace App;
@@ -45,7 +45,7 @@ add_action('customize_register', function ($wp) {
                         <button type="button" class="prt-if-tab" data-src="ai"><?php esc_html_e('AI', 'pressroot'); ?></button>
                     </div>
                     <div class="prt-if-searchrow">
-                        <input type="text" class="prt-if-q" placeholder="<?php esc_attr_e('Search imagesâ€¦', 'pressroot'); ?>">
+                        <input type="text" class="prt-if-q" placeholder="<?php esc_attr_e('Search images…', 'pressroot'); ?>">
                         <button type="button" class="button prt-if-go"><?php esc_html_e('Search', 'pressroot'); ?></button>
                     </div>
                     <p class="prt-if-note" aria-live="polite"></p>
@@ -80,7 +80,7 @@ add_action('customize_controls_enqueue_scripts', function () {
         file_exists(get_theme_file_path($path)) ? filemtime(get_theme_file_path($path)) : '1',
         true
     );
-    wp_localize_script('prt-img-finder', 'prtIF', [
+    wp_localize_script('prt-img-finder', 'mhIF', [
         'rest'        => esc_url_raw(rest_url()),
         'nonce'       => wp_create_nonce('wp_rest'),
         'hasUnsplash' => trim((string) get_theme_mod('prt_unsplash_key', '')) !== '',
@@ -148,11 +148,11 @@ function prt_img_search_rest($req)
             }
         }
     } else { // openverse (no key)
-        $r = wp_remote_get('https://api.openverse.org/v1/images/?page_size=24&mature=false&q=' . rawurlencode($q), ['timeout' => 15, 'headers' => ['User-Agent' => 'matthummel-theme/1.0']]);
+        $r = wp_remote_get('https://api.openverse.org/v1/images/?page_size=24&mature=false&q=' . rawurlencode($q), ['timeout' => 15, 'headers' => ['User-Agent' => 'pressroot/1.0']]);
         if (! is_wp_error($r)) {
             $j = json_decode(wp_remote_retrieve_body($r), true);
             foreach (($j['results'] ?? []) as $p) {
-                $out[] = ['thumb' => $p['thumbnail'] ?? ($p['url'] ?? ''), 'full' => $p['url'] ?? '', 'credit' => trim(($p['creator'] ?? '') . ' Â· ' . strtoupper((string) ($p['license'] ?? ''))), 'link' => $p['foreign_landing_url'] ?? ''];
+                $out[] = ['thumb' => $p['thumbnail'] ?? ($p['url'] ?? ''), 'full' => $p['url'] ?? '', 'credit' => trim(($p['creator'] ?? '') . ' · ' . strtoupper((string) ($p['license'] ?? ''))), 'link' => $p['foreign_landing_url'] ?? ''];
             }
         }
     }

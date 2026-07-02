@@ -2,7 +2,7 @@
 
 /**
  * Hero layout + site-wide scroll animations.
- *  - Hero: columns (1â€“3), content flex position (H/V), side image + 2nd image,
+ *  - Hero: columns (1–3), content flex position (H/V), side image + 2nd image,
  *    background cover (with overlay + min-height), and an entrance animation.
  *  - Animations: on-scroll reveal for sections site-wide (IntersectionObserver),
  *    with a choice of effect + speed. Respects prefers-reduced-motion and degrades
@@ -44,7 +44,7 @@ add_action('customize_register', function ($wp) {
     ]);
 
     // Editable hero copy (defaults match the built-in text so nothing changes until edited).
-    $wp->add_setting('prt_hero_eyebrow', ['default' => __('Web Â· WordPress Â· Power Platform', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_setting('prt_hero_eyebrow', ['default' => __('Web · WordPress · Power Platform', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
     $wp->add_control('prt_hero_eyebrow', ['label' => __('Eyebrow (small label above title)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
     $wp->add_setting('prt_hero_title', ['default' => __('Clean, fast software for the web and Microsoft 365.', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
     $wp->add_control('prt_hero_title', ['label' => __('Hero title (H1)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'textarea']);
@@ -125,7 +125,7 @@ add_action('prt_head_end', function () {
     }
 
     // Content is a flex column so the alignment moves EVERY item (eyebrow, title,
-    // lead, buttons) â€” not just the buttons. We also neutralise the children's own
+    // lead, buttons) — not just the buttons. We also neutralise the children's own
     // auto-margins / text-align (e.g. .lead has margin:0 auto + text-align:center).
     $ai = $ah === 'left' ? 'flex-start' : ($ah === 'right' ? 'flex-end' : 'center');
     $ta = $ah === 'left' ? 'left' : ($ah === 'right' ? 'right' : 'center');
@@ -153,7 +153,7 @@ add_action('prt_head_end', function () {
     // Always keep comfortable side padding so content never touches the device edge.
     $css .= '.prt-hero{padding-left:clamp(20px,5vw,28px);padding-right:clamp(20px,5vw,28px);box-sizing:border-box;}';
 
-    // Per-breakpoint content max-width (tablet 641â€“1024, mobile â‰¤640). On a single
+    // Per-breakpoint content max-width (tablet 641–1024, mobile ≤640). On a single
     // column we also re-apply the block position so it stays put when narrowed.
     $bwv = function ($v) {
         if ($v === 'full') {
@@ -260,7 +260,11 @@ add_action('wp_footer', function () {
     $selectors = '.home-section,.section-head,.card-grid,.project-grid,.project-card,.mini-card,.cta-card,.prt-cta-band,.prt-stat-strip,.post-single-title,.post-prose > h2,.post-prose > h3,.service-card,.archive-header,.project-hero,.readme-prose,.contact-form';
 
     $eff = esc_js($effect);
-    $sel = esc_js($selectors);
+    // NOTE: not esc_js() — it HTML-encodes '>' (&gt;) and breaks the child
+    // combinators in the selector list, throwing in querySelectorAll and
+    // killing every scroll reveal. The list is a theme constant; just escape
+    // quotes/backslashes for the JS string literal.
+    $sel = addslashes($selectors);
     $on  = $enable ? '1' : '0';
 
     $js  = '(function(){';

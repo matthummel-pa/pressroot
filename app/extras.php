@@ -28,8 +28,8 @@ add_action('customize_register', function ($wp) {
     $select($wp, 'prt_head_lh', __('Heading line height', 'pressroot'), ['1' => '1.0', '1.1' => '1.1', '1.12' => '1.12 (default)', '1.2' => '1.2', '1.3' => '1.3'], '1.12', 'prt_type');
     $select($wp, 'prt_head_spacing', __('Heading letter spacing', 'pressroot'), ['-0.03em' => 'Tighter', '-0.02em' => 'Tight (default)', '0' => 'Normal', '0.02em' => 'Wide'], '-0.02em', 'prt_type');
     $bool($wp, 'prt_link_underline', __('Underline content links', 'pressroot'), false);
-    $select($wp, 'prt_btn_radius', __('Button corner radius', 'pressroot'), ['0' => 'Square', '4' => '4px', '8' => '8px (default)', '12' => '12px', '999' => 'Pill'], '8');
-    $select($wp, 'prt_card_radius', __('Card corner radius', 'pressroot'), ['6' => '6px', '10' => '10px', '14' => '14px', '16' => '16px (default)', '20' => '20px'], '16');
+    $select($wp, 'prt_btn_radius', __('Button corner radius', 'pressroot'), ['0' => 'Square', '4' => '4px', '8' => '8px', '12' => '12px', '999' => 'Pill (default)'], '999');
+    $select($wp, 'prt_card_radius', __('Card corner radius', 'pressroot'), ['6' => '6px', '10' => '10px', '14' => '14px', '16' => '16px', '20' => '20px (default)'], '20');
     $bool($wp, 'prt_scrolltop', __('Show scroll-to-top button', 'pressroot'), true);
 
     $wp->add_setting('prt_selection', ['default' => '', 'sanitize_callback' => 'sanitize_hex_color']);

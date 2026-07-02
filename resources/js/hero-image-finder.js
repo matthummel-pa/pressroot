@@ -1,10 +1,10 @@
-/* Hero image finder â€” Customizer control behavior.
+/* Hero image finder — Customizer control behavior.
  * Searches Openverse / Unsplash / Pexels and generates AI images (Pollinations),
  * imports the chosen image into the Media Library, and sets the linked setting.
  */
 (function () {
   if (typeof wp === 'undefined' || !wp.customize) return;
-  var cfg = window.prtIF || {};
+  var cfg = window.mhIF || {};
 
   function el(tag, cls, html) {
     var e = document.createElement(tag);
@@ -31,7 +31,7 @@
         source = t.getAttribute('data-src');
         results.innerHTML = '';
         setNote('');
-        q.placeholder = source === 'ai' ? 'Describe an image to generateâ€¦' : 'Search imagesâ€¦';
+        q.placeholder = source === 'ai' ? 'Describe an image to generate…' : 'Search images…';
         go.textContent = source === 'ai' ? 'Generate' : 'Search';
         if (source === 'unsplash' && !cfg.hasUnsplash) setNote('Add an Unsplash API key in the Hero section to use this source.');
         if (source === 'pexels' && !cfg.hasPexels) setNote('Add a Pexels API key in the Hero section to use this source.');
@@ -45,7 +45,7 @@
 
     function importAndSet(remoteUrl, tile) {
       if (tile) tile.classList.add('is-loading');
-      setNote('Saving image to your Media Libraryâ€¦');
+      setNote('Saving image to your Media Library…');
       fetch(cfg.rest + 'prt/v1/img-import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': cfg.nonce },
@@ -53,7 +53,7 @@
       })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          if (d && d.url) { setImage(d.url); setNote('Image set âœ“ (saved to Media Library)'); }
+          if (d && d.url) { setImage(d.url); setNote('Image set ✓ (saved to Media Library)'); }
           else { setNote('Could not import that image' + (d && d.error ? ': ' + d.error : '') + '.'); }
         })
         .catch(function () { setNote('Import failed.'); })
@@ -63,7 +63,7 @@
     function renderResults(items) {
       results.innerHTML = '';
       if (!items || !items.length) { setNote('No results.'); return; }
-      setNote(items.length + ' results â€” click one to use it.');
+      setNote(items.length + ' results — click one to use it.');
       items.forEach(function (it) {
         if (!it.thumb && !it.full) return;
         var b = el('button', 'prt-if-tile');
@@ -76,7 +76,7 @@
     }
 
     function generateAI(prompt) {
-      setNote('Generatingâ€¦');
+      setNote('Generating…');
       results.innerHTML = '';
       var seed = Math.floor(Math.random() * 1e6);
       var url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) +
@@ -91,8 +91,8 @@
       var regen = el('button', 'button prt-if-use', 'Regenerate');
       regen.type = 'button';
       regen.addEventListener('click', function () { generateAI(prompt); });
-      img.onload = function () { setNote('Generated. Click â€œUse this imageâ€, or Regenerate for a new take.'); };
-      img.onerror = function () { setNote('Generation failed â€” try again.'); };
+      img.onload = function () { setNote('Generated. Click “Use this image”, or Regenerate for a new take.'); };
+      img.onerror = function () { setNote('Generation failed — try again.'); };
       wrap.appendChild(img);
       wrap.appendChild(use);
       wrap.appendChild(regen);
@@ -105,7 +105,7 @@
       if (source === 'ai') { generateAI(term); return; }
       if (source === 'unsplash' && !cfg.hasUnsplash) { setNote('Unsplash API key required.'); return; }
       if (source === 'pexels' && !cfg.hasPexels) { setNote('Pexels API key required.'); return; }
-      setNote('Searching ' + source + 'â€¦');
+      setNote('Searching ' + source + '…');
       fetch(cfg.rest + 'prt/v1/img-search?source=' + encodeURIComponent(source) + '&q=' + encodeURIComponent(term), {
         headers: { 'X-WP-Nonce': cfg.nonce }
       })

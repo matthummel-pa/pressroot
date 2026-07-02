@@ -1,4 +1,4 @@
-/* Social Icons block editor (no build step â€” uses global wp.* packages). */
+/* Social Icons block editor (no build step — uses global wp.* packages). */
 (function (wp) {
   if (!wp || !wp.blocks) return;
 
@@ -11,7 +11,7 @@
   var c = wp.components;
   var ServerSideRender = wp.serverSideRender || wp.components.ServerSideRender;
 
-  var cfg = window.prtSocialBlock || { attrs: {}, defaults: {}, networks: {} };
+  var cfg = window.mhSocialBlock || { attrs: {}, defaults: {}, networks: {} };
 
   // Build attributes from PHP-provided schema.
   var attributes = {};
@@ -57,7 +57,7 @@
             value: a.customLinks,
             onChange: set('customLinks')
           }) : el('p', { style: { fontSize: '12px', opacity: 0.7 } },
-            __('Showing the URLs from Customizer â†’ Theme Options â†’ Menu & Popout.', 'pressroot'))
+            __('Showing the URLs from Customizer → Theme Options → Menu & Popout.', 'pressroot'))
         ),
 
         el(c.PanelBody, { title: __('Layout', 'pressroot'), initialOpen: false },
@@ -107,6 +107,6 @@
       return el(Fragment, {}, controls, el('div', blockProps, preview));
     },
 
-    save: function () { return null; } // dynamic â€” rendered in PHP
+    save: function () { return null; } // dynamic — rendered in PHP
   });
 })(window.wp);

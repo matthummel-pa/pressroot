@@ -11,8 +11,7 @@
   $pageUrl     = get_permalink();
   $showGithub  = ($catSlug === '' || $catSlug === 'github-projects');
   $showManual  = ($catSlug !== 'github-projects');
-  $ghOwner     = get_theme_mod('prt_proj_owner', 'matthummel-pa');
-  $ghUser      = \App\Github::fetchUser($ghOwner);
+  $ghUser      = \App\Github::fetchUser('matthummel-pa');
   $langColors  = [
     'PHP'        => '#4F5D95', 'JavaScript' => '#f1e05a', 'TypeScript' => '#3178c6',
     'CSS'        => '#563d7c', 'HTML'       => '#e34c26', 'Python'     => '#3572A5',
@@ -38,9 +37,9 @@
       <span class="gh-live-stat">
         <strong>{{ $ghUser['public_repos'] }}</strong> public repos
       </span>
-      <a href="{{ esc_url('https://github.com/' . $ghOwner) }}" class="gh-live-link" target="_blank" rel="noopener">
+      <a href="https://github.com/matthummel-pa" class="gh-live-link" target="_blank" rel="noopener">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        {{ $ghOwner }}
+        matthummel-pa
       </a>
     </div>
     @endif
@@ -55,10 +54,10 @@
     <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:text-bottom;margin-right:4px" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
     GitHub
   </a>
-  @foreach ($manualCats as $prtCat)
-    @if ($prtCat->slug !== 'github-projects')
-      <a class="filter-pill{{ $catSlug === $prtCat->slug ? ' is-active' : '' }}"
-         href="{{ add_query_arg('cat', $prtCat->slug, $pageUrl) }}">{{ $prtCat->name }}</a>
+  @foreach ($manualCats as $mhCat)
+    @if ($mhCat->slug !== 'github-projects')
+      <a class="filter-pill{{ $catSlug === $mhCat->slug ? ' is-active' : '' }}"
+         href="{{ add_query_arg('cat', $mhCat->slug, $pageUrl) }}">{{ $mhCat->name }}</a>
     @endif
   @endforeach
 </nav>
@@ -66,7 +65,7 @@
 {{-- ── LIVE GITHUB REPOS ───────────────────────────────────────────────── --}}
 @if ($showGithub)
 @php
-  $ghRepos = \App\Github::fetchRepos($ghOwner, 12, 'updated');
+  $ghRepos = \App\Github::fetchRepos('matthummel-pa', 12, 'updated');
 @endphp
 @if (!empty($ghRepos))
 <section class="projects-github">
@@ -76,7 +75,7 @@
         <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         Live from GitHub
       </h2>
-      <a href="{{ esc_url('https://github.com/' . $ghOwner . '?tab=repositories') }}" class="section-view-all"
+      <a href="https://github.com/matthummel-pa?tab=repositories" class="section-view-all"
          target="_blank" rel="noopener">View all repos →</a>
     </div>
 
@@ -124,16 +123,16 @@
 {{-- ── MANUAL CPT PROJECTS ─────────────────────────────────────────────── --}}
 @if ($showManual)
 @php
-  $prtTaxQuery = ($catSlug && $catSlug !== 'github-projects')
+  $mhTaxQuery = ($catSlug && $catSlug !== 'github-projects')
     ? [['taxonomy' => 'project_categories', 'field' => 'slug', 'terms' => $catSlug]]
     : [];
-  $prtProjects = new \WP_Query([
+  $mhProjects = new \WP_Query([
     'post_type'      => 'projects',
     'posts_per_page' => 12,
-    'tax_query'      => $prtTaxQuery,
+    'tax_query'      => $mhTaxQuery,
   ]);
 @endphp
-@if ($prtProjects->have_posts())
+@if ($mhProjects->have_posts())
 <section class="projects-manual">
   <div class="container">
     @php
@@ -149,8 +148,8 @@
     </div>
 
     <div class="project-card-grid">
-      @while ($prtProjects->have_posts())
-      @php $prtProjects->the_post(); @endphp
+      @while ($mhProjects->have_posts())
+      @php $mhProjects->the_post(); @endphp
       @php
         $isFeatured = (bool) get_post_meta(get_the_ID(), '_prt_featured', true);
         $techStack  = get_post_meta(get_the_ID(), '_prt_tech_stack', true);
@@ -175,9 +174,9 @@
               <p class="project-card-eyebrow">{{ $projLabel }}</p>
             @endif
             <h2 class="project-card-title">{!! get_the_title() !!}</h2>
-            @php $prtEx = get_the_excerpt() @endphp
-            @if ($prtEx)
-              <p class="project-card-excerpt">{{ wp_trim_words($prtEx, 18) }}</p>
+            @php $mhEx = get_the_excerpt() @endphp
+            @if ($mhEx)
+              <p class="project-card-excerpt">{{ wp_trim_words($mhEx, 18) }}</p>
             @endif
             @if (!empty($techPills))
               <div class="project-card-tech">
@@ -204,8 +203,8 @@
     <div class="cta-card" data-anim="fade-up">
       <h2>Have a project in mind?</h2>
       <p>I'm open to select freelance and consulting work — Power Platform apps, WordPress builds, and M365 solutions. Let's talk.</p>
-      @php $prtContactPage = get_page_by_path('contact') @endphp
-      <a class="btn" href="{{ $prtContactPage ? get_permalink($prtContactPage) : '/contact/' }}">Get in touch →</a>
+      @php $mhContactPage = get_page_by_path('contact') @endphp
+      <a class="btn" href="{{ $mhContactPage ? get_permalink($mhContactPage) : '/contact/' }}">Get in touch →</a>
     </div>
   </div>
 </section>
