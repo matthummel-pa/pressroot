@@ -253,6 +253,32 @@ add_action('init', function () {
     $resources .= $dyn('cta-band', ['heading' => 'Want more like this?', 'body' => 'I share what I learn as I build — tutorials, snippets, and honest notes from real projects.', 'btnText' => 'Read the blog →', 'btnUrl' => '/blog/', 'variant' => 'dark']);
     $patterns['matthummel/resources-full'] = ['title' => __('Resources — Full page', 'pressroot'), 'content' => $resources];
 
+    /* ════════════════════════════ NOW ═════════════════════════════════ */
+    $nowList  = '<!-- wp:list --><ul class="wp-block-list">'
+        . '<!-- wp:list-item --><li>Shipping Pressroot v1.2 — the Paper + Space design refresh.</li><!-- /wp:list-item -->'
+        . '<!-- wp:list-item --><li>Deepening Laravel + WASM PHP experiments (Sage on Playground).</li><!-- /wp:list-item -->'
+        . '<!-- wp:list-item --><li>Reading <em>A Philosophy of Software Design</em>.</li><!-- /wp:list-item -->'
+        . '<!-- wp:list-item --><li>Running three mornings a week.</li><!-- /wp:list-item -->'
+        . '</ul><!-- /wp:list -->';
+    $now  = $hero('Now', 'What I&#8217;m doing now.',
+        'A snapshot of what has my attention this season — projects, learning, and life. The idea comes from nownownow.com.');
+    $now .= $wrap($h(2, 'Right now', 'x-large') . $nowList, '40px', '8px');
+    $now .= $wrap($h(2, 'Up next', 'x-large') . $p('Publishing the theme framework write-up, and turning the GitHub project sync into a standalone mini-plugin.', 'medium', 'muted'), '30px', '40px');
+    $now .= $dyn('cta-band', ['heading' => 'Working on something similar?', 'body' => 'Always happy to compare notes on WordPress, Power Platform, or side projects.', 'btnText' => 'Say hello →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
+    $patterns['matthummel/now-full'] = ['title' => __('Now — Full page', 'pressroot'), 'content' => $now];
+
+    /* ════════════════════════════ LEGAL ═══════════════════════════════ */
+    $legal  = $hero('Legal', 'Privacy Policy.', 'How this site handles your data — in plain language.');
+    $legal .= $wrap(
+        $h(2, 'What we collect', 'large')
+        . $p('Only the data needed to answer your messages: a name, an email address, and whatever you write in the contact form.')
+        . $h(2, 'What we store', 'large')
+        . $p('Contact form submissions are emailed and never sold. No analytics cookies are set without consent.')
+        . $h(2, 'Your rights', 'large')
+        . $p('Email hello@example.com to request a copy or deletion of your data at any time.'),
+        '20px', '50px');
+    $patterns['matthummel/legal-full'] = ['title' => __('Legal — Full page', 'pressroot'), 'content' => $legal];
+
     /* ── Register (single "Matt Hummel" pattern category) ───────────── */
     foreach ($patterns as $slug => $pat) {
         register_block_pattern($slug, [
@@ -279,6 +305,8 @@ add_action('init', function () {
         'matthummel/projects-full',
         'matthummel/resume-full',
         'matthummel/resources-full',
+        'matthummel/now-full',
+        'matthummel/legal-full',
         'matthummel/blog-full',
         'matthummel/single-post',
     ];
