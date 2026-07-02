@@ -11,3 +11,7 @@ npm-debug.log
 Thumbs.db
 .idea
 .vscode
+
+# Playground CLI dev site data
+.playground/database/
+.playground/uploads/
