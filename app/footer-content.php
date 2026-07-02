@@ -1,20 +1,75 @@
 <?php
 
 /**
- * Footer builder (colors, social, sticky header) + content controls
- * (global CTA + per-template intros), all in the Customizer.
+ * Footer Builder — a full, Customizer-driven footer system:
+ *
+ *   Layout   width (contained/full) · 1–4 widget columns · column weighting ·
+ *            padding scale
+ *   Brand    logo/site title column · tagline · social icons
+ *   Menus    footer navigation + legal (bottom bar) menu locations
+ *   Bottom   copyright with {year}/{site} tokens · credit line · layout
+ *            (split / centered / stacked) · divider
+ *   Style    background & text via theme palette or custom hex · top border
+ *
+ * Also keeps the global CTA + per-template intro controls.
  */
 
 namespace App;
 
+/** Full footer configuration (single source of truth for the Blade view). */
 function prt_footer()
 {
+    $copy = (string) get_theme_mod('prt_footer_copyright', '');
+    if ($copy === '') {
+        $copy = '© {year} {site}. ' . __('All rights reserved.', 'pressroot');
+    }
+    $copy = strtr($copy, [
+        '{year}' => date('Y'),
+        '{site}' => get_bloginfo('name'),
+    ]);
+
     return [
+        // Style
         'bg'          => prt_palette_value(get_theme_mod('prt_footer_bg', 'paper'), get_theme_mod('prt_footer_bg_custom', '')),
         'text'        => prt_palette_value(get_theme_mod('prt_footer_textc', 'body'), get_theme_mod('prt_footer_text_custom', '')),
+        'border'      => (bool) get_theme_mod('prt_footer_border', true),
+        'divider'     => (bool) get_theme_mod('prt_footer_divider', true),
+
+        // Layout
+        'width'       => in_array(get_theme_mod('prt_footer_width', 'contained'), ['contained', 'full'], true)
+                            ? get_theme_mod('prt_footer_width', 'contained') : 'contained',
+        'cols'        => max(1, min(4, (int) get_theme_mod('prt_footer_cols', 3))),
+        'col_layout'  => in_array(get_theme_mod('prt_footer_col_layout', 'equal'), ['equal', 'wide-first', 'wide-last'], true)
+                            ? get_theme_mod('prt_footer_col_layout', 'equal') : 'equal',
+        'pad'         => in_array(get_theme_mod('prt_footer_pad', 'cozy'), ['compact', 'cozy', 'spacious'], true)
+                            ? get_theme_mod('prt_footer_pad', 'cozy') : 'cozy',
+
+        // Brand column (tagline: new setting → legacy prt_footer_text → site tagline)
+        'brand'       => (bool) get_theme_mod('prt_footer_brand', true),
+        'tagline'     => (string) (get_theme_mod('prt_footer_tagline', '')
+                            ?: (get_theme_mod('prt_footer_text', '')
+                            ?: get_bloginfo('description'))),
         'show_social' => (bool) get_theme_mod('prt_footer_social', true),
+
+        // Footer navigation
+        'show_menu'   => (bool) get_theme_mod('prt_footer_menu', true),
+        'menu_title'  => (string) get_theme_mod('prt_footer_menu_title', __('Explore', 'pressroot')),
+
+        // Bottom bar
+        'copyright'     => $copy,
+        'credit'        => (bool) get_theme_mod('prt_footer_credit', true),
+        'bottom_layout' => in_array(get_theme_mod('prt_footer_bottom_layout', 'split'), ['split', 'center', 'stacked'], true)
+                            ? get_theme_mod('prt_footer_bottom_layout', 'split') : 'split',
     ];
 }
+
+/** Footer + legal menu locations. */
+add_action('after_setup_theme', function () {
+    register_nav_menus([
+        'footer_navigation' => __('Footer Navigation', 'pressroot'),
+        'footer_legal'      => __('Footer Legal (bottom bar)', 'pressroot'),
+    ]);
+}, 12);
 
 /** Wire the global CTA to Customizer values (cta.blade uses these filters). */
 add_filter('matthummel/cta_heading', function ($d) { $v = get_theme_mod('prt_cta_heading', ''); return $v !== '' ? $v : $d; });
@@ -28,13 +83,72 @@ add_action('customize_register', function ($wp) {
         $wp->add_panel('prt_theme_options', ['title' => __('Theme Options', 'pressroot'), 'priority' => 30]);
     }
 
-    /* Footer */
-    $wp->add_section('prt_footer_section', ['title' => __('Footer & Header', 'pressroot'), 'panel' => 'prt_theme_options']);
+    /* ── Footer Builder ─────────────────────────────────────────────── */
+    $wp->add_section('prt_footer_section', [
+        'title'       => __('Footer Builder', 'pressroot'),
+        'panel'       => 'prt_theme_options',
+        'description' => __('Layout, brand column, menus, bottom bar, and colors. Column content comes from Appearance → Widgets (Footer Column 1–4); menus from Appearance → Menus.', 'pressroot'),
+    ]);
 
-    // (Sticky header lives in Header Layout → prt_header_sticky; the old duplicate here was removed.)
-    $wp->add_setting('prt_footer_social', ['default' => true, 'sanitize_callback' => 'wp_validate_boolean']);
-    $wp->add_control('prt_footer_social', ['label' => __('Show social icons in footer', 'pressroot'), 'section' => 'prt_footer_section', 'type' => 'checkbox']);
+    $select = function ($id, $label, $choices, $default, $description = '') use ($wp) {
+        $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => 'sanitize_key']);
+        $wp->add_control($id, ['label' => $label, 'description' => $description, 'section' => 'prt_footer_section', 'type' => 'select', 'choices' => $choices]);
+    };
+    $toggle = function ($id, $label, $default, $description = '') use ($wp) {
+        $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => 'wp_validate_boolean']);
+        $wp->add_control($id, ['label' => $label, 'description' => $description, 'section' => 'prt_footer_section', 'type' => 'checkbox']);
+    };
+    $text = function ($id, $label, $default = '', $type = 'text', $description = '') use ($wp) {
+        $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => $type === 'textarea' ? 'wp_kses_post' : 'sanitize_text_field']);
+        $wp->add_control($id, ['label' => $label, 'description' => $description, 'section' => 'prt_footer_section', 'type' => $type]);
+    };
 
+    /* Layout */
+    $select('prt_footer_width', __('Footer width', 'pressroot'), [
+        'contained' => __('Contained (matches content width)', 'pressroot'),
+        'full'      => __('Full width', 'pressroot'),
+    ], 'contained');
+
+    $wp->add_setting('prt_footer_cols', ['default' => 3, 'sanitize_callback' => 'absint']);
+    $wp->add_control('prt_footer_cols', [
+        'label'       => __('Widget columns', 'pressroot'),
+        'description' => __('Add blocks to each column in Appearance → Widgets (Footer Column 1–4).', 'pressroot'),
+        'section'     => 'prt_footer_section',
+        'type'        => 'select',
+        'choices'     => [1 => '1 column', 2 => '2 columns', 3 => '3 columns', 4 => '4 columns'],
+    ]);
+
+    $select('prt_footer_col_layout', __('Column layout', 'pressroot'), [
+        'equal'      => __('Equal widths', 'pressroot'),
+        'wide-first' => __('Wide first column', 'pressroot'),
+        'wide-last'  => __('Wide last column', 'pressroot'),
+    ], 'equal');
+
+    $select('prt_footer_pad', __('Vertical padding', 'pressroot'), [
+        'compact'  => __('Compact', 'pressroot'),
+        'cozy'     => __('Cozy (default)', 'pressroot'),
+        'spacious' => __('Spacious', 'pressroot'),
+    ], 'cozy');
+
+    /* Brand column */
+    $toggle('prt_footer_brand', __('Show brand column (logo, tagline, social)', 'pressroot'), true);
+    $text('prt_footer_tagline', __('Brand tagline', 'pressroot'), '', 'textarea', __('Defaults to the site tagline when empty.', 'pressroot'));
+    $toggle('prt_footer_social', __('Show social icons', 'pressroot'), true);
+
+    /* Footer navigation */
+    $toggle('prt_footer_menu', __('Show footer navigation column', 'pressroot'), true, __('Uses the "Footer Navigation" menu location; falls back to your pages when no menu is assigned.', 'pressroot'));
+    $text('prt_footer_menu_title', __('Footer navigation heading', 'pressroot'), __('Explore', 'pressroot'));
+
+    /* Bottom bar */
+    $text('prt_footer_copyright', __('Copyright text', 'pressroot'), '', 'text', __('Tokens: {year} and {site}. Empty = "© {year} {site}. All rights reserved."', 'pressroot'));
+    $toggle('prt_footer_credit', __('Show "Built with Sage" credit', 'pressroot'), true);
+    $select('prt_footer_bottom_layout', __('Bottom bar layout', 'pressroot'), [
+        'split'   => __('Copyright left · legal menu right', 'pressroot'),
+        'center'  => __('Centered', 'pressroot'),
+        'stacked' => __('Stacked', 'pressroot'),
+    ], 'split', __('The legal menu uses the "Footer Legal" menu location.', 'pressroot'));
+
+    /* Style */
     $wp->add_setting('prt_footer_bg', ['default' => 'paper', 'sanitize_callback' => 'sanitize_key']);
     $wp->add_control('prt_footer_bg', ['label' => __('Footer background', 'pressroot'), 'section' => 'prt_footer_section', 'type' => 'select', 'choices' => prt_palette_choices()]);
     $wp->add_setting('prt_footer_bg_custom', ['default' => '', 'sanitize_callback' => 'sanitize_hex_color']);
@@ -45,7 +159,10 @@ add_action('customize_register', function ($wp) {
     $wp->add_setting('prt_footer_text_custom', ['default' => '', 'sanitize_callback' => 'sanitize_hex_color']);
     $wp->add_control(new \WP_Customize_Color_Control($wp, 'prt_footer_text_custom', ['label' => __('Footer text (custom)', 'pressroot'), 'section' => 'prt_footer_section']));
 
-    /* CTA & intros */
+    $toggle('prt_footer_border', __('Show top border', 'pressroot'), true);
+    $toggle('prt_footer_divider', __('Show divider above bottom bar', 'pressroot'), true);
+
+    /* ── CTA & intros (unchanged) ───────────────────────────────────── */
     $wp->add_section('prt_content_section', ['title' => __('CTA & Intros', 'pressroot'), 'panel' => 'prt_theme_options', 'description' => __('Edit the global project CTA and the intro text on the Projects and Contact templates.', 'pressroot')]);
 
     $content = [
@@ -82,7 +199,7 @@ add_action('widgets_init', function () {
         register_sidebar([
             'name'          => sprintf(__('Footer Column %d', 'pressroot'), $i),
             'id'            => "footer-{$i}",
-            'description'   => __('Drop any blocks here. Shown when "Footer columns" includes this column.', 'pressroot'),
+            'description'   => __('Drop any blocks here. Shown when "Widget columns" includes this column.', 'pressroot'),
             'before_widget' => '<section class="widget %2$s">',
             'after_widget'  => '</section>',
             'before_title'  => '<h2 class="footer-widget-title">',
@@ -90,17 +207,3 @@ add_action('widgets_init', function () {
         ]);
     }
 });
-
-/** Footer column count control (added to the Footer & Header section). */
-add_action('customize_register', function ($wp) {
-    if ($wp->get_section('prt_footer_section')) {
-        $wp->add_setting('prt_footer_cols', ['default' => 3, 'sanitize_callback' => 'absint']);
-        $wp->add_control('prt_footer_cols', [
-            'label'       => __('Footer columns', 'pressroot'),
-            'description' => __('Add blocks to each column in Appearance > Widgets (Footer Column 1-4).', 'pressroot'),
-            'section'     => 'prt_footer_section',
-            'type'        => 'select',
-            'choices'     => [1 => '1 column', 2 => '2 columns', 3 => '3 columns', 4 => '4 columns'],
-        ]);
-    }
-}, 24);
