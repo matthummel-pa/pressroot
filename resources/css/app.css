@@ -73,6 +73,19 @@
     border-radius: 2px;
   }
   .container { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: 28px; }
+  /* Visually hidden, available to assistive tech (WP convention). */
+  .screen-reader-text {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    clip-path: inset(50%); overflow: hidden;
+    white-space: nowrap;
+  }
+  .screen-reader-text:focus {
+    position: static !important;
+    width: auto; height: auto; margin: 0;
+    clip-path: none; white-space: normal;
+  }
   .measure { max-width: 720px; margin-inline: auto; }
 }
 

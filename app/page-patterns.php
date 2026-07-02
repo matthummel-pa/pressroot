@@ -115,7 +115,7 @@ add_action('init', function () {
     $services  = $hero('Services', 'How I can help you ship.',
         'Whether you need a brand-new site, a rescue mission, or an internal tool, here&#8217;s where I do my best work.',
         [['text' => 'See pricing', 'url' => '/pricing/'], ['text' => "Let's talk", 'url' => '/contact/', 'outline' => true]]);
-    $services .= $dyn('skills-grid', ['cards' => $svcSkills, 'columns' => 3]);
+    $services .= $wrap('<!-- wp:heading {"level":2,"className":"screen-reader-text"} --><h2 class="screen-reader-text">What I do</h2><!-- /wp:heading -->', '0px', '0px') . $dyn('skills-grid', ['cards' => $svcSkills, 'columns' => 3]);
     $services .= $wrap($h(2, "How we'll work together", 'x-large') . $cardGrid('4', $svcProcess), '40px', '20px');
     $services .= $dyn('cta-band', ['heading' => 'Have a project in mind?', 'body' => 'Power Platform apps, WordPress builds, and Microsoft 365 solutions — transparent, fixed-price scopes. Let\'s talk.', 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
     $patterns['matthummel/services-full'] = ['title' => __('Services — Full page', 'pressroot'), 'content' => $services];
@@ -146,7 +146,7 @@ add_action('init', function () {
     $pricing  = $hero('Pricing', 'Simple, honest pricing.',
         'No hourly mysteries. Pick the engagement that fits, and we&#8217;ll scope it together.',
         [['text' => 'Start a project', 'url' => '/contact/']]);
-    $pricing .= $cardGrid('3', $tiers);
+    $pricing .= $wrap('<!-- wp:heading {"level":2,"className":"screen-reader-text"} --><h2 class="screen-reader-text">Plans</h2><!-- /wp:heading -->', '0px', '0px') . $cardGrid('3', $tiers);
     $pricing .= $wrap($h(2, 'Questions?', 'x-large'), '50px', '0px');
     $pricing .= $faq([
         ['How do you scope a project?', 'We start with a short discovery call, then I send a fixed-price proposal with a clear timeline and deliverables. You approve before any work begins.'],

@@ -82,6 +82,7 @@ add_action('wp_head', function () {
     $m  = "\n<!-- mh SEO -->\n";
     $m .= '<meta property="og:site_name" content="' . esc_attr(get_bloginfo('name')) . '">' . "\n";
     $m .= '<meta property="og:title" content="' . esc_attr($title) . '">' . "\n";
+    $m .= '<meta name="description" content="' . esc_attr(wp_trim_words(wp_strip_all_tags($desc), 32)) . '">' . "\n";
     $m .= '<meta property="og:description" content="' . esc_attr(wp_strip_all_tags($desc)) . '">' . "\n";
     $m .= '<meta property="og:type" content="' . (is_singular('post') ? 'article' : 'website') . '">' . "\n";
     $m .= '<meta property="og:url" content="' . esc_url($url) . '">' . "\n";

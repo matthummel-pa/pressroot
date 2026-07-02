@@ -302,3 +302,20 @@ add_action('admin_init', function () {
         update_option('page_for_posts', $blog->ID);
     }
 }, 99);
+
+/** v11: re-apply Services/Pricing patterns (SR-only h2 heading fix). */
+add_action('admin_init', function () {
+    if (get_option('prt_preview_seed_v11') || wp_get_theme()->get('TextDomain') !== 'pressroot') {
+        return;
+    }
+    if (! current_user_can('edit_theme_options')) {
+        return;
+    }
+    foreach (['services' => 'matthummel/services-full', 'pricing' => 'matthummel/pricing-full'] as $slug => $pat) {
+        $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered($pat);
+        if (($page = get_page_by_path($slug)) && $reg && ! empty($reg['content'])) {
+            wp_update_post(['ID' => $page->ID, 'post_content' => wp_slash($reg['content'])]);
+        }
+    }
+    update_option('prt_preview_seed_v11', 1);
+});

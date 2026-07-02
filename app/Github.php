@@ -216,10 +216,11 @@ class Github
         if (($h1 = stripos($body, '</h1>')) !== false) {
             $body = substr($body, $h1 + 5);
         }
-        $body = str_ireplace(['<h2', '</h2>', '<h3', '</h3>'], ['<h4', '</h4>', '<h5', '</h5>'], $body);
+        $body = str_ireplace(['<h1', '</h1>', '<h2', '</h2>', '<h3', '</h3>'], ['<h4', '</h4>', '<h4', '</h4>', '<h5', '</h5>'], $body);
         $body = preg_replace('#<img[^>]*(shields\.io|badge|/actions/|/workflows/)[^>]*>#i', '', $body);
         $body = preg_replace('~<svg[^>]*>.*?</svg>~is', '', $body);
         $body = preg_replace('~<a[^>]*href="#[^"]*"[^>]*>(.*?)</a>~is', '$1', $body);
+        $body = preg_replace('~<a[^>]*>\s*</a>~i', '', $body); // badges stripped above leave empty links
         return (string) $body;
     }
 
@@ -249,7 +250,7 @@ class Github
         }
 
         $out  = '<div class="prt-gh-repo">';
-        $out .= '<div class="prt-ghr-head"><a class="prt-ghr-title" href="' . esc_url($d['url']) . '" target="_blank" rel="noopener">' . esc_html($owner) . ' / <strong>' . esc_html($repo) . '</strong> &#8599;</a>';
+        $out .= '<div class="prt-ghr-head"><h2 class="prt-ghr-titlewrap"><a class="prt-ghr-title" href="' . esc_url($d['url']) . '" target="_blank" rel="noopener">' . esc_html($owner) . ' / <strong>' . esc_html($repo) . '</strong> &#8599;</a></h2>';
         if (! empty($d['desc'])) {
             $out .= '<p class="prt-ghr-desc">' . esc_html($d['desc']) . '</p>';
         }
@@ -289,13 +290,13 @@ class Github
                 $bar  .= '<span class="prt-ghr-langseg" style="width:' . $pct . '%;background:' . esc_attr($color) . '" title="' . esc_attr($lang . ' ' . $pct . '%') . '"></span>';
                 $list .= '<span class="prt-ghr-langitem"><span class="prt-ghr-langdot" style="background:' . esc_attr($color) . '"></span>' . esc_html((string) $lang) . ' <em>' . $pct . '%</em></span>';
             }
-            $out .= '<div class="prt-ghr-section"><h4 class="prt-ghr-h">Languages used</h4><div class="prt-ghr-langbar">' . $bar . '</div><div class="prt-ghr-langlist">' . $list . '</div></div>';
+            $out .= '<div class="prt-ghr-section"><h3 class="prt-ghr-h">Languages used</h3><div class="prt-ghr-langbar">' . $bar . '</div><div class="prt-ghr-langlist">' . $list . '</div></div>';
         }
 
         if ($o['releases']) {
             $rels = self::fetchReleases($owner, $repo, (int) $o['releaseCount']);
             if ($rels) {
-                $out .= '<div class="prt-ghr-section"><div class="prt-ghr-sechead"><h4 class="prt-ghr-h">Version notes</h4>';
+                $out .= '<div class="prt-ghr-section"><div class="prt-ghr-sechead"><h3 class="prt-ghr-h">Version notes</h3>';
                 if (! empty($d['changelog'])) {
                     $out .= '<a class="prt-ghr-changelog" href="' . esc_url($d['changelog']) . '" target="_blank" rel="noopener">Full changelog &#8599;</a>';
                 }
@@ -325,7 +326,7 @@ class Github
                 'h4' => [], 'h5' => [], 'h6' => [], 'blockquote' => [], 'table' => [], 'thead' => [], 'tbody' => [],
                 'tr' => [], 'th' => [], 'td' => [], 'img' => ['src' => [], 'alt' => []],
             ];
-            $out .= '<div class="prt-ghr-section"><h4 class="prt-ghr-h">Readme</h4><div class="prt-ghr-readme readme-prose">' . wp_kses((string) $d['readme'], $allowed) . '</div></div>';
+            $out .= '<div class="prt-ghr-section"><h3 class="prt-ghr-h">Readme</h3><div class="prt-ghr-readme readme-prose">' . wp_kses((string) $d['readme'], $allowed) . '</div></div>';
         }
 
         return $out . '</div>';

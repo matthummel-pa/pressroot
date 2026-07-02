@@ -247,7 +247,8 @@ add_action('prt_head_end', function () {
         . '.prt-rel-pre{font-size:11px;background:#fff3cd;color:#7a5b00;border-radius:4px;padding:1px 6px;}.prt-rel-date{font-size:12px;color:var(--color-muted,#5c636c);margin-left:auto;}'
         // ── Full repo profile (prt/gh-repo) ─────────────────────────────
         . '.prt-gh-repo{background:var(--color-card,#fff);border:1.5px solid var(--color-line,#ECE4F8);border-radius:22px;padding:32px;}'
-        . '.prt-ghr-title{font-family:var(--font-mono);font-size:15px;color:var(--color-ink,#1B1830);text-decoration:none;}.prt-ghr-title strong{color:var(--color-purple,#7C5CFF);}'
+        . '.prt-ghr-titlewrap{margin:0;font-size:inherit;font-weight:inherit;line-height:inherit;display:inline;}'
+        . '.prt-ghr-title{font-family:var(--font-mono);font-size:15px;color:var(--color-ink,#1B1830);text-decoration:none;font-weight:400;}.prt-ghr-title strong{color:var(--color-purple,#7C5CFF);}'
         . '.prt-ghr-desc{font-family:var(--font-display);font-size:18px;line-height:1.5;color:var(--color-body,#4A4660);margin:10px 0 0;}'
         . '.prt-ghr-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}'
         . '.prt-ghr-topic{font-family:var(--font-mono);font-size:12px;background:var(--color-green-tint,#EFE9FF);color:var(--color-purple,#7C5CFF);border-radius:999px;padding:5px 12px;}'
