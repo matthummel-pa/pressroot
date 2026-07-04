@@ -31,7 +31,7 @@ and deliberately light on plugins.
 | Area | What's there |
 |---|---|
 | **Customize → Theme Options** | Colors, typography, layout, header, navigation, menu/popout, announcement bar, dark mode, footer, SEO, performance, custom code, newsletter, cookie notice, white-label. |
-| **Appearance → Theme Settings** | A tabbed admin panel mirroring the most-used options (General, Design, Layout, Header, Footer, Projects). |
+| **Appearance → GitHub** | The one group of settings with no Customizer equivalent: default GitHub owner, API token, data cache hours, OAuth Client ID, and the Connect with GitHub button. |
 | **Appearance → Theme Tools** | Style Kits, export/import settings, reset to defaults. |
 | **Appearance → Local Fonts** | Download + self-host Google Fonts (removes the external request). |
 
@@ -41,7 +41,7 @@ The full catalog of every control is in the **[settings reference]({{ site.baseu
 
 - **Re-skin the whole site** — Appearance → Theme Tools → pick a Style Kit (Editorial, Sage Classic, Warm Sand, Midnight, Mono Slate).
 - **Self-host fonts** — Appearance → Local Fonts → *Download fonts now*, then toggle *Serve fonts locally*.
-- **Connect GitHub for project pages** — Theme Settings → Projects → paste your OAuth App Client ID → *Connect with GitHub* (device-flow login). This raises the API rate limit for the live repo data.
+- **Connect GitHub for project pages** — Appearance → GitHub → paste your OAuth App Client ID → *Connect with GitHub* (device-flow login). This raises the API rate limit for the live repo data.
 - **Add social icons to a post/page** — insert the **Social Icons** block; it pulls from your site social links by default.
 - **Add any icon** — insert the **Icon (Blade)** block and type a name like `si-github`, `heroicon-o-rocket`, or `lucide-zap`.
 - **Show a posts/projects grid** — insert the **Post Grid** block.

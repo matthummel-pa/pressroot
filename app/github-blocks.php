@@ -6,15 +6,34 @@
  *  - prt/repo-grid     : a user's repos as a responsive card grid.
  *  - prt/gh-stats      : a user/org profile (avatar, bio, followers, repos).
  *  - prt/gh-releases   : recent releases for a repo.
+ *  - prt/gh-repo       : full repo profile (topics, languages, releases, README).
+ *
+ * All server-side rendered (render_callback, not static block markup) so the
+ * data is always fresh at request time within Github.php's own cache TTL, and
+ * so the editor preview (via wp-server-side-render) always matches the front
+ * end exactly — there's no separate client-side rendering path to drift out
+ * of sync.
  */
 
 namespace App;
 
+/**
+ * Default GitHub owner/org used by any block instance that doesn't specify
+ * its own owner/username attribute, sourced from the "Projects" Customizer
+ * setting so authors don't have to retype the same owner on every block.
+ */
 function prt_gh_default_owner()
 {
     return get_theme_mod('prt_proj_owner', 'matthummel-pa');
 }
 
+/**
+ * Single source of truth for each block's registered attributes (used both
+ * by register_block_type() below and implicitly documents what each render
+ * callback can expect in $a). Keeping this as one lookup array — keyed by the
+ * same slug used in the render-callback map below — means adding a new
+ * attribute only requires editing one place instead of two.
+ */
 function prt_gh_blocks_attrs()
 {
     return [
@@ -52,6 +71,15 @@ function prt_gh_blocks_attrs()
     ];
 }
 
+/**
+ * Registers the shared editor script (one JS bundle drives all five block
+ * types' editor UI via wp-server-side-render, so the editor just previews
+ * whatever the PHP render callback below produces) and the five `prt/*`
+ * block types themselves, each wired to its own render_callback so the
+ * front end and editor preview always render identical server-side HTML.
+ * Priority 12 just needs to run after `init`'s default block-registration
+ * timing expectations; nothing else in this file depends on ordering.
+ */
 add_action('init', function () {
     $path = 'resources/js/github-blocks-editor.js';
     wp_register_script(
@@ -83,6 +111,13 @@ add_action('init', function () {
     }
 }, 12);
 
+/**
+ * Shared "nothing to show" placeholder for all five blocks. Only renders
+ * visible text inside a REST request (i.e. the editor's server-side-render
+ * preview) — on the actual front end it returns an empty string so a
+ * misconfigured or failed block just disappears instead of showing an error
+ * message to site visitors.
+ */
 function prt_gh_rest_placeholder($msg)
 {
     return (defined('REST_REQUEST') && REST_REQUEST)
@@ -90,6 +125,12 @@ function prt_gh_rest_placeholder($msg)
         : '';
 }
 
+/**
+ * Renders a colored dot + label for a language name, mimicking GitHub's own
+ * language-color convention (same hex values GitHub uses in its UI) so the
+ * blocks feel visually consistent with GitHub itself. Unknown languages fall
+ * back to GitHub's own generic gray rather than a blank/missing dot.
+ */
 function prt_lang_dot($lang)
 {
     $c = [
@@ -101,7 +142,13 @@ function prt_lang_dot($lang)
     return '<span class="prt-lang"><span class="prt-lang-dot" style="background:' . esc_attr($hex) . '"></span>' . esc_html($lang) . '</span>';
 }
 
-/** Single repo card. */
+/**
+ * Render callback for prt/repo-card: a single repo's name, description, and
+ * stats, pulled from the cached Github::fetch() engine (app/Github.php).
+ * Falls back to the Customizer's default owner when the block instance
+ * doesn't specify one, so authors can drop the block in and just type a repo
+ * name.
+ */
 function prt_render_repo_card($a)
 {
     $owner = $a['owner'] ?: prt_gh_default_owner();
@@ -133,10 +180,17 @@ function prt_render_repo_card($a)
     return $out . '</div>';
 }
 
-/** Grid of a user's repos. */
+/**
+ * Render callback for prt/repo-grid: a responsive card grid of a user's
+ * repos. Generates a scoped inline <style> per block instance (keyed to a
+ * wp_unique_id()) rather than a shared stylesheet class, because the number
+ * of grid columns is a per-block attribute and needs its own CSS rule.
+ */
 function prt_render_repo_grid($a)
 {
     $user = $a['username'] ?: prt_gh_default_owner();
+    // Clamp to 1-4 columns — the design only has grid/responsive CSS for that
+    // range, and an unbounded column count would break small-viewport layout.
     $cols = max(1, min(4, (int) ($a['columns'] ?? 2)));
     $repos = Github::fetchRepos($user, (int) ($a['count'] ?? 6), (string) ($a['sort'] ?? 'updated'));
     if (empty($repos)) {
@@ -160,7 +214,10 @@ function prt_render_repo_grid($a)
     return $out . '</div>';
 }
 
-/** Profile stats. */
+/**
+ * Render callback for prt/gh-stats: a user/org profile card (avatar, name,
+ * bio, follower/repo/following counts).
+ */
 function prt_render_gh_stats($a)
 {
     $user = $a['username'] ?: prt_gh_default_owner();
@@ -184,7 +241,11 @@ function prt_render_gh_stats($a)
     return $out . '</div>';
 }
 
-/** Releases feed. */
+/**
+ * Render callback for prt/gh-releases: a list of recent GitHub releases for
+ * one repo, flagging pre-releases so visitors don't mistake a beta for a
+ * stable release.
+ */
 function prt_render_gh_releases($a)
 {
     $owner = $a['owner'] ?: prt_gh_default_owner();
@@ -210,7 +271,13 @@ function prt_render_gh_releases($a)
     return $out . '</ul>';
 }
 
-/** Full repo profile: tags, languages, version notes + changelog, README. */
+/**
+ * Render callback for prt/gh-repo: the "full profile" block. Delegates the
+ * actual HTML assembly to Github::renderRepo() (app/Github.php) — this
+ * function's only job is translating block attributes into that method's
+ * options array, keeping the heavier topics/languages/releases/README
+ * rendering logic in the shared engine rather than duplicated per block.
+ */
 function prt_render_gh_repo($a)
 {
     $owner = $a['owner'] ?: prt_gh_default_owner();
@@ -231,7 +298,14 @@ function prt_render_gh_repo($a)
     return '<div class="wp-block-prt-gh-repo">' . $html . '</div>';
 }
 
-/** Block styles. */
+/**
+ * Block styles: one inline stylesheet covering all five prt/* block types
+ * (repo card, repo grid, stats, releases, and the larger gh-repo profile).
+ * Kept as a single hand-rolled inline <style> rather than an enqueued CSS
+ * file so the blocks work with zero build step / asset registration, and
+ * only prints when prt_head_end fires (i.e. on the front end, not on every
+ * admin request).
+ */
 add_action('prt_head_end', function () {
     echo "\n<style id=\"prt-gh-blocks\">"
         . '.prt-repo-card{display:block;border:1px solid var(--color-line,#e6e2d9);border-radius:12px;padding:16px 18px;background:var(--color-surface,#fff);text-decoration:none;}'

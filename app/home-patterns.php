@@ -12,6 +12,11 @@
 
 namespace App;
 
+// Registers the homepage section patterns and the assembled full-page
+// pattern on 'init'. Priority 11 (before blocks-bespoke.php's 12) doesn't
+// matter for these patterns since their markup is static wp:html, not
+// prt/* block comments — pattern registration order is independent of
+// whether the blocks they might reference are registered yet.
 add_action('init', function () {
 
     // Per-page pattern categories so the inserter groups patterns by page.
@@ -164,7 +169,13 @@ HTML,
        the theme's DYNAMIC blocks (prt/post-grid + prt/repo-grid), so they stay
        live (projects CPT, GitHub, recent posts) even when edited visually. */
 
-    // Static section header → wp:html (eyebrow optional)
+    // Small local "template helpers" so the full-page assembly below (which
+    // interleaves static design sections with live dynamic blocks) reads as
+    // a list of section calls instead of repeating wrapper markup each time.
+
+    // Builds a static section heading (title + optional italic accent word +
+    // optional subtext) as a wp:html block, matching the heading style used
+    // by the static sections above so dynamic-block sections look identical.
     $header = function ($title, $sub = '', $accentWord = '', $accentColor = '#7C5CFF') {
         $h = $title;
         if ($accentWord !== '') {
@@ -177,13 +188,20 @@ HTML,
             . $subHtml . '</div>' . "\n<!-- /wp:html -->\n\n";
     };
 
-    // Dynamic block wrapped in a width-constrained group so it lines up.
+    // Wraps a real block-comment string (e.g. prt/post-grid, prt/repo-grid)
+    // in a constrained-width group so live/dynamic blocks line up with the
+    // static wp:html sections' max-width, since those dynamic blocks don't
+    // carry the prt-wrap width constraint themselves.
     $dynamic = function ($blockComment) {
         return '<!-- wp:group {"className":"prt-wrap","layout":{"type":"constrained","contentSize":"1240px"}} -->'
             . '<div class="wp-block-group prt-wrap">' . $blockComment . '</div>'
             . '<!-- /wp:group -->' . "\n\n";
     };
 
+    // Looks up a previously-defined section's raw HTML by pattern slug and
+    // wraps it in a wp:html block comment, so each static section (hero,
+    // marquee, services, etc.) only has to be written once above and can be
+    // reused here by name when assembling the full page.
     $section = function ($slug) use ($patterns) {
         return isset($patterns[$slug]) ? "<!-- wp:html -->\n{$patterns[$slug]['html']}\n<!-- /wp:html -->\n\n" : '';
     };

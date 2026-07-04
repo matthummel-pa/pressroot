@@ -8,10 +8,17 @@
 
 namespace App;
 
+/**
+ * Register the "Header Layout" Customizer section: full-width menu toggle,
+ * header max-width/height/gap, and numeric "order" fields controlling the
+ * flex order (and thus visual position) of the logo/menu/social/button
+ * clusters. Priority 27, after the Navigation section (26), so both panels
+ * appear in a sensible order in the Customizer UI and after the shared
+ * prt_theme_options panel already exists.
+ */
 add_action('customize_register', function ($wp) {
-    if (! $wp->get_panel('prt_theme_options')) {
-        $wp->add_panel('prt_theme_options', ['title' => __('Theme Options', 'pressroot'), 'priority' => 30]);
-    }
+    // Shared guarded helper — see prt_ensure_theme_options_panel() in app/customizer.php.
+    prt_ensure_theme_options_panel($wp);
     $wp->add_section('prt_headerlayout_section', [
         'title'       => __('Header Layout', 'pressroot'),
         'panel'       => 'prt_theme_options',
@@ -26,6 +33,9 @@ add_action('customize_register', function ($wp) {
     $wp->add_setting('prt_nav_fullwidth', ['default' => false, 'sanitize_callback' => 'wp_validate_boolean']);
     $wp->add_control('prt_nav_fullwidth', ['label' => __('Full-width menu (spread items across)', 'pressroot'), 'section' => 'prt_headerlayout_section', 'type' => 'checkbox']);
 
+    // prt_width_options() lives outside this file (shared width-choices
+    // helper used by more than one Customizer panel); referenced here as a
+    // fully-qualified call rather than imported since we're already in App.
     $wp->add_setting('prt_header_width', ['default' => 1180, 'sanitize_callback' => 'absint']);
     $wp->add_control('prt_header_width', ['label' => __('Header width', 'pressroot'), 'section' => 'prt_headerlayout_section', 'type' => 'select', 'choices' => \App\prt_width_options()]);
     $number($wp, 'prt_header_height', __('Header height (px, 0 = auto)', 'pressroot'), 0, 0, 240);
@@ -37,6 +47,14 @@ add_action('customize_register', function ($wp) {
     $number($wp, 'prt_cta_order', __('Button position', 'pressroot'), 4, 1, 9);
 }, 27);
 
+/**
+ * Emit the Header Layout settings as a <style> block: header container
+ * sizing plus `order` on each of the four header clusters so they can be
+ * rearranged purely with CSS flex order (no markup/template changes
+ * needed to reposition logo/menu/social/button). Priority 13, after
+ * nav-options.php's base nav styling (12), so this can layer
+ * layout-level positioning on top without being overwritten by it.
+ */
 add_action('prt_head_end', function () {
     $g = function ($k, $d) { return get_theme_mod($k, $d); };
 
@@ -44,19 +62,24 @@ add_action('prt_head_end', function () {
     $h   = absint($g('prt_header_height', 0));
     $gap = absint($g('prt_header_gap', 28));
 
-    $css = '.banner{max-width:' . $w . 'px;gap:' . $gap . 'px;';
+    // Real header markup (resources/views/sections/header.blade.php) is
+    // .site-header-inner > .brand, .header-nav, .header-actions — the CTA
+    // button, dark-mode toggle, social icons, and hamburger all live inside
+    // .header-actions, so "button position" reorders that whole cluster and
+    // "social position" reorders social within it.
+    $css = '.site-header-inner{max-width:' . $w . 'px;gap:' . $gap . 'px;';
     if ($h > 0) {
         $css .= 'min-height:' . $h . 'px;align-items:center;';
     }
     $css .= '}';
 
-    $css .= '.banner .brand{order:' . absint($g('prt_logo_order', 1)) . ';}';
-    $css .= '.banner .nav-primary{order:' . absint($g('prt_nav_order', 2)) . ';}';
-    $css .= '.banner .social{order:' . absint($g('prt_social_order', 3)) . ';}';
-    $css .= '.banner .header-cta,.banner .menu-toggle,.banner .prt-theme-toggle{order:' . absint($g('prt_cta_order', 4)) . ';}';
+    $css .= '.site-header .brand{order:' . absint($g('prt_logo_order', 1)) . ';}';
+    $css .= '.header-nav{order:' . absint($g('prt_nav_order', 2)) . ';}';
+    $css .= '.header-actions{order:' . absint($g('prt_cta_order', 4)) . ';}';
+    $css .= '.header-actions .header-social{order:' . absint($g('prt_social_order', 3)) . ';}';
 
     if ($g('prt_nav_fullwidth', false)) {
-        $css .= '.banner .nav-primary{flex:1 1 0%;margin-left:24px;}';
+        $css .= '.header-nav{flex:1 1 0%;margin-left:24px;}';
     }
 
     echo "\n<style id=\"prt-headerlayout\">" . $css . "</style>\n";

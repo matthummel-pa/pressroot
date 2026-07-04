@@ -52,3 +52,149 @@ Standard WordPress hierarchy, in Blade:
 | Search / 404 | `search.blade.php` / `404.blade.php` |
 
 Shared chrome lives in `sections/header.blade.php`, `sections/footer.blade.php`, and `layouts/app.blade.php`.
+
+## Extending this theme (for other developers)
+
+The theme is designed to be extended from a child theme or a small mu-plugin
+without editing anything under `app/` directly. Two mechanisms:
+
+**1. Filters** - change data before the theme uses it (fonts list, style kits,
+social platforms, default colors, width presets, font weight choices, and
+more). Full list with file + description:
+
+```
+wp pressroot hooks --type=filters
+```
+
+**2. Actions** - run your own code at a specific point in the page (before/after
+header, before/after main content, before/after footer, before/after each
+post-card in listings):
+
+```
+wp pressroot hooks --type=actions
+```
+
+Both commands read from `app/hooks-registry.php` (`prt_hook_registry()`) -
+the single source of truth for every custom hook this theme fires. Add a new
+`apply_filters()`/`do_action()` call anywhere in `app/`? Add a row there too,
+so it stays discoverable instead of requiring a grep.
+
+## Settings pages (2026-07 cleanup)
+
+There used to be a full tabbed "Theme Settings" admin page (`app/admin-settings.php`,
+`matthummel/admin_schema` filter) mirroring the Customizer's General, Design,
+Layout, Header, Footer, and Social Links controls via a separate `set_theme_mod()`
+form. It was pure duplication — same theme mods, second UI — so it's gone. The
+Customizer (Appearance -> Customize -> Theme Options) is now the only place to
+edit those settings.
+
+The one exception was the GitHub/Projects tab (default owner, API token, cache
+hours, OAuth Client ID, the "Connect with GitHub" device-flow widget), which had
+no Customizer equivalent. That survived as its own small page:
+`app/github-settings.php`, under Appearance -> GitHub.
+
+Two other admin pages remain, both non-duplicative: Appearance -> Theme Tools
+(`app/settings-io.php` — style kits, export/import/reset) and Appearance ->
+Local Fonts / Starter Sites.
+
+## Developer CLI (`wp pressroot ...`)
+
+Registered in `app/cli.php`, only loaded when `WP_CLI` is true:
+
+| Command | What it does |
+|---|---|
+| `wp pressroot settings export [--file=<path>]` | Dump every `prt_*` theme mod to JSON |
+| `wp pressroot settings import <file>` | Apply a JSON export |
+| `wp pressroot settings reset` | Remove all `prt_*` theme mods (confirms first) |
+| `wp pressroot kit list` | List Style Kit presets |
+| `wp pressroot kit apply <slug>` | Apply a Style Kit by slug |
+| `wp pressroot views clear` | Delete compiled Acorn/Blade view files |
+| `wp pressroot hooks [--type=filters\|actions]` | Print the hook registry as a table |
+
+These share their underlying logic with the web UI (`prt_owned_mods()` /
+`prt_style_kits()` in `app/settings-io.php`, `prt_clear_compiled_views()` in
+`app/setup.php`) so the CLI and Appearance -> Theme Tools can't drift apart.
+
+## Dev Mode / Standard Mode
+
+`app/dev-mode.php` stores one setting, `prt_dev_mode` — `auto` (default),
+`on`, or `off` — editable either from Customizer -> Theme Options ->
+Developer, or with a single click directly in the admin bar (visible to
+`manage_options` users only): click "Standard Mode" to switch on Dev Mode,
+click "Dev Mode" to switch back. The admin-bar toggle always sets an
+explicit `on`/`off`; only the Customizer select can put it back to `auto`.
+
+In `auto`, it's active whenever `wp_get_environment_type()` isn't
+`production` (set `WP_ENVIRONMENT_TYPE` in `wp-config.php` for staging boxes
+that don't already report a non-production type). `off` is useful for
+seeing the site the way a real visitor would while working locally.
+
+When active, the admin-bar node expands into: environment, resolved
+template file, DB query count so far, peak memory, elapsed load time, and
+quick links to Theme Tools and clearing compiled views.
+
+## Header/Nav CSS selectors (2026-07 fix)
+
+`app/header-elements.php`, `app/header-layout.php`, `app/header-behaviors.php`,
+`app/dark-mode.php`, and the global container-width rule in `app/customizer.php`
+previously emitted CSS scoped to `.banner`, `.nav-primary`, `.header-cta`, and
+bare `.social` — leftover selectors from an older header markup that no longer
+exists. The real header (`resources/views/sections/header.blade.php`) uses
+`.site-header` / `.site-header-inner` / `.header-nav` / `.header-actions` /
+`.header-social` / `.btn-hire`. All of the above files now target the real
+classes, so the Navigation, Header Layout, Header Behaviors, and Dark Mode
+Customizer sections actually affect the page again.
+
+The Top Bar section (`app/theme-options.php`) had the same problem plus a
+missing piece: `prt_topbar()` assembled the settings but nothing ever echoed
+the `.top-bar` markup. `prt_topbar_render()` now does, hooked to
+`prt_before_header` at priority 8 (the announcement bar moved to the same
+action, priority 5, so both bars are flex children of `#app` — required for
+the "Stack order" reorder setting to have any effect).
+
+## Customizer audit (2026-07)
+
+A full sweep of every Customizer section for the same "CSS targets markup
+that doesn't exist" bug found in the header/top-bar work above. Fixed:
+
+- **Navigation flexbox** (`app/nav-options.php`) and **Typography (advanced)**
+  nav font/weight/case (`app/typography.php`) both targeted `.nav-primary`
+  — corrected to `.header-nav-list`.
+- **Menu icon on desktop/tablet/mobile** (`app/menu.php`) — the checkboxes
+  drove body classes matched against `.nav-primary`/`.banner > .social` in a
+  static stylesheet, so they never worked. Replaced with a 3-state (auto/on/off)
+  select per breakpoint and a real `prt_head_end` emitter targeting
+  `.header-nav`/`.header-social`/`.btn-hire`/`.menu-toggle`. "Auto" (the
+  default) is a no-op — the theme's existing 768px split keeps working
+  untouched; only an explicit on/off per tier changes anything.
+- **Custom Code "Body code"** (`app/integrations.php`) was misrouted into
+  `<head>` by the same `get_header`-fires-before-`wp_body_open` hazard
+  documented in `app/announcement.php` — fixed to use `wp_body_open` only.
+- **Contact intro** (`prt_contact_intro`) was registered but never read;
+  wired into `template-contact.blade.php` (default matches the old hardcoded
+  copy exactly).
+- **Social platform list** was registered twice (`app/social-links.php` +
+  `app/menu.php`) with only the latter having real controls. Consolidated:
+  `prt_socials_map()` now sources from `prt_social_platforms()`, one list.
+- **Hero section** (`app/hero.php`) styles the reusable "Hero" block patterns
+  (Inserter -> Patterns -> MH · Heroes) — legitimate, not dead. Its copy
+  fields (`prt_hero_eyebrow`/`title`/`subtext`) had no consumer anywhere
+  though, since the homepage's own hero (`resources/views/partials/home/hero.blade.php`)
+  is a separate hand-built section. Dropped the unused eyebrow field (the
+  homepage's badge already has its own working field, `prt_avail_text`), and
+  wired title/subtext into the homepage hero with defaults matching its exact
+  existing copy.
+- Added `active_callback` (previously used nowhere in the theme) so
+  parent/child fields hide correctly: footer custom-color pickers, footer
+  tagline/social (needs brand column on), footer nav heading (needs nav
+  column on), popout gradient end/angle (needs gradient background), cookie
+  notice text fields (needs notice enabled), dark mode default (needs dark
+  mode enabled).
+
+## Code style
+
+`pint.json` configures [Laravel Pint](https://laravel.com/docs/pint) (already
+a dev dependency) for PHP: `composer format` to fix, `composer lint` to check
+without writing. `eslint.config.js` covers the hand-written JS in
+`resources/js/*.js` (the block-editor files that intentionally have no build
+step): `npm install` then `npm run lint:js`.

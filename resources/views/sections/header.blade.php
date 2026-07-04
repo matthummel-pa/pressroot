@@ -36,7 +36,7 @@
         <ul class="header-social" aria-label="Social links">
           @foreach ($mhSoc as $s)
             <li>
-              <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank">
+              <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank"{!! \App\prt_social_item_style_attr($s['key']) !!}>
                 {!! \App\prt_social_icon($s['key']) !!}
               </a>
             </li>
@@ -66,6 +66,10 @@
 <aside id="prt-popout" class="prt-popout" aria-label="{{ __('Menu', 'pressroot') }}">
   <button class="prt-popout-close" aria-label="{{ __('Close menu', 'pressroot') }}">&times;</button>
 
+  <a class="btn btn-hire prt-popout-cta" href="{{ esc_url(home_url('/contact')) }}">
+    {{ __('Hire Me', 'pressroot') }}
+  </a>
+
   @if (has_nav_menu('primary_navigation'))
     <nav aria-label="{{ __('Popout menu', 'pressroot') }}">
       {!! wp_nav_menu([
@@ -80,7 +84,7 @@
   @if ($mhSoc)
     <div class="prt-popout-socials">
       @foreach ($mhSoc as $s)
-        <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank">
+        <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank"{!! \App\prt_social_item_style_attr($s['key']) !!}>
           {!! \App\prt_social_icon($s['key']) !!}
         </a>
       @endforeach

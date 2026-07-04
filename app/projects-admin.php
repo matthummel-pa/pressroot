@@ -7,10 +7,20 @@
 
 namespace App;
 
+/** Register the "Project Details" meta box on the projects post-type edit screen. */
 add_action('add_meta_boxes', function () {
     add_meta_box('prt_project_details', __('Project Details', 'pressroot'), 'App\\prt_project_metabox', 'projects', 'side', 'high');
 });
 
+/**
+ * Render the "Project Details" meta box: GitHub owner/repo, eyebrow label,
+ * demo URL, tech stack, and a "featured" checkbox. Values here are read by
+ * the single-project Blade template to build the GitHub-powered project
+ * page without hardcoding per-project data in the template itself.
+ *
+ * @param \WP_Post $post
+ * @return void
+ */
 function prt_project_metabox($post)
 {
     wp_nonce_field('prt_project_save', 'prt_project_nonce');
@@ -40,6 +50,12 @@ function prt_project_metabox($post)
     echo '</div>';
 }
 
+/**
+ * Persist the meta box fields when a "projects" post is saved. Guards against
+ * the standard WordPress footguns: no nonce/CSRF check, autosave requests
+ * (which fire without the real $_POST field values), and users without edit
+ * capability trying to write meta via a crafted request.
+ */
 add_action('save_post_projects', function ($post_id) {
     if (! isset($_POST['prt_project_nonce']) || ! wp_verify_nonce($_POST['prt_project_nonce'], 'prt_project_save')) {
         return;
@@ -61,7 +77,7 @@ add_action('save_post_projects', function ($post_id) {
     update_post_meta($post_id, '_prt_featured', isset($_POST['_prt_featured']) ? '1' : '');
 });
 
-/** Admin list columns. */
+/** Add "Repo" and "Label" columns to the projects admin list table, right after Title. */
 add_filter('manage_projects_posts_columns', function ($cols) {
     $new = [];
     foreach ($cols as $k => $v) {
@@ -74,6 +90,7 @@ add_filter('manage_projects_posts_columns', function ($cols) {
     return $new;
 });
 
+/** Render the values for the custom "Repo" and "Label" admin list columns added above. */
 add_action('manage_projects_posts_custom_column', function ($col, $post_id) {
     if ($col === 'prt_repo') {
         $owner = get_post_meta($post_id, '_prt_gh_owner', true) ?: get_theme_mod('prt_proj_owner', 'matthummel-pa');
@@ -89,7 +106,15 @@ add_action('manage_projects_posts_custom_column', function ($col, $post_id) {
     }
 }, 10, 2);
 
-/** REST endpoint: GET /wp-json/prt/v1/github-repos?user=&count=&sort= */
+/**
+ * REST endpoint: GET /wp-json/prt/v1/github-repos?user=&count=&sort=
+ *
+ * Publicly readable (permission_callback __return_true — no sensitive data,
+ * just a proxy over public GitHub repo listings) so the front-end projects
+ * page can fetch live GitHub data client-side without exposing GitHub API
+ * credentials or requiring a logged-in WP session. Delegates the actual
+ * GitHub call/caching to \App\Github::fetchRepos().
+ */
 add_action('rest_api_init', function () {
     register_rest_route('prt/v1', '/github-repos', [
         'methods'             => 'GET',

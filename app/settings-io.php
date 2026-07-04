@@ -20,6 +20,48 @@ function prt_owned_mods()
     return $out;
 }
 
+/**
+ * Gate an admin_post handler behind the standard nonce + capability check
+ * used identically by all four Theme Tools actions below (apply kit, export,
+ * import, reset): the current user must be able to 'edit_theme_options' AND
+ * the request must carry a valid nonce for $nonceAction (matching the
+ * wp_nonce_field($nonceAction) each form in prt_tools_render() emits). On
+ * failure, dies with the same "Not allowed" message every handler used
+ * before this was extracted — behavior is unchanged, just no longer
+ * duplicated four times.
+ *
+ * @param string $nonceAction The nonce action string (also the admin_post 'action' value).
+ * @return void Returns normally (falls through) when the check passes; wp_die()s otherwise.
+ */
+function prt_require_admin_post(string $nonceAction): void
+{
+    if (! current_user_can('edit_theme_options') || ! check_admin_referer($nonceAction)) {
+        wp_die('Not allowed');
+    }
+}
+
+/**
+ * Apply a Style Kit's `mods` array to theme mods via set_theme_mod().
+ * Shared by the "Apply" buttons on Appearance -> Theme Tools
+ * (admin_post_prt_apply_kit below) and `wp pressroot kit apply <slug>`
+ * (Prt_Kit_Command::apply() in app/cli.php), so both call sites use the
+ * exact same lookup + loop instead of maintaining independent copies.
+ *
+ * @param string $slug Kit slug, must be a key in prt_style_kits().
+ * @return bool True if the slug was found and its mods were applied, false if unknown.
+ */
+function prt_apply_style_kit(string $slug): bool
+{
+    $kits = prt_style_kits();
+    if (! isset($kits[$slug])) {
+        return false;
+    }
+    foreach ($kits[$slug]['mods'] as $k => $v) {
+        set_theme_mod($k, $v);
+    }
+    return true;
+}
+
 /** One-click design presets (palette + fonts + radius). */
 function prt_style_kits()
 {
@@ -173,27 +215,23 @@ function prt_tools_render()
     <?php
 }
 
-/** Apply a style kit. */
+/**
+ * Apply a style kit. Unknown/missing slugs are a silent no-op (same as
+ * before this was extracted to prt_apply_style_kit()) — the redirect still
+ * reports success either way, since the previous behavior never
+ * distinguished "applied" from "unknown slug" here.
+ */
 add_action('admin_post_prt_apply_kit', function () {
-    if (! current_user_can('edit_theme_options') || ! check_admin_referer('prt_apply_kit')) {
-        wp_die('Not allowed');
-    }
-    $kits = prt_style_kits();
-    $id   = isset($_POST['kit']) ? sanitize_key($_POST['kit']) : '';
-    if (isset($kits[$id])) {
-        foreach ($kits[$id]['mods'] as $k => $v) {
-            set_theme_mod($k, $v);
-        }
-    }
+    prt_require_admin_post('prt_apply_kit');
+    $id = isset($_POST['kit']) ? sanitize_key($_POST['kit']) : '';
+    prt_apply_style_kit($id);
     wp_safe_redirect(admin_url('themes.php?page=prt-theme-tools&prt_done=kit'));
     exit;
 });
 
 /** Export all prt_* theme mods as JSON download. */
 add_action('admin_post_prt_export_settings', function () {
-    if (! current_user_can('edit_theme_options') || ! check_admin_referer('prt_export_settings')) {
-        wp_die('Not allowed');
-    }
+    prt_require_admin_post('prt_export_settings');
     $payload = [
         'theme'   => 'pressroot',
         'version' => wp_get_theme()->get('Version'),
@@ -209,9 +247,7 @@ add_action('admin_post_prt_export_settings', function () {
 
 /** Import settings from an uploaded JSON file. */
 add_action('admin_post_prt_import_settings', function () {
-    if (! current_user_can('edit_theme_options') || ! check_admin_referer('prt_import_settings')) {
-        wp_die('Not allowed');
-    }
+    prt_require_admin_post('prt_import_settings');
     $ok = false;
     if (! empty($_FILES['prt_import_file']['tmp_name']) && is_uploaded_file($_FILES['prt_import_file']['tmp_name'])) {
         $raw  = file_get_contents($_FILES['prt_import_file']['tmp_name']);
@@ -231,9 +267,7 @@ add_action('admin_post_prt_import_settings', function () {
 
 /** Reset: remove all prt_* theme mods. */
 add_action('admin_post_prt_reset_settings', function () {
-    if (! current_user_can('edit_theme_options') || ! check_admin_referer('prt_reset_settings')) {
-        wp_die('Not allowed');
-    }
+    prt_require_admin_post('prt_reset_settings');
     foreach (array_keys(prt_owned_mods()) as $k) {
         remove_theme_mod($k);
     }

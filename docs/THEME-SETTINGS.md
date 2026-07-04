@@ -8,11 +8,13 @@ Every setting the theme exposes, where to find it, and what it does. The theme i
 built on **Sage 11 / Acorn**; all options write WordPress **theme mods** (or options,
 where noted) and render with no build step.
 
-Three places hold settings:
+Two places hold settings:
 
-1. **Customize â†’ Theme Options** â€” the live, preview-as-you-edit panel.
-2. **Appearance â†’ Theme Settings** â€” a tabbed admin page mirroring the most-used options.
-3. **Appearance â†’ Theme Tools / Local Fonts** â€” utilities (presets, import/export, font hosting).
+1. **Customize â†’ Theme Options** â€” the live, preview-as-you-edit panel, and the
+   home for everything except the GitHub connection below.
+2. **Appearance â†’ GitHub / Theme Tools / Local Fonts** â€” utilities and the one
+   settings group with no Customizer equivalent (GitHub token/owner/OAuth), plus
+   presets, import/export, and font hosting.
 
 ---
 
@@ -128,16 +130,15 @@ Three places hold settings:
 
 ---
 
-## Appearance â†’ Theme Settings (admin tabs)
+## Appearance â†’ GitHub
 
-A tabbed panel mirroring the most common options for quick edits:
+Everything above (General, Design, Layout, Header, Footer, Social Links, etc.)
+used to also be mirrored on a tabbed "Theme Settings" admin page. That page was
+removed â€” it was pure duplication of the Customizer controls above. The only
+settings that page had with no Customizer equivalent were GitHub/Projects, so
+those got their own small page:
 
-- **General** â€” header button text/URL, show button, footer tagline.
-- **Design** â€” colors, heading/body fonts, default content width.
-- **Layout** â€” per-type width preset, custom width, sidebar.
-- **Header** â€” full-width menu, sizing, element order, top bar, menu-icon breakpoints.
-- **Footer** â€” show social, columns, background/text colors, tagline, sticky header.
-- **Projects** â€” default GitHub owner, API token, data cache (hours), **OAuth Client ID**, and **Connect with GitHub** (device-flow login).
+- **Default GitHub owner**, **API token**, **data cache (hours)**, **OAuth Client ID**, and **Connect with GitHub** (device-flow login) â€” raises the API rate limit for the live repo data shown on project pages.
 
 ---
 

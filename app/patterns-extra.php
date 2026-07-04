@@ -12,8 +12,14 @@ add_action('init', function () {
         return;
     }
 
-    register_block_pattern('matthummel/hero', [
-        'title'      => __('Hero', 'pressroot'),
+    // Slug is "hero-simple" (not "hero") because block-patterns.php already
+    // registers a richer "matthummel/hero" pattern (dark ink hero with a
+    // terminal-style code accent). Reusing that slug here silently lost this
+    // pattern to a WordPress "doing_it_wrong" duplicate-registration notice —
+    // renamed instead of removed, since this simpler centered version is
+    // still a useful, distinct starting point.
+    register_block_pattern('matthummel/hero-simple', [
+        'title'      => __('Hero — simple centered', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
 <!-- wp:group {"className":"prt-hero","layout":{"type":"constrained"}} -->

@@ -110,6 +110,55 @@ Full audit, ~20 Customizer sections:
   folded in Phase 0/1–3 history and the `theme.json` reference, then trimmed
   every entry down to its essentials for faster skimming.
 
+## "one more scan, consolidate, add comments, upscale into a marketable theme"
+Final audit pass before treating pressroot as a product, not just a personal
+site theme:
+- **2 real bugs fixed:** unguarded `filemtime()` in `social-block.php` (only
+  script registration missing the `file_exists()` guard used everywhere
+  else); `should_load_separate_core_block_assets` was set two places
+  (`setup.php` hardcoded, `critical-css.php` Customizer-driven) — the
+  hardcoded one always silently won, so the Customizer toggle never worked.
+  Removed the hardcoded one.
+- **Block-pattern architecture fix (the big one):** `page-patterns.php` had a
+  priority-99 cleanup pass that unregistered *every* pattern except its own
+  12 curated "Full page" patterns — silently deleting ~27 working
+  section-level patterns (heroes, CTAs, pricing, testimonials, stat strips…)
+  from `block-patterns.php`, `patterns-extra.php`, `sections-library.php`,
+  and `blocks.php` on every single page load. Removed the blanket purge (more
+  prebuilt sections = more product value for a page-building theme); kept
+  only the two truly-superseded duplicate patterns removed by name
+  (`about-page`/`resume-page`, since `about-full`/`resume-full` already do
+  that job better). Also fixed a duplicate pattern-category registration and
+  a duplicate `matthummel/hero` slug collision (renamed to `hero-simple`)
+  that were both silently throwing WordPress "doing_it_wrong" notices.
+- **Consolidation:** removed dead `app/Vite.php` (unreferenced, superseded by
+  Acorn's real `Vite` facade); removed a duplicate hardcoded Google Fonts
+  enqueue in `setup.php` that fought with the real Customizer-driven one in
+  `customizer.php`; extracted 3 shared helpers that were duplicated across
+  files — `prt_apply_style_kit()`, `prt_ensure_theme_options_panel()`
+  (deduped 20 call sites), `prt_require_admin_post()`.
+- **Comments:** added file- and function-level doc comments across all
+  ~45 `app/*.php` files — what each file does, why non-obvious code exists,
+  what problem each helper solves. 13 additional minor issues flagged inline
+  as `// NOTE(audit):` for later review (stale labels, a hardcoded default
+  GitHub owner, a couple of dead/unreachable branches) rather than fixed
+  blind, since none of them affect current behavior.
+- **New feature — AI Setup Assistant** (`app/ai-assistant.php`,
+  Appearance → AI Setup Assistant): pick a site type (Agency, Freelance/
+  Portfolio, SaaS, Blog, Marketing landing) to apply a matching Style Kit
+  *and* auto-create the starter pages that site type needs, pre-filled with
+  the theme's existing full-page patterns (idempotent — never touches a page
+  that already exists). Plus a starter hero-copy generator: type a one-line
+  business description, get a headline + subheadline back from Pollinations'
+  free text API — same no-key, no-server-proxy pattern the Hero Image Finder
+  already used for images. This is the "clone into other project types"
+  answer: the site-type list is exactly that set of starting points, and any
+  fork can add its own via the `matthummel/site_types` filter.
+- **Takeaway:** a full audit right before "productizing" catches architecture
+  problems (like the pattern purge) that targeted fixes never surface,
+  because they only show up when you ask "does everything I built actually
+  get used?"
+
 ---
 
 ## Recurring bug patterns

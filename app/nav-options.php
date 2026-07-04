@@ -8,6 +8,13 @@
 
 namespace App;
 
+/**
+ * Shared choice lists (flexbox properties, font weights, text transforms,
+ * text alignment) reused by both the main nav and popout menu controls
+ * below, so the two option sets stay in sync and are only defined once.
+ *
+ * @return array<string, array<string, string>>
+ */
 function prt_nav_choices()
 {
     return [
@@ -22,10 +29,15 @@ function prt_nav_choices()
     ];
 }
 
+/**
+ * Register the "Navigation" Customizer section: flexbox container controls
+ * for the main menu, per-item box/typography controls, and popout-menu
+ * typography controls. Priority 26 to run after the sibling sections that
+ * lazily create the shared prt_theme_options panel.
+ */
 add_action('customize_register', function ($wp) {
-    if (! $wp->get_panel('prt_theme_options')) {
-        $wp->add_panel('prt_theme_options', ['title' => __('Theme Options', 'pressroot'), 'priority' => 30]);
-    }
+    // Shared guarded helper — see prt_ensure_theme_options_panel() in app/customizer.php.
+    prt_ensure_theme_options_panel($wp);
     $wp->add_section('prt_nav_section', [
         'title'       => __('Navigation', 'pressroot'),
         'panel'       => 'prt_theme_options',
@@ -33,6 +45,8 @@ add_action('customize_register', function ($wp) {
     ]);
     $c = prt_nav_choices();
 
+    // Local factories for the three repeated setting+control shapes below
+    // (select/number/color), keeping each control declaration to one line.
     $select = function ($wp, $id, $label, $choices, $default) {
         $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => 'sanitize_key']);
         $wp->add_control($id, ['label' => $label, 'section' => 'prt_nav_section', 'type' => 'select', 'choices' => $choices]);
@@ -75,10 +89,20 @@ add_action('customize_register', function ($wp) {
     $number($wp, 'prt_pop_gap', __('Popout — gap between items (px)', 'pressroot'), 0, 40);
 }, 26);
 
+/**
+ * Emit the Navigation panel's settings as a <style> block targeting the
+ * real .header-nav-list / .prt-popout-menu markup. CSS-only (no rebuild)
+ * so Customizer changes apply instantly; every value is re-sanitized here
+ * (sanitize_key/absint/sanitize_hex_color) even though the settings were
+ * already sanitized on save, since this runs on the public front end and
+ * must not trust stored option values as safe-to-echo CSS. Priority 12,
+ * ahead of header-layout.php (13) and menu.php's popout CSS (13), so base
+ * nav sizing is in place before layout-level overrides (ordering/flex) run.
+ */
 add_action('prt_head_end', function () {
     $g = function ($k, $d) { return get_theme_mod($k, $d); };
 
-    $css = '.nav-primary .nav{'
+    $css = '.header-nav-list{'
         . 'flex-direction:' . sanitize_key($g('prt_nav_dir', 'row')) . ';'
         . 'justify-content:' . sanitize_key($g('prt_nav_justify', 'flex-start')) . ';'
         . 'align-items:' . sanitize_key($g('prt_nav_align', 'center')) . ';'
@@ -99,8 +123,8 @@ add_action('prt_head_end', function () {
         . 'border-radius:' . absint($g('prt_nav_radius', 0)) . 'px;';
     if ($h > 0) { $item .= 'min-height:' . $h . 'px;'; }
     if ($col) { $item .= 'color:' . $col . ';'; }
-    $css .= '.nav-primary .nav a{' . $item . '}';
-    if ($hov) { $css .= '.nav-primary .nav a:hover{color:' . $hov . ';}'; }
+    $css .= '.header-nav-list a{' . $item . '}';
+    if ($hov) { $css .= '.header-nav-list a:hover{color:' . $hov . ';}'; }
 
     $css .= '.prt-popout-menu{text-align:' . sanitize_key($g('prt_pop_align', 'left')) . ';}';
     $pgap = absint($g('prt_pop_gap', 0));

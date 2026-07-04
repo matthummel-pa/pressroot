@@ -8,6 +8,7 @@
 
 @section('content')
 @php($mhStatus = isset($_GET['contact']) ? sanitize_key($_GET['contact']) : '')
+@php($mhContactIntro = get_theme_mod('prt_contact_intro', "Tell me a little about your project and I'll reply within a day. Fixed-price quotes, no surprises."))
 
 <style>
   .prt-contact-label { display:block; font-family:var(--font-display); font-weight:600; font-size:14px; color:#1B1830; margin-bottom:7px; }
@@ -19,9 +20,9 @@
   <div class="prt-grid-2" style="display:grid; grid-template-columns:0.85fr 1.15fr; gap:48px; align-items:start;">
 
     <div>
-      <div style="font-family:var(--font-mono); font-size:13px; color:#7C5CFF; letter-spacing:.1em; margin-bottom:18px;">CONTACT</div>
-      <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(40px,6vw,64px); letter-spacing:-.035em; line-height:1; margin:0 0 18px; color:#1B1830;">Let&rsquo;s build something <span class="prt-serif" style="color:#7C5CFF;">delightful</span>.</h1>
-      <p style="font-size:19px; line-height:1.55; color:#4A4660; margin:0 0 28px;">Tell me a little about your project and I&rsquo;ll reply within a day. Fixed-price quotes, no surprises.</p>
+      <div style="font-family:var(--font-mono); font-size:13px; color:var(--color-eyebrow, var(--color-green)); letter-spacing:.1em; margin-bottom:18px;">CONTACT</div>
+      <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(40px,6vw,64px); letter-spacing:-.035em; line-height:1; margin:0 0 18px; color:var(--color-h1, var(--color-ink));">Let&rsquo;s build something <span class="prt-serif" style="color:#7C5CFF;">delightful</span>.</h1>
+      <p style="font-size:19px; line-height:1.55; color:var(--color-body); margin:0 0 28px;">{!! wp_kses_post($mhContactIntro) !!}</p>
 
       @if (trim(get_the_content()))
         <div class="entry-content post-prose" style="margin-top:16px;">@php(the_content())</div>

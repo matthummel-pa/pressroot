@@ -14,7 +14,8 @@ namespace App;
  * Uses WordPress core's own hosted catalog, so it stays current and requires no API key.
  */
 add_action('init', function () {
-    // Font Library (WP 6.5+) must be present.
+    // Font Library (WP 6.5+) must be present. Older cores simply don't get
+    // the collection — this is a progressive enhancement, not a hard dependency.
     if (! function_exists('wp_register_font_collection')) {
         return;
     }
@@ -22,6 +23,8 @@ add_action('init', function () {
     $slug = 'prt-google-fonts';
 
     // Don't double-register if it (or a core equivalent) is already there.
+    // Registering the same slug twice would otherwise throw/warn on every
+    // page load once WP core ships its own bundled Google Fonts collection.
     if (function_exists('wp_get_font_collection') && wp_get_font_collection($slug)) {
         return;
     }

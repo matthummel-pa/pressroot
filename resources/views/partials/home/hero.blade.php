@@ -2,8 +2,8 @@
 @php
   $eyebrow   = get_theme_mod('prt_avail_text', 'Open to side projects · 2 slots');
   $avail     = (bool) get_theme_mod('prt_avail_open', true);
-  $headline  = 'Hi there! I\'m Matt — I build';        // edit copy here
-  $sub       = 'Full-stack developer with 15+ years building fast, accessible WordPress & Sage sites and Microsoft Power Platform tools — from Gettysburg, PA.';
+  $headline  = get_theme_mod('prt_hero_title', "Hi there! I'm Matt — I build");
+  $sub       = get_theme_mod('prt_hero_subtext', 'Full-stack developer with 15+ years building fast, accessible WordPress & Sage sites and Microsoft Power Platform tools — from Gettysburg, PA.');
   $portrait  = get_theme_mod('prt_hero_portrait'); // attachment URL
 @endphp
 
@@ -19,12 +19,12 @@
             <span style="width:8px; height:8px; border-radius:50%; background:#C2F23D; animation:prt-bob 1.6s ease-in-out infinite;"></span> {{ $eyebrow }}
           </div>
         @endif
-        <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(48px,7vw,88px); line-height:.96; letter-spacing:-.035em; margin:0 0 24px; color:#1B1830;">
+        <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(48px,7vw,88px); line-height:.96; letter-spacing:-.035em; margin:0 0 24px; color:var(--color-h1, var(--color-ink));">
           {{ $headline }}<br>
           <span class="prt-gradient-text">delightful</span>
           <span style="font-family:var(--font-serif); font-style:italic; font-weight:400;">things</span> for the web.
         </h1>
-        <p style="font-family:var(--font-display); font-size:21px; line-height:1.5; max-width:30em; color:#4A4660; margin:0 0 34px;">{{ $sub }}</p>
+        <p style="font-family:var(--font-display); font-size:21px; line-height:1.5; max-width:30em; color:var(--color-body); margin:0 0 34px;">{{ $sub }}</p>
         <div style="display:flex; gap:14px; flex-wrap:wrap;">
           <a href="{{ get_post_type_archive_link('projects') ?: '#work' }}" class="prt-lift" style="text-decoration:none; background:#1B1830; color:#fff; padding:17px 30px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);">See my work →</a>
           <a href="{{ get_permalink(get_page_by_path('contact')) ?: '#contact' }}" class="prt-lift" style="text-decoration:none; background:#fff; border:1.5px solid #1B1830; color:#1B1830; padding:17px 30px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);">Let's chat</a>

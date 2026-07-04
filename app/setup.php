@@ -24,14 +24,12 @@ add_filter('block_editor_settings_all', function ($settings) {
 });
 
 /**
- * Clear Acorn's compiled Blade views on demand: visit any admin URL with
- * ?prt_view_clear=1. Useful when template edits don't show because the compiled
- * views were cached (e.g. `wp acorn view:cache` / production mode).
+ * Delete every compiled Acorn/Blade view file. Shared by the admin
+ * ?prt_view_clear=1 shortcut below and `wp pressroot views clear` (app/cli.php)
+ * so there's exactly one place that knows where compiled views live.
  */
-add_action('admin_init', function () {
-    if (empty($_GET['prt_view_clear']) || ! current_user_can('edit_theme_options')) {
-        return;
-    }
+function prt_clear_compiled_views(): int
+{
     $dirs = [
         WP_CONTENT_DIR . '/uploads/acorn-views',
         WP_CONTENT_DIR . '/cache/acorn/views',
@@ -50,7 +48,20 @@ add_action('admin_init', function () {
             }
         }
     }
-    wp_safe_redirect(add_query_arg('prt_views_cleared', (int) $count, admin_url()));
+    return $count;
+}
+
+/**
+ * Clear Acorn's compiled Blade views on demand: visit any admin URL with
+ * ?prt_view_clear=1. Useful when template edits don't show because the compiled
+ * views were cached (e.g. `wp acorn view:cache` / production mode).
+ */
+add_action('admin_init', function () {
+    if (empty($_GET['prt_view_clear']) || ! current_user_can('edit_theme_options')) {
+        return;
+    }
+    $count = prt_clear_compiled_views();
+    wp_safe_redirect(add_query_arg('prt_views_cleared', $count, admin_url()));
     exit;
 });
 
@@ -112,11 +123,17 @@ add_filter('theme_file_path', function ($path, $file) {
 }, 10, 2);
 
 /**
- * Disable on-demand block asset loading.
+ * NOTE: `should_load_separate_core_block_assets` is intentionally NOT filtered
+ * here. It's controlled from one place only — the Customizer-driven filter in
+ * app/critical-css.php (setting: prt_split_block_css) — so there's a single
+ * source of truth. A hardcoded '__return_false' used to live here too, but
+ * since both filters run at the default priority and critical-css.php's
+ * callback loads later and ignores the incoming value, this one always won
+ * silently and the Customizer toggle never actually took effect. Removed.
  *
  * @link https://core.trac.wordpress.org/ticket/61965
+ * @see app/critical-css.php
  */
-add_filter('should_load_separate_core_block_assets', '__return_false');
 
 /**
  * Register the initial theme setup.
@@ -216,25 +233,17 @@ add_action('widgets_init', function () {
 });
 
 /**
- * Enqueue Google Fonts (Fraunces display + Inter body).
+ * NOTE: Google Fonts used to also be enqueued here as a hardcoded
+ * 'matthummel-fonts' stylesheet (Outfit/Instrument Serif/JetBrains Mono,
+ * both on wp_enqueue_scripts and admin_enqueue_scripts), completely ignoring
+ * the Customizer's font pickers. That duplicated — and silently fought with —
+ * the real, Customizer-driven enqueue in app/customizer.php
+ * ('matthummel-fonts-custom', built from prt_font_heading/prt_font_body +
+ * prt_fonts()), which is the single source of truth for Google Fonts loading
+ * now. Removed here to stop double-loading overlapping font families on
+ * every front-end page load. See also app/typography.php's 'prt-fonts-extra'
+ * (nav/button font mods) and app/fonts-local.php (self-hosted opt-out).
  */
-add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style(
-        'matthummel-fonts',
-        'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap',
-        [],
-        null
-    );
-}, 5);
-
-add_action('admin_enqueue_scripts', function () {
-    wp_enqueue_style(
-        'matthummel-fonts',
-        'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap',
-        [],
-        null
-    );
-}, 5);
 
 /**
  * Register the "projects" custom post type (case studies) + taxonomy,

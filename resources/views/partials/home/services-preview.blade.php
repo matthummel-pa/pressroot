@@ -8,7 +8,7 @@
 @endphp
 <section class="prt-wrap" style="padding-top:90px; padding-bottom:30px;">
   <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:36px;">
-    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0; color:#1B1830;">What I do <span style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:#7C5CFF;">well</span></h2>
+    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0; color:var(--color-h2, var(--color-ink));">What I do <span style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:#7C5CFF;">well</span></h2>
     <span style="font-family:var(--font-mono); font-size:13px; color:#7C75A8;">(three things, done right)</span>
   </div>
   <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;">

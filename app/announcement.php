@@ -3,10 +3,21 @@
 /**
  * Announcement bar: scheduled (optional start/end date), dismissible, themable.
  * Renders at the very top of <body> via wp_body_open/get_header (guarded once).
+ *
+ * Everything (copy, link, colors, scheduling, dismiss behavior) is controlled
+ * from a single Customizer section so a site owner can run a time-boxed
+ * announcement (e.g. a launch or holiday notice) without editing any template
+ * or code. Dismissal state is remembered client-side via localStorage, keyed
+ * to a hash of the content, so editing the message automatically re-shows
+ * the bar to visitors who'd already dismissed the old one.
  */
 
 namespace App;
 
+/**
+ * Default values for every Announcement Bar setting, used to pre-fill the
+ * Customizer controls and as the read fallback in prt_ann().
+ */
 function prt_ann_defaults()
 {
     return [
@@ -23,16 +34,24 @@ function prt_ann_defaults()
     ];
 }
 
+/**
+ * Read a single Announcement Bar setting, falling back to its default from
+ * prt_ann_defaults() when no theme_mod is saved yet.
+ */
 function prt_ann($k)
 {
     $d = prt_ann_defaults();
     return get_theme_mod($k, $d[$k] ?? null);
 }
 
+/**
+ * Register the "Announcement Bar" Customizer section: enable toggle, message,
+ * optional link, colors, dismiss/mobile-hide toggles, and an optional
+ * start/end date range for scheduling.
+ */
 add_action('customize_register', function ($wp) {
-    if (! $wp->get_panel('prt_theme_options')) {
-        $wp->add_panel('prt_theme_options', ['title' => __('Theme Options', 'pressroot'), 'priority' => 30]);
-    }
+    // Shared guarded helper — see prt_ensure_theme_options_panel() in app/customizer.php.
+    prt_ensure_theme_options_panel($wp);
     $wp->add_section('prt_ann_section', [
         'title' => __('Announcement Bar', 'pressroot'),
         'panel' => 'prt_theme_options',
@@ -67,6 +86,16 @@ add_action('customize_register', function ($wp) {
     $wp->add_control('prt_ann_end', ['label' => __('End date (optional)', 'pressroot'), 'section' => 'prt_ann_section', 'type' => 'date']);
 }, 21);
 
+/**
+ * Print the announcement bar markup, its scoped inline <style>, and the
+ * dismiss-button script — provided the bar is enabled, has a message, and
+ * (if scheduled) today falls within the configured date range.
+ *
+ * Guarded by a static flag so it's a no-op on any call after the first: this
+ * function is hooked once below, but is also written defensively in case a
+ * template or child theme calls it directly (e.g. from get_header.php) —
+ * without the guard it would print two duplicate bars.
+ */
 function prt_ann_render()
 {
     static $done = false;
@@ -79,6 +108,9 @@ function prt_ann_render()
     if (! prt_ann('prt_ann_enable') || $text === '') {
         return;
     }
+    // Scheduling uses simple string comparison against Y-m-d dates, which
+    // works because ISO-8601 date strings sort lexicographically the same
+    // as chronologically — no need to parse into DateTime objects.
     $today = current_time('Y-m-d');
     $start = prt_ann('prt_ann_start');
     $end   = prt_ann('prt_ann_end');
@@ -95,6 +127,10 @@ function prt_ann_render()
     $hideMob = (bool) prt_ann('prt_ann_hide_mobile');
     $ltext   = (string) prt_ann('prt_ann_ltext');
     $lurl    = (string) prt_ann('prt_ann_lurl');
+    // Hash of the content (not a stored option/nonce) so the localStorage
+    // dismiss key changes automatically whenever the message/link/schedule is
+    // edited in the Customizer — visitors who dismissed the old bar will see
+    // the updated one instead of it staying hidden forever.
     $ver     = substr(md5((string) $start . (string) $end . $text . $ltext . $lurl), 0, 8);
 
     $cls = 'prt-ann' . ($hideMob ? ' prt-ann--hide-mobile' : '');
@@ -114,5 +150,8 @@ function prt_ann_render()
         echo "<script>(function(){var b=document.querySelector('.prt-ann');if(!b)return;var k='prt-ann-'+b.getAttribute('data-ver');try{if(localStorage.getItem(k)==='1'){b.classList.add('is-hidden');}}catch(e){}var x=b.querySelector('.prt-ann-x');if(x)x.addEventListener('click',function(){b.classList.add('is-hidden');try{localStorage.setItem(k,'1');}catch(e){}});})();</script>";
     }
 }
-add_action('wp_body_open', __NAMESPACE__ . '\\prt_ann_render', 5);
-add_action('get_header', __NAMESPACE__ . '\\prt_ann_render', 5);
+// Hooked to prt_before_header (fires inside #app, right before the site
+// header is included) rather than wp_body_open/get_header, so .prt-ann is a
+// flex child of #app — required for the "Stack order" reorder CSS in
+// app/header-elements.php (.prt-ann{order:...}) to have any effect.
+add_action('prt_before_header', __NAMESPACE__ . '\\prt_ann_render', 5);

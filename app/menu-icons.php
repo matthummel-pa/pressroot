@@ -5,6 +5,17 @@
  * in Appearance -> Menus (the item's "CSS Classes" field):
  *   - prt-ic-<icon>   e.g. "prt-ic-si-github" or "prt-ic-heroicon-o-rocket" prepends that Blade icon.
  *   - prt-mega        makes that item's submenu a wide, multi-column "mega" panel.
+ *
+ * NOTE on `.nav li.prt-mega` below: this only matches the `prt/bar-nav` block's
+ * wp_nav_menu() call (menu_class: 'nav', full depth, in app/bar-blocks.php,
+ * prt_block_bar_nav()) — the only nav render in this theme that both (a) uses
+ * the `.nav` menu_class and (b) doesn't cap `depth`, so it's the only one that
+ * outputs `.sub-menu` markup for this selector to target. The two other menu
+ * renders (header.blade.php's `header-nav-list` primary nav, which also passes
+ * `depth: 1` so it never emits submenu markup at all, and the popout's
+ * `prt-popout-menu`) are NOT affected by this class. If you're not using the
+ * "Bar · Navigation menu" block anywhere, adding `prt-mega` to a menu item's
+ * CSS Classes field will have no visible effect.
  */
 
 namespace App;

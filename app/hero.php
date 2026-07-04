@@ -11,7 +11,12 @@
 
 namespace App;
 
-/** Shared list of animation effects. */
+/**
+ * Shared list of animation effect choices, used to populate both the hero's
+ * "entrance animation" select and the site-wide "scroll animation effect"
+ * select. Single source of truth so the two controls always offer the same
+ * options and their CSS/JS (below) only needs to support one list.
+ */
 function prt_anim_effects()
 {
     return [
@@ -26,10 +31,13 @@ function prt_anim_effects()
     ];
 }
 
+// Registers the "Hero" and "Animations" Customizer sections/controls. Priority
+// 24 puts it after the panel-creating modules that typically run at the
+// default priority, while still creating the panel itself defensively (in
+// case this file loads before any other module that also registers it).
 add_action('customize_register', function ($wp) {
-    if (! $wp->get_panel('prt_theme_options')) {
-        $wp->add_panel('prt_theme_options', ['title' => __('Theme Options', 'pressroot'), 'priority' => 30]);
-    }
+    // Shared guarded helper — see prt_ensure_theme_options_panel() in app/customizer.php.
+    prt_ensure_theme_options_panel($wp);
 
     $sel = function ($id, $label, $choices, $default, $section) use ($wp) {
         $wp->add_setting($id, ['default' => $default, 'sanitize_callback' => 'sanitize_text_field']);
@@ -40,16 +48,23 @@ add_action('customize_register', function ($wp) {
     $wp->add_section('prt_hero_section', [
         'title'       => __('Hero', 'pressroot'),
         'panel'       => 'prt_theme_options',
-        'description' => __('Homepage hero: columns, content position, images, background cover and entrance animation.', 'pressroot'),
+        'description' => __('Columns, content position, images, background cover and entrance animation for the reusable "Hero" block patterns (Inserter -> Patterns -> MH · Heroes) — insert one on any page to use them. The homepage\'s own hero only reads the two copy fields below.', 'pressroot'),
     ]);
 
-    // Editable hero copy (defaults match the built-in text so nothing changes until edited).
-    $wp->add_setting('prt_hero_eyebrow', ['default' => __('Web · WordPress · Power Platform', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
-    $wp->add_control('prt_hero_eyebrow', ['label' => __('Eyebrow (small label above title)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
-    $wp->add_setting('prt_hero_title', ['default' => __('Clean, fast software for the web and Microsoft 365.', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
-    $wp->add_control('prt_hero_title', ['label' => __('Hero title (H1)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'textarea']);
-    $wp->add_setting('prt_hero_subtext', ['default' => __("I'm Matt Hummel, a full-stack developer. I write about web development, WordPress, and the Power Platform, and share the tools I build on GitHub.", 'pressroot'), 'sanitize_callback' => 'sanitize_textarea_field']);
-    $wp->add_control('prt_hero_subtext', ['label' => __('Hero subtext (paragraph)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'textarea']);
+    // Editable homepage hero copy — the homepage (resources/views/partials/home/hero.blade.php)
+    // has its own hand-built layout (not the .prt-hero pattern styled above), so it only reads
+    // these two fields. Defaults match the built-in copy exactly, so nothing changes until edited.
+    // "Eyebrow" isn't included here: the homepage's small badge above the title is the
+    // "Availability" section's own text (prt_avail_text), already editable there.
+    $wp->add_setting('prt_hero_title', ['default' => __("Hi there! I'm Matt — I build", 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_title', [
+        'label'       => __('Homepage headline (opening line)', 'pressroot'),
+        'description' => __('The rest of the sentence ("delightful things for the web.") keeps its two-tone styling and stays fixed.', 'pressroot'),
+        'section'     => 'prt_hero_section',
+        'type'        => 'text',
+    ]);
+    $wp->add_setting('prt_hero_subtext', ['default' => __('Full-stack developer with 15+ years building fast, accessible WordPress & Sage sites and Microsoft Power Platform tools — from Gettysburg, PA.', 'pressroot'), 'sanitize_callback' => 'sanitize_textarea_field']);
+    $wp->add_control('prt_hero_subtext', ['label' => __('Homepage subtext (paragraph)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'textarea']);
 
     $sel('prt_hero_cols', __('Columns', 'pressroot'), ['1' => '1', '2' => '2', '3' => '3'], '1', 'prt_hero_section');
     $sel('prt_hero_align_h', __('Content horizontal position', 'pressroot'), ['left' => __('Left', 'pressroot'), 'center' => __('Center', 'pressroot'), 'right' => __('Right', 'pressroot')], 'center', 'prt_hero_section');
@@ -93,7 +108,14 @@ add_action('customize_register', function ($wp) {
     $sel('prt_scroll_speed', __('Animation speed', 'pressroot'), ['fast' => __('Fast', 'pressroot'), 'normal' => __('Normal', 'pressroot'), 'slow' => __('Slow', 'pressroot')], 'normal', 'prt_anim_section');
 }, 24);
 
-/** No-flash: mark <html> anim-ready early so animated elements only hide when JS will reveal them. */
+/**
+ * No-flash-of-hidden-content guard: adds the `prt-anim` class to <html> as
+ * early as possible (wp_head, priority 3 — before most other head output)
+ * via an inline script, rather than a PHP body class. The animation CSS below
+ * only hides `[data-anim]` elements under `html.prt-anim`, so if JS is
+ * disabled or errors before this runs, content simply never gets the
+ * "hidden" state instead of being stuck invisible forever.
+ */
 add_action('wp_head', function () {
     $heroAnim = get_theme_mod('prt_hero_anim', 'zoom-in');
     if (! get_theme_mod('prt_scroll_enable', true) && $heroAnim === 'none') {
@@ -102,7 +124,13 @@ add_action('wp_head', function () {
     echo "<script>document.documentElement.classList.add('prt-anim');</script>\n";
 }, 3);
 
-/** Hero layout CSS (dynamic from mods). */
+/**
+ * Emits the <style id="prt-hero"> block that turns the Hero Customizer
+ * settings (columns, alignment, image side, background, min-height, etc.)
+ * into actual CSS rules scoped to `.prt-hero`. Hooked on the theme's custom
+ * `prt_head_end` action (not wp_head directly) so it renders alongside the
+ * rest of the theme's dynamic per-page style blocks in one predictable spot.
+ */
 add_action('prt_head_end', function () {
     $cols = max(1, min(3, (int) get_theme_mod('prt_hero_cols', 1)));
     $ah   = get_theme_mod('prt_hero_align_h', 'center');
@@ -225,7 +253,14 @@ add_action('prt_head_end', function () {
     echo "\n<style id=\"prt-hero\">" . $css . "</style>\n";
 }, 16);
 
-/** Animation CSS (initial/hidden states under html.prt-anim). */
+/**
+ * Emits the <style id="prt-anim"> block defining the "hidden"/pre-reveal
+ * state for each `[data-anim="..."]` effect (translate/scale/blur) plus the
+ * `.is-in` state that clears it, keyed off the chosen speed. Everything is
+ * scoped under `html.prt-anim` so it only applies once the no-flash guard
+ * above has confirmed JS is running; also force-disables via
+ * prefers-reduced-motion for users who've asked for less motion.
+ */
 add_action('prt_head_end', function () {
     $heroAnim = get_theme_mod('prt_hero_anim', 'zoom-in');
     if (! get_theme_mod('prt_scroll_enable', true) && $heroAnim === 'none') {
@@ -247,7 +282,16 @@ add_action('prt_head_end', function () {
     echo "\n<style id=\"prt-anim\">" . $css . "</style>\n";
 }, 17);
 
-/** Scroll-reveal engine. */
+/**
+ * Prints the vanilla-JS IntersectionObserver engine that actually reveals
+ * animated elements: tags site-wide sections with `data-anim` (unless
+ * already tagged, e.g. by a block that sets its own effect), reveals the
+ * hero immediately on first paint, and reveals everything else as it
+ * scrolls into view. Hooked late (priority 50) on wp_footer so it runs after
+ * the page's own scripts/markup are already in the DOM. Includes a 3s
+ * failsafe timeout that force-reveals everything in case the observer never
+ * fires (e.g. an unexpected layout keeps elements permanently offscreen).
+ */
 add_action('wp_footer', function () {
     $heroAnim = get_theme_mod('prt_hero_anim', 'zoom-in');
     $enable   = (bool) get_theme_mod('prt_scroll_enable', true);

@@ -10,7 +10,15 @@
 
 namespace App;
 
-/** Start the device flow: ask GitHub for a user code. */
+/**
+ * Step 1 of the Device Flow: request a device_code + user_code pair from
+ * GitHub for the configured OAuth App. The device_code and client_id are kept
+ * server-side in a transient keyed by user ID (never sent to the browser);
+ * only the short-lived user_code and verification URL go back to the admin
+ * screen for the human to enter on github.com. `scope => ''` deliberately
+ * requests no OAuth scopes — this integration only needs the higher
+ * unauthenticated-vs-authenticated GitHub API rate limit, not write access.
+ */
 add_action('wp_ajax_prt_gh_device_start', function () {
     check_ajax_referer('prt_gh_connect', 'nonce');
     if (! current_user_can('manage_options')) {
@@ -50,7 +58,15 @@ add_action('wp_ajax_prt_gh_device_start', function () {
     ]);
 });
 
-/** Poll for the token after the user authorizes on GitHub. */
+/**
+ * Step 2 of the Device Flow: called repeatedly by the admin-screen JS (see
+ * prt_gh_connect_widget() below) while the user authorizes on github.com.
+ * Exchanges the pending device_code for an access token once GitHub reports
+ * authorization is complete; until then it echoes GitHub's "still waiting" /
+ * "slow down" responses back to the poller as a success with a status field,
+ * rather than as an error, so the JS polling loop keeps retrying instead of
+ * giving up.
+ */
 add_action('wp_ajax_prt_gh_device_poll', function () {
     check_ajax_referer('prt_gh_connect', 'nonce');
     if (! current_user_can('manage_options')) {
@@ -93,7 +109,11 @@ add_action('wp_ajax_prt_gh_device_poll', function () {
     wp_send_json_error(['message' => $j['error_description'] ?? $err]);
 });
 
-/** Disconnect: clear the stored token. */
+/**
+ * Disconnect: clear the stored token and any in-flight device-flow transient.
+ * Doesn't call GitHub to revoke the token remotely — it just stops this site
+ * from using it, which is enough since the token was scope-less to begin with.
+ */
 add_action('wp_ajax_prt_gh_disconnect', function () {
     check_ajax_referer('prt_gh_connect', 'nonce');
     if (! current_user_can('manage_options')) {
@@ -104,7 +124,15 @@ add_action('wp_ajax_prt_gh_disconnect', function () {
     wp_send_json_success(['status' => 'disconnected']);
 });
 
-/** Renders the connection widget (called from the admin Projects tab). */
+/**
+ * Renders the connection widget (called from the admin Projects tab): shows
+ * connected state + Disconnect button, or the Connect button plus the setup
+ * instructions and a code/status panel that the inline script below fills in
+ * as the device flow progresses. The JS here (rather than a separate enqueued
+ * asset) drives the whole start -> poll -> reload loop against the AJAX
+ * actions registered above, since this widget is only ever rendered once per
+ * page and doesn't need a shared/cacheable script file.
+ */
 function prt_gh_connect_widget()
 {
     $connected = trim((string) get_theme_mod('prt_gh_token', '')) !== '';

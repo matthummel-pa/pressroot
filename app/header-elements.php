@@ -12,9 +12,8 @@
 namespace App;
 
 add_action('customize_register', function ($wp) {
-    if (! $wp->get_panel('prt_theme_options')) {
-        $wp->add_panel('prt_theme_options', ['title' => __('Theme Options', 'pressroot'), 'priority' => 30]);
-    }
+    // Shared guarded helper — see prt_ensure_theme_options_panel() in app/customizer.php.
+    prt_ensure_theme_options_panel($wp);
     if (! $wp->get_section('prt_nav_section')) {
         $wp->add_section('prt_nav_section', ['title' => __('Navigation', 'pressroot'), 'panel' => 'prt_theme_options']);
     }
@@ -119,10 +118,10 @@ add_action('prt_head_end', function () {
         return '';
     };
     foreach ([
-        'prt_logo_align'     => '.banner .brand',
-        'prt_darkicon_align' => '.banner .prt-theme-toggle',
-        'prt_popbtn_align'   => '.banner .menu-toggle',
-        'prt_cta_align'      => '.banner .header-cta',
+        'prt_logo_align'     => '.site-header .brand',
+        'prt_darkicon_align' => '.site-header .prt-theme-toggle',
+        'prt_popbtn_align'   => '.site-header .menu-toggle',
+        'prt_cta_align'      => '.header-actions .btn-hire',
     ] as $mod => $sel) {
         $m = $map(get_theme_mod($mod, 'none'));
         if ($m !== '') {
@@ -131,15 +130,15 @@ add_action('prt_head_end', function () {
     }
     $sa = $map(get_theme_mod('prt_nav_social_align', 'none'));
     if ($sa !== '') {
-        $css .= '.banner .social{' . $sa . '}';
+        $css .= '.site-header .header-social{' . $sa . '}';
     }
 
     // Hide social icons on mobile (<=640px) per bar.
     if (get_theme_mod('prt_social_nav_hide_mobile', false)) {
-        $css .= '@media(max-width:640px){.banner .social{display:none!important;}}';
+        $css .= '@media(max-width:640px){.site-header .header-social{display:none!important;}}';
     }
     if (get_theme_mod('prt_social_nav_hide_desktop', false)) {
-        $css .= '@media(min-width:641px){.banner .social{display:none!important;}}';
+        $css .= '@media(min-width:641px){.site-header .header-social{display:none!important;}}';
     }
     if (get_theme_mod('prt_social_top_hide_mobile', false)) {
         $css .= '@media(max-width:640px){.top-bar-social{display:none!important;}}';
@@ -148,58 +147,29 @@ add_action('prt_head_end', function () {
         $css .= '@media(max-width:640px){.top-bar-cta{display:none!important;}}';
     }
     if (get_theme_mod('prt_navcta_hide_mobile', false)) {
-        $css .= '@media(max-width:640px){.banner .header-cta{display:none!important;}}';
+        $css .= '@media(max-width:640px){.header-actions .btn-hire{display:none!important;}}';
     }
     if (get_theme_mod('prt_navcta_hide_tablet', false)) {
-        $css .= '@media(min-width:641px) and (max-width:1024px){.banner .header-cta{display:none!important;}}';
+        $css .= '@media(min-width:641px) and (max-width:1024px){.header-actions .btn-hire{display:none!important;}}';
     }
     if (get_theme_mod('prt_topbar_oneline_tablet', false)) {
         $css .= '@media(min-width:641px) and (max-width:1024px){.top-bar-inner{flex-wrap:nowrap;gap:12px;}.top-bar-contact{flex-wrap:nowrap;white-space:nowrap;}}';
     }
     if (get_theme_mod('prt_logo_shrink_mobile', false)) {
         $css .= '@media(max-width:640px){'
-            . '.banner{gap:14px;}'
-            . '.banner .brand{gap:8px;}'
-            . '.banner .brand-mark svg{width:30px;height:30px;border-radius:8px;}'
-            . '.banner .brand-name{font-size:16px;}'
-            . '.banner .brand small{display:none;}'
+            . '.site-header-inner{gap:14px;}'
+            . '.site-header .brand{gap:8px;}'
+            . '.site-header .brand-mark svg{width:30px;height:30px;border-radius:8px;}'
+            . '.site-header .brand-name{font-size:16px;}'
             . '}';
     }
     if (get_theme_mod('prt_menu_label_hide_mobile', false)) {
         $css .= '@media(max-width:640px){.menu-toggle .menu-toggle-label{display:none;}.menu-toggle{gap:0;}}';
     }
 
-    // Icon styling for header social links (only when display = icons).
-    if (get_theme_mod('prt_social_style', 'icons') === 'icons') {
-        $size  = max(10, absint(get_theme_mod('prt_social_size', 18)));
-        $shape = get_theme_mod('prt_social_shape', 'none');
-        $color = sanitize_hex_color(get_theme_mod('prt_social_color', ''));
-        $bg    = sanitize_hex_color(get_theme_mod('prt_social_bg', ''));
-        $hover = sanitize_hex_color(get_theme_mod('prt_social_hover', ''));
-        $chip  = $shape !== 'none';
-        $pad   = $chip ? max(5, (int) round($size * 0.5)) : 0;
-        $radius = $shape === 'circle' ? '50%' : ($shape === 'rounded' ? (string) max(4, (int) round($size * 0.35)) . 'px' : '0');
-        // Distribute each suffix across BOTH base selectors. Appending e.g. " a svg"
-        // to a comma-grouped base only qualifies the LAST member, so the first
-        // (".top-bar-social.is-icons", the <ul>) would match bare and inherit the
-        // descendant's display:block — collapsing the list to a stack. This helper
-        // keeps every rule scoped to the intended element on both bars.
-        $bases = ['.top-bar-social.is-icons', '.social.is-icons'];
-        $grp = function ($suffix) use ($bases) {
-            return implode(',', array_map(static function ($b) use ($suffix) {
-                return $b . $suffix;
-            }, $bases));
-        };
-        $css .= $grp('') . '{display:inline-flex;align-items:center;gap:' . ($chip ? '8' : '14') . 'px;list-style:none;margin:0;padding:0;}';
-        $css .= $grp(' li') . '{margin:0;list-style:none;}';
-        $css .= $grp(' a') . '{display:inline-flex;align-items:center;justify-content:center;padding:' . $pad . 'px;border-radius:' . $radius . ';transition:color .15s ease,background .15s ease,transform .15s ease;'
-            . ($color ? 'color:' . $color . ';' : 'color:currentColor;')
-            . ($chip && $bg ? 'background:' . $bg . ';' : '') . '}';
-        $css .= $grp(' a svg') . '{width:' . $size . 'px;height:' . $size . 'px;fill:currentColor;display:block;}';
-        if ($hover) {
-            $css .= $grp(' a:hover') . '{color:' . $hover . ';transform:translateY(-1px);}';
-        }
-    }
+    // Social icon design (size/shape/color/gap/border/custom CSS) is handled
+    // centrally for every location — header, footer, popout, and this bar —
+    // in app/social-icon-style.php, so the rules aren't duplicated here.
 
     // Reorder the three top bars (only when changed from default 1/2/3).
     $ann = absint(get_theme_mod('prt_bar_ann', 1));
@@ -208,7 +178,7 @@ add_action('prt_head_end', function () {
     if (! ($ann === 1 && $top === 2 && $nav === 3)) {
         $css .= '#app{display:flex;flex-direction:column;}';
         $css .= '#app > a:first-child{order:-10;}';
-        $css .= '.prt-ann{order:' . $ann . ';}.top-bar{order:' . $top . ';}.banner{order:' . $nav . ';}';
+        $css .= '.prt-ann{order:' . $ann . ';}.top-bar{order:' . $top . ';}.site-header{order:' . $nav . ';}';
         $css .= '.prt-popout-overlay,#prt-popout{order:0;}';
         $css .= '.main-wrap{order:90;}.content-info{order:91;}';
     }
@@ -261,9 +231,9 @@ add_action('prt_head_end', function () {
         $css .= '.prt-ann .prt-ann-inner{' . $mw . '}';
     }
 
-    // Per-breakpoint bar widths (tablet 641–1024px, mobile ≤640px). Navbar = .banner.
+    // Per-breakpoint bar widths (tablet 641–1024px, mobile ≤640px). Navbar = .site-header-inner.
     $tabletW = '';
-    foreach ([['prt_topbar_width_tablet', '.top-bar .top-bar-inner'], ['prt_nav_width_tablet', '.banner'], ['prt_msgbar_width_tablet', '.prt-ann .prt-ann-inner']] as $r) {
+    foreach ([['prt_topbar_width_tablet', '.top-bar .top-bar-inner'], ['prt_nav_width_tablet', '.site-header-inner'], ['prt_msgbar_width_tablet', '.prt-ann .prt-ann-inner']] as $r) {
         $v = $bw(get_theme_mod($r[0], '0'));
         if ($v !== '') {
             $tabletW .= $r[1] . '{' . $v . '}';
@@ -273,7 +243,7 @@ add_action('prt_head_end', function () {
         $css .= '@media(min-width:641px) and (max-width:1024px){' . $tabletW . '}';
     }
     $mobileW = '';
-    foreach ([['prt_topbar_width_mobile', '.top-bar .top-bar-inner'], ['prt_nav_width_mobile', '.banner'], ['prt_msgbar_width_mobile', '.prt-ann .prt-ann-inner']] as $r) {
+    foreach ([['prt_topbar_width_mobile', '.top-bar .top-bar-inner'], ['prt_nav_width_mobile', '.site-header-inner'], ['prt_msgbar_width_mobile', '.prt-ann .prt-ann-inner']] as $r) {
         $v = $bw(get_theme_mod($r[0], '0'));
         if ($v !== '') {
             $mobileW .= $r[1] . '{' . $v . '}';
@@ -284,18 +254,23 @@ add_action('prt_head_end', function () {
     }
 
     // Tablet: push the menu (popout) button to the right edge so its inset mirrors
-    // the logo's left padding (both sit at the banner's 28px side padding).
+    // the logo's left padding (both sit at the header's 28px side padding).
     $css .= '@media(min-width:641px) and (max-width:1024px){'
-        . '.banner .brand{margin-right:auto;}'
-        . '.banner .menu-toggle{margin-left:0;padding-right:0;}'
+        . '.site-header .brand{margin-right:auto;}'
+        . '.site-header .menu-toggle{margin-left:0;padding-right:0;}'
         . '}';
 
-    // Base styling for blocks placed in the bars (only when those areas are in use).
-    if (is_active_sidebar('topbar') || is_active_sidebar('messagebar') || is_active_sidebar('navbar')) {
-        $css .= '.top-bar-blocks,.prt-ann-blocks,.nav-blocks{display:inline-flex;align-items:center;gap:14px;}'
-            . '.top-bar-blocks *,.prt-ann-blocks *,.nav-blocks *{color:inherit;}'
-            . '.nav-blocks{margin-left:8px;}';
-    }
+    // Base styling for blocks placed in the bars. This used to be gated behind
+    // is_active_sidebar('topbar' | 'messagebar' | 'navbar'), but those sidebar
+    // IDs are never registered anywhere in the theme (see the comment below,
+    // "the top bar, message bar, and navigation bar are configured via Theme
+    // Options, not widgets") — so that check was always false and this CSS
+    // never actually shipped. The bar-item blocks (prt/bar-social, prt/bar-cta,
+    // etc. in app/bar-blocks.php) can be placed directly in the bars via the
+    // block editor without any widget area, so the rules are now unconditional.
+    $css .= '.top-bar-blocks,.prt-ann-blocks,.nav-blocks{display:inline-flex;align-items:center;gap:14px;}'
+        . '.top-bar-blocks *,.prt-ann-blocks *,.nav-blocks *{color:inherit;}'
+        . '.nav-blocks{margin-left:8px;}';
 
     if ($css !== '') {
         echo "\n<style id=\"prt-header-elements\">" . $css . "</style>\n";
@@ -317,7 +292,7 @@ add_action('customize_preview_init', function () {
                         el.id = 'prt-nav-social-pos';
                         document.head.appendChild(el);
                     }
-                    el.textContent = alignMap[val] ? '.banner .social{' + alignMap[val] + '}' : '';
+                    el.textContent = alignMap[val] ? '.site-header .header-social{' + alignMap[val] + '}' : '';
                 });
             });
         })();"

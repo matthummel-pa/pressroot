@@ -18,12 +18,16 @@
         {{ __('Skip to content', 'pressroot') }}
       </a>
 
+      @php(do_action('prt_before_header'))
       @include('sections.header')
+      @php(do_action('prt_after_header'))
 
       @php($mhLayout = \App\prt_active_layout())
       <div class="main-wrap @if ($mhLayout['sidebar']) main-wrap--sidebar @endif">
         <main id="main" class="main">
+          @php(do_action('prt_before_content'))
           @yield('content')
+          @php(do_action('prt_after_content'))
         </main>
 
         @if ($mhLayout['sidebar'])
@@ -43,7 +47,9 @@
         </aside>
       @endif
 
+      @php(do_action('prt_before_footer'))
       @include('sections.footer')
+      @php(do_action('prt_after_footer'))
     </div>
 
     @php(do_action('get_footer'))

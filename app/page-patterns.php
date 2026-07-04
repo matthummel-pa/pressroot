@@ -1,16 +1,23 @@
 <?php
 
 /**
- * Full-page block patterns for the main pages only.
+ * Full-page block patterns for the main pages.
  *
  * Provides ONE curated "— Full page" pattern per main page: Home (see
  * home-patterns.php), Services, Pricing, About, Contact, Blog, and Single Post.
  * Built from WordPress CORE blocks (headings, paragraphs, buttons, details) for
  * editable text + the theme's DYNAMIC blocks (prt/skills-grid, prt/post-grid,
- * prt/cta-band, …) for the live/structured sections. A late cleanup pass
- * (init:99) unregisters every other pattern so the inserter stays focused.
+ * prt/cta-band, …) for the live/structured sections.
  *
- * Insert from the editor: Patterns → Matt Hummel.
+ * These full-page patterns sit ALONGSIDE the smaller section-level patterns
+ * registered in block-patterns.php, patterns-extra.php, sections-library.php,
+ * and blocks.php — all under the "pressroot" (or "MH ·") categories in the
+ * inserter, so a site builder can start from a full page or assemble one from
+ * individual sections. (A previous version of this file unregistered every
+ * one of those section patterns on every page load — that's been removed; see
+ * the note below the $keep array.)
+ *
+ * Insert from the editor: Patterns → Matt Hummel / MH ·.
  */
 
 namespace App;
@@ -291,39 +298,38 @@ add_action('init', function () {
 }, 12);
 
 /**
- * Keep the inserter focused: after everything registers, unregister every
- * pattern and pattern category EXCEPT the curated main-page set, and turn off
- * WordPress core + remote patterns.
+ * Late cleanup pass — runs after every pattern file has registered on `init`.
+ *
+ * IMPORTANT: this used to unregister EVERY pattern in the theme except the 12
+ * curated "— Full page" patterns above, on every single page load. That
+ * silently deleted ~27 working section-level patterns (heroes, CTAs, pricing,
+ * testimonials, stat strips, etc. — from block-patterns.php, patterns-extra.php,
+ * sections-library.php, and blocks.php) before a real user ever saw them in the
+ * inserter. For a theme meant to be a flexible page-building toolkit for
+ * developers/agencies, that's the opposite of what we want — more prebuilt
+ * sections is more product value, not clutter. Removed.
+ *
+ * What's still worth doing here: drop the two "matthummel/about-page" and
+ * "matthummel/resume-page" patterns in block-patterns.php — they're an older,
+ * simpler draft of what "matthummel/about-full" and "matthummel/resume-full"
+ * (above) now do better, so keeping both would just confuse a site owner
+ * choosing between two "full About page" options in the inserter. Genuinely
+ * superseded duplicates like these are worth unregistering explicitly, by
+ * name, rather than via a blanket purge.
  */
 add_action('init', function () {
-    $keep = [
-        'matthummel/home-full',
-        'matthummel/services-full',
-        'matthummel/pricing-full',
-        'matthummel/about-full',
-        'matthummel/contact-full',
-        'matthummel/projects-full',
-        'matthummel/resume-full',
-        'matthummel/resources-full',
-        'matthummel/now-full',
-        'matthummel/legal-full',
-        'matthummel/blog-full',
-        'matthummel/single-post',
-    ];
-
-    if (class_exists('WP_Block_Patterns_Registry')) {
-        foreach (\WP_Block_Patterns_Registry::get_instance()->get_all_registered() as $pat) {
-            $name = $pat['name'] ?? '';
-            // Drop all of this theme's other patterns (home/section/legacy/extra).
-            if (strpos($name, 'matthummel/') === 0 && ! in_array($name, $keep, true)) {
-                unregister_block_pattern($name);
-            }
+    foreach (['matthummel/about-page', 'matthummel/resume-page'] as $superseded) {
+        if (function_exists('unregister_block_pattern')) {
+            unregister_block_pattern($superseded);
         }
     }
 
-    // Remove now-empty per-page categories.
+    // Per-page categories (prt-home, prt-about, etc.) registered in
+    // home-patterns.php were designed for patterns that were never actually
+    // assigned to them (see the comment there) — they're empty by design, so
+    // remove them here rather than clutter the inserter with 0-pattern groups.
     foreach (['prt-home', 'prt-about', 'prt-resume', 'prt-resources', 'prt-contact', 'prt-sections'] as $cat) {
-        if (\WP_Block_Pattern_Categories_Registry::get_instance()->is_registered($cat)) {
+        if (class_exists('WP_Block_Pattern_Categories_Registry') && \WP_Block_Pattern_Categories_Registry::get_instance()->is_registered($cat)) {
             unregister_block_pattern_category($cat);
         }
     }

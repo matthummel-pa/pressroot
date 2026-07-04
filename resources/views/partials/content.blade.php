@@ -1,3 +1,4 @@
+@php(do_action('prt_before_post_card', get_the_ID()))
 <article @php(post_class('post-card'))>
   <p class="post-meta">
     <time datetime="{{ get_post_time('c', true) }}">{{ get_the_date() }}</time>
@@ -16,3 +17,4 @@
     {{ __('Read more', 'sage') }} <span aria-hidden="true">&rarr;</span>
   </a>
 </article>
+@php(do_action('prt_after_post_card', get_the_ID()))

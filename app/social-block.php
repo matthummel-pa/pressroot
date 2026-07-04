@@ -15,6 +15,7 @@ function prt_social_block_attrs()
     return [
         'source'      => ['type' => 'string', 'default' => 'site'],     // site | custom
         'customLinks' => ['type' => 'string', 'default' => ''],          // "network|url" per line
+        'matchSite'   => ['type' => 'boolean', 'default' => false],      // inherit Customizer -> Social Icons design
         'size'        => ['type' => 'number', 'default' => 22],
         'gap'         => ['type' => 'number', 'default' => 12],
         'shape'       => ['type' => 'string', 'default' => 'circle'],    // none|circle|rounded|square
@@ -31,11 +32,14 @@ function prt_social_block_attrs()
 
 add_action('init', function () {
     // Editor script (plain JS, no build step) — uses global wp.* packages.
+    // Guard filemtime() with file_exists(): a missing file would otherwise throw
+    // a PHP warning here (matches the pattern used by every other block file).
+    $editorScriptPath = 'resources/js/social-block-editor.js';
     wp_register_script(
         'prt-social-block',
-        get_theme_file_uri('resources/js/social-block-editor.js'),
+        get_theme_file_uri($editorScriptPath),
         ['wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-server-side-render', 'wp-i18n'],
-        filemtime(get_theme_file_path('resources/js/social-block-editor.js')),
+        file_exists(get_theme_file_path($editorScriptPath)) ? filemtime(get_theme_file_path($editorScriptPath)) : '1',
         true
     );
 
@@ -105,17 +109,37 @@ function prt_social_block_render($attrs, $content = '')
         return '';
     }
 
-    $size  = max(10, absint($a['size']));
-    $gap   = max(0, absint($a['gap']));
-    $shape = in_array($a['shape'], ['none', 'circle', 'rounded', 'square'], true) ? $a['shape'] : 'circle';
-    $style = $a['iconStyle'] === 'brand' ? 'brand' : 'mono';
-    $align = in_array($a['align'], ['left', 'center', 'right'], true) ? $a['align'] : 'left';
+    $align  = in_array($a['align'], ['left', 'center', 'right'], true) ? $a['align'] : 'left';
     $newTab = ! empty($a['newTab']);
+    $matchSite = ! empty($a['matchSite']);
 
-    $color = sanitize_hex_color($a['color']);
-    $bg    = sanitize_hex_color($a['bg']);
-    $hc    = sanitize_hex_color($a['hoverColor']);
-    $hb    = sanitize_hex_color($a['hoverBg']);
+    if ($matchSite) {
+        // Inherit the site-wide design set in Customizer -> Theme Options ->
+        // Social Icons, so this block always matches the header/footer/popout
+        // icons even if that design changes later.
+        $d     = prt_social_design();
+        $size  = $d['size'];
+        $gap   = $d['gap'];
+        $shape = $d['shape'];
+        $style = $d['style'];
+        $color = $d['color'];
+        $bg    = $d['bg'];
+        $hc    = $d['hover'];
+        $hb    = $d['hoverBg'];
+        $bw    = $d['bw'];
+        $bc    = $d['bc'];
+    } else {
+        $size  = max(10, absint($a['size']));
+        $gap   = max(0, absint($a['gap']));
+        $shape = in_array($a['shape'], ['none', 'circle', 'rounded', 'square'], true) ? $a['shape'] : 'circle';
+        $style = $a['iconStyle'] === 'brand' ? 'brand' : 'mono';
+        $color = sanitize_hex_color($a['color']);
+        $bg    = sanitize_hex_color($a['bg']);
+        $hc    = sanitize_hex_color($a['hoverColor']);
+        $hb    = sanitize_hex_color($a['hoverBg']);
+        $bw    = 0;
+        $bc    = 'currentColor';
+    }
 
     $chip = $shape !== 'none';
     $pad  = $chip ? max(6, (int) round($size * 0.55)) : 0;
@@ -131,7 +155,9 @@ function prt_social_block_render($attrs, $content = '')
     $uid = 'prt-sl-' . wp_unique_id();
 
     $css  = "#{$uid}{display:flex;flex-wrap:wrap;align-items:center;gap:{$gap}px;justify-content:{$justify};margin:0;padding:0;list-style:none;}";
-    $css .= "#{$uid} .prt-sl-item{display:inline-flex;align-items:center;justify-content:center;line-height:0;text-decoration:none;padding:{$pad}px;border-radius:{$radius};transition:transform .15s ease,background .15s ease,color .15s ease;}";
+    $css .= "#{$uid} .prt-sl-item{display:inline-flex;align-items:center;justify-content:center;line-height:0;text-decoration:none;padding:{$pad}px;border-radius:{$radius};transition:transform .15s ease,background .15s ease,color .15s ease,border-color .15s ease;"
+        . ($bw > 0 ? "border:{$bw}px solid {$bc};" : '')
+        . '}';
     $css .= "#{$uid} .prt-sl-item svg{width:{$size}px;height:{$size}px;fill:currentColor;display:block;}";
     if ($style === 'mono') {
         $css .= "#{$uid} .prt-sl-item{color:{$baseColor};background:{$baseBg};}";

@@ -10,6 +10,13 @@
 
 namespace App;
 
+/**
+ * Registry mapping each `prt/bar-*` block slug to its editor label, Dashicon,
+ * and PHP render callback. Single source of truth consumed both by the
+ * `init` registration below (server) and, via wp_localize_script(), by the
+ * JS block registration in resources/js/bar-blocks-editor.js (editor UI) —
+ * so a new bar block only needs to be added here once.
+ */
 function prt_bar_blocks_defs()
 {
     return [
@@ -22,6 +29,10 @@ function prt_bar_blocks_defs()
     ];
 }
 
+// Registers the editor script once and each `prt/bar-*` block's server-side
+// render callback. Priority 12 (after the default 10) so it runs after any
+// earlier `init` callbacks that register the block category/patterns these
+// blocks may depend on.
 add_action('init', function () {
     $path = 'resources/js/bar-blocks-editor.js';
     wp_register_script(
@@ -44,13 +55,23 @@ add_action('init', function () {
     wp_localize_script('prt-bar-blocks', 'mhBarBlocks', $list);
 }, 12);
 
-/** Empty-state note (only shown inside the editor preview). */
+/**
+ * Renders a muted italic hint explaining why a bar block is empty, but only
+ * during the editor's server-side-render REST preview — never on the front
+ * end, where an unconfigured block should render as nothing (not a visible
+ * placeholder message for site visitors).
+ */
 function prt_bar_rest_note($msg)
 {
     return (defined('REST_REQUEST') && REST_REQUEST) ? '<span style="opacity:.6;font-style:italic">' . esc_html($msg) . '</span>' : '';
 }
 
-/** Social links — mirrors the header social style settings. */
+/**
+ * Render callback for prt/bar-social. Pulls the same links as the header
+ * (prt_social_links(), defined in menu.php) and honors the site-wide
+ * icons-vs-text toggle (prt_social_style) so this block never drifts out of
+ * sync with the Customizer settings it's meant to mirror.
+ */
 function prt_block_bar_social()
 {
     $links = function_exists('App\\prt_social_links') ? prt_social_links() : [];
@@ -66,7 +87,11 @@ function prt_block_bar_social()
     return $out . '</ul>';
 }
 
-/** Header CTA button (honors the show-button toggle). */
+/**
+ * Render callback for prt/bar-cta. Reads the same CTA text/URL settings the
+ * header uses and respects the "show CTA" toggle so the block can be turned
+ * off from the Customizer without editing the page/template.
+ */
 function prt_block_bar_cta()
 {
     if (! get_theme_mod('prt_show_cta', true)) {
@@ -80,7 +105,11 @@ function prt_block_bar_cta()
     return '<a class="btn header-cta" href="' . esc_url($u) . '">' . esc_html($t) . '</a>';
 }
 
-/** Announcement message + link. */
+/**
+ * Render callback for prt/bar-message. Surfaces the Announcement Bar text
+ * and optional link set in the Customizer; renders nothing if no message is
+ * configured so the block never leaves stray markup on the front end.
+ */
 function prt_block_bar_message()
 {
     $t = (string) get_theme_mod('prt_ann_text', '');
@@ -96,7 +125,11 @@ function prt_block_bar_message()
     return $out;
 }
 
-/** Site logo (custom logo or site name). */
+/**
+ * Render callback for prt/bar-logo. Falls back to the site name as a text
+ * link when no custom logo is set, so the block is never empty even on a
+ * freshly-installed site.
+ */
 function prt_block_bar_logo()
 {
     if (function_exists('has_custom_logo') && has_custom_logo()) {
@@ -105,7 +138,11 @@ function prt_block_bar_logo()
     return '<a class="brand-name" href="' . esc_url(home_url('/')) . '" rel="home">' . esc_html(get_bloginfo('name')) . '</a>';
 }
 
-/** Primary navigation menu. */
+/**
+ * Render callback for prt/bar-nav. Wraps wp_nav_menu() for the
+ * 'primary_navigation' location; shows an editor-only hint if no menu is
+ * assigned yet (Appearance -> Menus) instead of failing silently.
+ */
 function prt_block_bar_nav()
 {
     if (! has_nav_menu('primary_navigation')) {
@@ -114,7 +151,11 @@ function prt_block_bar_nav()
     return wp_nav_menu(['theme_location' => 'primary_navigation', 'menu_class' => 'nav', 'echo' => false, 'container' => false]);
 }
 
-/** Top bar contact text. */
+/**
+ * Render callback for prt/bar-contact. Outputs the free-text "contact"
+ * string configured under Customizer -> Top Bar (e.g. a phone number or
+ * email), allowed to contain basic HTML via wp_kses_post().
+ */
 function prt_block_bar_contact()
 {
     $c = (string) get_theme_mod('prt_topbar_contact', '');

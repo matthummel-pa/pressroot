@@ -7,7 +7,7 @@
 @if($recent)
 <section class="prt-wrap" style="padding-top:80px; padding-bottom:30px;">
   <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:32px;">
-    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0; color:#1B1830;">Latest writing</h2>
+    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0; color:var(--color-h2, var(--color-ink));">Latest writing</h2>
     <a href="{{ get_permalink(get_option('page_for_posts')) ?: '#blog' }}" style="text-decoration:none; font-weight:700; color:#7C5CFF; font-size:16px;">All posts →</a>
   </div>
   <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
@@ -20,7 +20,7 @@
         <div style="font-family:var(--font-mono); font-size:12px; color:{{ $tints[$i % 3] }}; margin-bottom:8px;">
           {{ $cat ? strtoupper($cat[0]->name) : 'POST' }} · {{ strtoupper(get_the_date('M Y', $post)) }}
         </div>
-        <h3 style="font-family:var(--font-display); font-weight:700; font-size:20px; margin:0 0 8px; line-height:1.25; color:#1B1830;">{{ get_the_title($post) }}</h3>
+        <h3 style="font-family:var(--font-display); font-weight:700; font-size:20px; margin:0 0 8px; line-height:1.25; color:var(--color-h3, var(--color-ink));">{{ get_the_title($post) }}</h3>
         <p style="font-size:14.5px; color:#5A5676; line-height:1.5; margin:0;">{{ wp_trim_words(get_the_excerpt($post), 16) }}</p>
       </a>
     @endforeach

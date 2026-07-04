@@ -5,10 +5,22 @@
  *  - prt/icon       : insert any Blade icon by name (Simple Icons, Heroicons, Lucide, local prt-).
  *  - prt/post-grid  : query posts or projects into a responsive card grid.
  * Server-rendered (render_callback) with plain-JS editors (ServerSideRender previews).
+ *
+ * "Dynamic" here means the block markup is generated in PHP on every render
+ * (via render_callback) rather than saved as static HTML in post_content, so
+ * editing the render function or theme styles updates every existing usage
+ * of the block with no re-saving needed. The block editor UI for both blocks
+ * is plain JS (not React/JSX build step) using wp.serverSideRender to preview
+ * the real PHP output, keeping this file framework-independent.
  */
 
 namespace App;
 
+/**
+ * Attribute schema for prt/icon. Defines both the block.json-equivalent
+ * attributes (for register_block_type) and doubles as the source of default
+ * values used by prt_icon_block_render() when attrs are missing.
+ */
 function prt_icon_block_attrs()
 {
     return [
@@ -20,6 +32,11 @@ function prt_icon_block_attrs()
     ];
 }
 
+/**
+ * Attribute schema for prt/post-grid, covering both which content to query
+ * (postType/count/orderby/order/term) and which card fields to show
+ * (showImage/showExcerpt/showDate/showCategory).
+ */
 function prt_postgrid_attrs()
 {
     return [
@@ -36,9 +53,19 @@ function prt_postgrid_attrs()
     ];
 }
 
+/**
+ * Register the editor scripts and the two block types on `init` (the
+ * standard WordPress hook for register_block_type/register_post_type calls).
+ * Priority 11 to run after anything at the default priority (10) that might
+ * need to exist first, e.g. prt_full_block_supports() below being defined by
+ * whichever file declares it having already hooked its own init callback.
+ */
 add_action('init', function () {
     foreach (['prt-icon-block' => 'icon', 'prt-postgrid-block' => 'postgrid'] as $handle => $slug) {
         $path = "resources/js/{$handle}-editor.js";
+        // filemtime as the version string busts the browser cache on every
+        // deploy without needing a manual version bump; falls back to '1' if
+        // the file is missing so this never throws during local dev.
         wp_register_script(
             $handle,
             get_theme_file_uri($path),
@@ -62,12 +89,20 @@ add_action('init', function () {
         'editor_script'   => 'prt-postgrid-block',
         'attributes'      => prt_postgrid_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_postgrid_render',
+        // Prefer the theme-wide supports helper (shared "wide/full align + margin/padding"
+        // config used by other blocks) if it's loaded; otherwise fall back to an inline
+        // equivalent so this block still registers correctly on its own.
         'supports'        => function_exists('App\\prt_full_block_supports') ? prt_full_block_supports() : ['align' => ['wide', 'full'], 'spacing' => ['margin' => true, 'padding' => true]],
         'example'         => ['attributes' => ['postType' => 'post', 'count' => 3, 'columns' => 3, 'showCategory' => true], 'viewportWidth' => 1000],
     ]);
 }, 11);
 
-/** Render: single icon. */
+/**
+ * render_callback for prt/icon: outputs a single inline SVG icon wrapped in a
+ * flex container so alignment/size/color are controlled without editing CSS.
+ * Attribute values are re-validated here (not just trusted from the editor)
+ * since render_callback also runs for content pasted/imported from elsewhere.
+ */
 function prt_icon_block_render($attrs)
 {
     $d = [];
@@ -76,6 +111,10 @@ function prt_icon_block_render($attrs)
     }
     $a = wp_parse_args($attrs, $d);
 
+    // Icon names follow the "<set>-<variant>-<icon>" convention (e.g.
+    // heroicon-o-sparkles), so only letters/digits/dashes are ever valid;
+    // stripping anything else prevents the name reaching prt_icon() (which
+    // resolves it into a Blade include path) from being used for path traversal.
     $name  = preg_replace('/[^a-z0-9\-]/i', '', (string) $a['name']);
     $size  = max(12, absint($a['size']));
     $color = sanitize_hex_color($a['color']);
@@ -90,7 +129,13 @@ function prt_icon_block_render($attrs)
     return '<div class="wp-block-prt-icon" style="' . esc_attr($style) . '"><span class="prt-icon-wrap" style="' . esc_attr($istyle) . '"' . $aria . '>' . $svg . '</span></div>';
 }
 
-/** Render: post/project grid. */
+/**
+ * render_callback for prt/post-grid: runs a WP_Query for the configured post
+ * type and prints a responsive CSS-grid of cards. CSS is emitted inline
+ * (scoped to a unique per-instance id) instead of a stylesheet because each
+ * placement can have a different column count, and this keeps the block
+ * fully self-contained with no separate enqueue/build step.
+ */
 function prt_postgrid_render($attrs)
 {
     $d = [];
@@ -126,11 +171,19 @@ function prt_postgrid_render($attrs)
 
     if (! $q->have_posts()) {
         wp_reset_postdata();
+        // The block editor's ServerSideRender preview calls this render_callback
+        // over the REST API, so an empty return there would look like a broken/
+        // blank preview with no feedback. On the front end (no REST_REQUEST) an
+        // empty string is preferred so an unmatched filter doesn't show placeholder
+        // text to real visitors.
         return (defined('REST_REQUEST') && REST_REQUEST)
             ? '<p style="opacity:.7;font-style:italic">' . esc_html__('No items found for this post type.', 'pressroot') . '</p>'
             : '';
     }
 
+    // Unique DOM id per block instance so the grid's column count and card
+    // styles are scoped with a plain <style> tag instead of a class collision
+    // when multiple post-grid blocks with different settings appear on one page.
     $uid = 'prt-pg-' . wp_unique_id();
     $css = "#{$uid}{display:grid;grid-template-columns:repeat({$cols},1fr);gap:20px;}"
         . "@media(max-width:900px){#{$uid}{grid-template-columns:repeat(2,1fr);}}"

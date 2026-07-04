@@ -11,6 +11,12 @@
 
 namespace App;
 
+/**
+ * Where self-hosted font files and the generated stylesheet live: a
+ * dedicated prt-fonts folder inside wp-content/uploads/ (not inside the theme
+ * folder), so downloaded fonts survive a theme update/reinstall and don't
+ * need to be write-protected the way theme files typically are.
+ */
 function prt_fonts_paths()
 {
     $up = wp_upload_dir();
@@ -20,7 +26,15 @@ function prt_fonts_paths()
     ];
 }
 
-/** name => css2 family slug, for every font currently in use + the defaults + mono. */
+/**
+ * Builds the list of families to download: name => css2 family slug (the
+ * query-string fragment Google's css2 endpoint expects), for every font
+ * currently selected in the Customizer (heading/body/nav/button) plus the
+ * theme's hardcoded defaults (Geist, Inter) and the mono font used for code
+ * blocks. Always including the defaults means switching away from a custom
+ * font and back doesn't require re-downloading; JetBrains Mono is added
+ * unconditionally since code-highlight.php can't self-host its own font.
+ */
 function prt_fonts_to_host()
 {
     $fonts = function_exists('App\\prt_fonts') ? prt_fonts() : [];
@@ -41,11 +55,19 @@ function prt_fonts_to_host()
     return $slugs;
 }
 
-/** Admin page. */
+/** Registers the Appearance -> Local Fonts admin page. */
 add_action('admin_menu', function () {
     add_theme_page(__('Local Fonts', 'pressroot'), __('Local Fonts', 'pressroot'), 'manage_options', 'prt-local-fonts', __NAMESPACE__ . '\\prt_fonts_page');
 });
 
+/**
+ * Renders the Local Fonts admin page: current cache status, the families
+ * that will be downloaded, a "download/re-download" button (admin-post ->
+ * prt_build_fonts), and a toggle to actually start serving the local copy
+ * (admin-post -> prt_toggle_fonts). The toggle is disabled until a build has
+ * completed at least once, so a site can't switch on self-hosting before any
+ * font files actually exist to serve.
+ */
 function prt_fonts_page()
 {
     if (! current_user_can('manage_options')) {
@@ -105,7 +127,15 @@ function prt_fonts_page()
     <?php
 }
 
-/** Download handler. */
+/**
+ * Download handler: for each family in prt_fonts_to_host(), fetches Google's
+ * css2 stylesheet, rewrites every gstatic woff2 URL to point at a locally
+ * downloaded copy (fetching + caching that file on disk if it isn't already
+ * present, keyed by an md5 of the source URL so re-runs skip files already
+ * downloaded), and concatenates the results into one fonts.css. That combined
+ * file is what prt-local-fonts serves on the front end once self-hosting is
+ * enabled below.
+ */
 add_action('admin_post_prt_build_fonts', function () {
     if (! current_user_can('manage_options') || ! check_admin_referer('prt_build_fonts')) {
         wp_die('Not allowed');
@@ -116,6 +146,10 @@ add_action('admin_post_prt_build_fonts', function () {
         exit;
     }
 
+    // Google's css2 endpoint serves modern woff2 @font-face rules only to
+    // browser-like User-Agents; WordPress's default HTTP API UA gets served
+    // an older/less complete CSS format instead. Spoofing a Chrome UA here
+    // guarantees we always get the woff2 URLs the regex below expects.
     $ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
     $css_all = "/* Self-hosted by the matthummel theme. Do not edit; regenerate from Appearance -> Local Fonts. */\n";
     $count = 0;
@@ -131,6 +165,8 @@ add_action('admin_post_prt_build_fonts', function () {
             continue;
         }
         $css = wp_remote_retrieve_body($r);
+        // Rewrite each url(https://fonts.gstatic.com/.../*.woff2) reference to
+        // the local copy, downloading it first if we haven't cached it yet.
         $css = preg_replace_callback('#url\((https://fonts\.gstatic\.com/[^)]+\.woff2)\)#', function ($m) use ($paths, &$count, &$ok) {
             $url  = $m[1];
             $file = md5($url) . '.woff2';
@@ -158,7 +194,13 @@ add_action('admin_post_prt_build_fonts', function () {
     exit;
 });
 
-/** Toggle handler. */
+/**
+ * Toggle handler: flips the "serve locally" switch on/off. Deliberately
+ * doesn't require a build to exist (the page-level checkbox already disables
+ * itself until $built is true, but this handler doesn't re-check that), so a
+ * direct POST without a prior download would just enable serving from a URL
+ * that doesn't exist yet.
+ */
 add_action('admin_post_prt_toggle_fonts', function () {
     if (! current_user_can('manage_options') || ! check_admin_referer('prt_toggle_fonts')) {
         wp_die('Not allowed');
@@ -168,7 +210,13 @@ add_action('admin_post_prt_toggle_fonts', function () {
     exit;
 });
 
-/** Front-end: serve local fonts + strip Google when enabled. */
+/**
+ * Front-end: when self-hosting is on, enqueue the generated fonts.css.
+ * Priority 4 — before setup.php's Google Fonts enqueue at its default
+ * priority — isn't what prevents the Google stylesheet from loading (that's
+ * the style_loader_tag filter below); it just makes sure the local stylesheet
+ * itself is registered/output early, alongside other early-priority styles.
+ */
 add_action('wp_enqueue_scripts', function () {
     if (! get_option('prt_selfhost_on', false)) {
         return;
@@ -179,7 +227,12 @@ add_action('wp_enqueue_scripts', function () {
     }
 }, 4);
 
-/** Remove any Google Fonts <link> on the front end when self-hosting. */
+/**
+ * Remove any Google Fonts <link> tag from the rendered page when self-hosting
+ * is on. This is the actual mechanism that stops the external Google request;
+ * it works regardless of which file enqueued the Google stylesheet (theme
+ * setup.php, a plugin, etc.) since it matches by the output URL, not by handle.
+ */
 add_filter('style_loader_tag', function ($tag, $handle, $href) {
     if (get_option('prt_selfhost_on', false) && strpos((string) $href, 'fonts.googleapis.com') !== false) {
         return '';
@@ -187,7 +240,13 @@ add_filter('style_loader_tag', function ($tag, $handle, $href) {
     return $tag;
 }, 10, 3);
 
-/** Drop the Google preconnect hints too when self-hosting. */
+/**
+ * Drop the Google Fonts preconnect resource hints too when self-hosting is
+ * on — otherwise the browser would still open an early connection to
+ * fonts.gstatic.com/googleapis.com for a request that no longer happens,
+ * which is a wasted connection and a small privacy leak the whole feature is
+ * meant to avoid.
+ */
 add_filter('wp_resource_hints', function ($hints, $relation) {
     if ($relation === 'preconnect' && get_option('prt_selfhost_on', false)) {
         $hints = array_filter($hints, function ($h) {

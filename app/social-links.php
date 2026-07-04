@@ -1,22 +1,26 @@
 <?php
 
 /**
- * Social Links — platform metadata, Customizer settings registration,
- * and admin settings schema tab.
+ * Social Links — platform metadata (label, icon, default URL).
  *
- * Controls (UI) live in Quick Setup (quick-setup.php) so there is one
- * clear entry point for first-time setup. These settings are registered
- * here so get_theme_mod() works correctly everywhere and sanitization
- * is applied on save.
- *
- * Keys match prt_socials_map() in menu.php so both read the same
- * prt_social_{key} theme_mods.
+ * This used to also register its own prt_social_{key} Customizer settings
+ * with no controls attached — a duplicate of the real settings + controls
+ * registered together in app/menu.php (prt_socials_map(), which now sources
+ * its list from prt_social_platforms() below). That duplicate registration
+ * is gone; this file now only defines the platform list + the
+ * matthummel/social_platforms filter extension point.
  */
 
 namespace App;
 
 /**
- * Platform metadata: label, Blade Icon slug, and default URL.
+ * Platform metadata: label, Blade Icon slug, and default URL, for every
+ * social network the theme knows about out of the box. This is the single
+ * catalog other modules loop over to build Customizer URL settings/controls
+ * (app/menu.php) and to render icons (app/icons.php, prt_social_icon()).
+ * Wrapped in the `matthummel/social_platforms` filter so a child theme or
+ * plugin can add/remove/reorder platforms without editing this file —
+ * important now that this theme is meant to be reused by other developers.
  */
 function prt_social_platforms(): array
 {
@@ -35,35 +39,7 @@ function prt_social_platforms(): array
     ]);
 }
 
-/* ── Register Customizer settings (controls live in Quick Setup) ─────────── */
-
-add_action('customize_register', function (\WP_Customize_Manager $wp) {
-    foreach (prt_social_platforms() as $key => $p) {
-        $wp->add_setting("prt_social_{$key}", [
-            'default'           => $p['default'],
-            'sanitize_callback' => 'esc_url_raw',
-            'transport'         => 'refresh',
-        ]);
-    }
-}, 25);
-
-/* ── Add Social Links tab to Appearance → Theme Settings ────────────────── */
-
-add_filter('matthummel/admin_schema', function (array $schema): array {
-    $fields = [];
-    foreach (prt_social_platforms() as $key => $p) {
-        $fields[] = [
-            'key'   => "prt_social_{$key}",
-            'label' => $p['label'],
-            'type'  => 'url',
-        ];
-    }
-
-    $schema['social'] = [
-        'icon'   => 'dashicons-share',
-        'label'  => __('Social Links', 'pressroot'),
-        'fields' => $fields,
-    ];
-
-    return $schema;
-});
+// Settings + controls for prt_social_{key} are registered together in
+// app/menu.php (one place, so the setting is never orphaned from its
+// control). The URLs are edited under Customize -> Theme Options ->
+// Menu & Popout.

@@ -14,6 +14,10 @@
 
 namespace App;
 
+// Adds "Pattern Library" under Appearance. Uses 'edit_posts' (not
+// 'edit_theme_options') as the capability since this page is read-only
+// (browse/copy pattern names) — any contributor who can write content
+// benefits from seeing what patterns exist, not just admins.
 add_action('admin_menu', function () {
     add_theme_page(
         __('Pattern Library', 'pressroot'),
@@ -25,11 +29,24 @@ add_action('admin_menu', function () {
 });
 
 /**
- * Renders the Pattern Library admin page.
+ * Renders the Pattern Library admin page: a grid of every registered
+ * 'pressroot' pattern (title, description, keywords, and a "copy pattern
+ * name" button) plus a shortcut to Synced Patterns and a short how-to.
+ *
+ * Exists so a non-technical editor can discover what patterns are
+ * available and how to insert them without needing to already know the
+ * "Patterns" tab exists in the block inserter, or memorize pattern names —
+ * this mirrors the UX of page-builder "design libraries" but needs no
+ * external API since everything here is read from the local pattern
+ * registry.
+ *
+ * @return void
  */
 function prt_pattern_library_page(): void
 {
     $all_patterns      = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
+    // Only this theme's own patterns — core/plugin patterns aren't shown
+    // here since they already have their own discovery UI in the inserter.
     $theme_patterns    = array_filter($all_patterns, function ($p) {
         return in_array('pressroot', $p['categories'] ?? [], true);
     });
@@ -146,6 +163,8 @@ function prt_pattern_library_page(): void
 
     </div>
 
+    <?php /* Inline (not enqueued) since this markup/script only exists on this one
+             admin page and is trivial — not worth a separate asset + wp_enqueue_script. */ ?>
     <script>
     (function () {
         document.querySelectorAll('.prt-copy-pattern').forEach(function (btn) {

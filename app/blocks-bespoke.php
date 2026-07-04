@@ -17,6 +17,15 @@ namespace App;
 
 /* ── Attribute definitions ─────────────────────────────────────────── */
 
+/**
+ * Attribute schema for prt/stat-strip.
+ *
+ * Stats are stored as a single JSON-encoded string attribute (not a nested
+ * block attribute array) so the editor can round-trip the whole list through
+ * one text control / REST call instead of wiring up per-field attributes.
+ *
+ * @return array
+ */
 function prt_stat_strip_attrs(): array
 {
     return [
@@ -25,6 +34,12 @@ function prt_stat_strip_attrs(): array
     ];
 }
 
+/**
+ * Attribute schema for prt/skills-grid (same JSON-string-attribute pattern
+ * as prt_stat_strip_attrs() above).
+ *
+ * @return array
+ */
 function prt_skills_grid_attrs(): array
 {
     return [
@@ -34,6 +49,12 @@ function prt_skills_grid_attrs(): array
     ];
 }
 
+/**
+ * Attribute schema for prt/timeline (entries are a JSON-encoded string,
+ * same reasoning as prt_stat_strip_attrs() above).
+ *
+ * @return array
+ */
 function prt_timeline_attrs(): array
 {
     return [
@@ -41,6 +62,12 @@ function prt_timeline_attrs(): array
     ];
 }
 
+/**
+ * Attribute schema for prt/resource-group (links are a JSON-encoded string,
+ * same reasoning as prt_stat_strip_attrs() above).
+ *
+ * @return array
+ */
 function prt_resource_group_attrs(): array
 {
     return [
@@ -50,6 +77,12 @@ function prt_resource_group_attrs(): array
     ];
 }
 
+/**
+ * Attribute schema for prt/cta-band (a simple call-to-action panel with a
+ * heading, body copy, button, and colour variant).
+ *
+ * @return array
+ */
 function prt_cta_band_attrs(): array
 {
     return [
@@ -61,6 +94,13 @@ function prt_cta_band_attrs(): array
     ];
 }
 
+/**
+ * Attribute schema for prt/project-card — a single flat set of scalar
+ * attributes (unlike the JSON-string lists above) since a card only ever
+ * represents one project, not a repeatable collection.
+ *
+ * @return array
+ */
 function prt_project_card_attrs(): array
 {
     return [
@@ -116,9 +156,14 @@ function prt_full_block_supports(array $align = ['wide', 'full']): array
 
 /* ── Registration ───────────────────────────────────────────────────── */
 
+// Registers all six bespoke blocks on 'init' (the earliest hook block types
+// can be registered on; priority 12 keeps it after any earlier setup that
+// blocks might depend on, e.g. theme support flags in setup.php).
 add_action('init', function () {
     $deps = ['wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-server-side-render', 'wp-i18n'];
 
+    // Slug ⇒ editor-script-file-name map, so registering N blocks doesn't
+    // require N near-identical wp_register_script() calls below.
     $blocks = [
         'prt-stat-strip'     => 'stat-strip',
         'prt-skills-grid'    => 'skills-grid',
@@ -186,7 +231,21 @@ add_action('init', function () {
 }, 12);
 
 /* ── Render callbacks ───────────────────────────────────────────────── */
+/* Every render_callback below follows the same shape: merge $attrs over its
+ * attrs-function defaults (so partial attribute sets from older saved
+ * content don't produce PHP notices), decode any JSON-string list
+ * attributes, then hand-build the HTML string using
+ * get_block_wrapper_attributes() so block supports (color, spacing, etc.)
+ * are applied automatically. All user-supplied text is escaped at output. */
 
+/**
+ * Server-side render for prt/stat-strip. Renders a responsive row of
+ * number+label stat items, clamped to 2–4 columns since the grid CSS only
+ * defines styles for that range.
+ *
+ * @param array $attrs Block attributes (see prt_stat_strip_attrs()).
+ * @return string Block HTML.
+ */
 function prt_stat_strip_render(array $attrs): string
 {
     $a     = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_stat_strip_attrs()));
@@ -204,6 +263,14 @@ function prt_stat_strip_render(array $attrs): string
     return $out;
 }
 
+/**
+ * Server-side render for prt/skills-grid. Renders a grid of title+body
+ * cards (2–3 columns); the 'focus' style swaps in bolder card/grid classes
+ * for use as a smaller, higher-emphasis feature list.
+ *
+ * @param array $attrs Block attributes (see prt_skills_grid_attrs()).
+ * @return string Block HTML.
+ */
 function prt_skills_grid_render(array $attrs): string
 {
     $a     = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_skills_grid_attrs()));
@@ -227,6 +294,13 @@ function prt_skills_grid_render(array $attrs): string
     return $out;
 }
 
+/**
+ * Server-side render for prt/timeline. Renders a vertical work-history
+ * timeline (dates, title, org, body) used on the Résumé page.
+ *
+ * @param array $attrs Block attributes (see prt_timeline_attrs()).
+ * @return string Block HTML.
+ */
 function prt_timeline_render(array $attrs): string
 {
     $a       = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_timeline_attrs()));
@@ -252,6 +326,14 @@ function prt_timeline_render(array $attrs): string
     return $out;
 }
 
+/**
+ * Server-side render for prt/resource-group. Renders a titled list of
+ * external links (each opened in a new tab with rel="noopener noreferrer"
+ * since these always point off-site).
+ *
+ * @param array $attrs Block attributes (see prt_resource_group_attrs()).
+ * @return string Block HTML.
+ */
 function prt_resource_group_render(array $attrs): string
 {
     $a     = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_resource_group_attrs()));
@@ -269,6 +351,16 @@ function prt_resource_group_render(array $attrs): string
     return $out;
 }
 
+/**
+ * Server-side render for prt/cta-band. Renders a call-to-action panel whose
+ * background/text/button colours are driven entirely by the 'variant'
+ * attribute (dark/green/light) rather than block color supports, so the
+ * three variants stay visually consistent regardless of what the editor's
+ * color picker is set to.
+ *
+ * @param array $attrs Block attributes (see prt_cta_band_attrs()).
+ * @return string Block HTML.
+ */
 function prt_cta_band_render(array $attrs): string
 {
     $a   = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_cta_band_attrs()));
@@ -288,6 +380,16 @@ function prt_cta_band_render(array $attrs): string
     return $out;
 }
 
+/**
+ * Server-side render for prt/project-card. Renders a single project/case-
+ * study card with an optional thumbnail, tag pills (from a comma-separated
+ * string, capped at 6), and Live/GitHub links. 'link' takes priority over
+ * 'liveUrl' for the card's primary click-through target (title + thumbnail),
+ * while 'liveUrl' still gets its own explicit CTA link further down.
+ *
+ * @param array $attrs Block attributes (see prt_project_card_attrs()).
+ * @return string Block HTML.
+ */
 function prt_project_card_render(array $attrs): string
 {
     $a    = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_project_card_attrs()));

@@ -10,6 +10,15 @@
 
 namespace App;
 
+/**
+ * Registry of available "starter sites" (personas). Each entry defines the
+ * pages to create (from patterns and/or raw block markup), which Style Kit
+ * to apply, the primary menu order, and which page becomes the front page.
+ * Single source of truth consumed by both the admin picker UI
+ * (prt_starter_render()) and the importer (admin_post_prt_import_demo).
+ *
+ * @return array<string, array{label:string,desc:string,kit:string,pages:array,menu:array,front:string}>
+ */
 function prt_starter_sites()
 {
     return [
@@ -42,7 +51,12 @@ function prt_starter_sites()
     ];
 }
 
-/** Assemble a page's block markup from patterns + raw. */
+/**
+ * Assemble a page's block markup by concatenating the content of each named
+ * registered pattern (in order), then appending any raw block markup. Falls
+ * back to an empty paragraph so wp_insert_post() never receives blank
+ * content (which would make the page look broken/uneditable in the editor).
+ */
 function prt_compose_page($def)
 {
     $out = '';
@@ -61,10 +75,17 @@ function prt_compose_page($def)
     return $out !== '' ? $out : '<!-- wp:paragraph --><p></p><!-- /wp:paragraph -->';
 }
 
+// Adds the "Starter Sites" page under Appearance, gated to users who can
+// edit theme options (same capability the rest of the Customizer uses).
 add_action('admin_menu', function () {
     add_theme_page(__('Starter Sites', 'pressroot'), __('Starter Sites', 'pressroot'), 'edit_theme_options', 'prt-starter-sites', __NAMESPACE__ . '\\prt_starter_render');
 });
 
+/**
+ * Renders the Appearance -> Starter Sites picker: one card per entry in
+ * prt_starter_sites(), each with a confirm-before-submit import button that
+ * posts to admin_post_prt_import_demo.
+ */
 function prt_starter_render()
 {
     if (! current_user_can('edit_theme_options')) {
@@ -98,6 +119,16 @@ function prt_starter_render()
     <?php
 }
 
+/**
+ * Handles the "Import this starter site" form submission. Idempotent by
+ * design: pages are matched by slug and reused rather than duplicated (only
+ * empty existing pages get their content refreshed), and the primary menu is
+ * only (re)built if it doesn't already have items — so re-running the import,
+ * or importing a second starter site, won't stomp on manual edits.
+ *
+ * Order matters: style kit, then pages (so IDs exist), then front page and
+ * menu (which depend on those IDs).
+ */
 add_action('admin_post_prt_import_demo', function () {
     if (! current_user_can('edit_theme_options') || ! check_admin_referer('prt_import_demo')) {
         wp_die('Not allowed');
@@ -148,6 +179,10 @@ add_action('admin_post_prt_import_demo', function () {
     }
 
     // 4) primary menu
+    // NOTE(audit): looks up the menu by its translated display name ('Primary'),
+    // not by slug/ID. If the site locale changes after the menu is created, or a
+    // user renames the "Primary" menu, this won't find it and will silently
+    // create a second menu instead of reusing/updating the original.
     $menu = wp_get_nav_menu_object(__('Primary', 'pressroot'));
     $menu_id = $menu ? $menu->term_id : wp_create_nav_menu(__('Primary', 'pressroot'));
     if (! is_wp_error($menu_id)) {

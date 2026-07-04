@@ -47,7 +47,7 @@
             @if ($f['show_social'] && $socials)
               <div class="footer-socials">
                 @foreach ($socials as $s)
-                  <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank">{!! \App\prt_social_icon($s['key']) !!}</a>
+                  <a href="{{ esc_url($s['url']) }}" aria-label="{{ $s['label'] }}" rel="me noopener" target="_blank"{!! \App\prt_social_item_style_attr($s['key']) !!}>{!! \App\prt_social_icon($s['key']) !!}</a>
                 @endforeach
               </div>
             @endif

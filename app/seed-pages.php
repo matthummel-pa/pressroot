@@ -19,7 +19,16 @@
 
 namespace App;
 
-/** Build a page's markup from a registered block pattern. */
+/**
+ * Build a page's markup from a registered block pattern.
+ *
+ * Looks the pattern up at call time (not cached) since patterns are
+ * registered on 'init' by home-patterns.php / pattern-library.php and this
+ * function is only ever invoked later, from 'admin_init' callbacks below.
+ *
+ * @param string $slug Registered pattern name, e.g. 'matthummel/home-full'.
+ * @return string Pattern content HTML, or '' if the pattern isn't registered.
+ */
 function prt_seed_pattern_content(string $slug): string
 {
     if (! class_exists('WP_Block_Patterns_Registry')) {
@@ -29,7 +38,17 @@ function prt_seed_pattern_content(string $slug): string
     return ($p && ! empty($p['content'])) ? $p['content'] : '';
 }
 
-/** Find an existing page by any of the given slugs. */
+/**
+ * Find an existing page by any of the given slugs.
+ *
+ * Accepts multiple candidate slugs (not just one) because some pages were
+ * renamed over the site's lifetime (e.g. Resources used to live at
+ * 'power-platform-learning-resources') — checking all known slugs avoids
+ * creating a duplicate page for installs that still use the old one.
+ *
+ * @param string[] $slugs Candidate page slugs to check, in priority order.
+ * @return \WP_Post|null The first matching page, or null if none exist.
+ */
 function prt_seed_find_page(array $slugs)
 {
     foreach ($slugs as $slug) {
@@ -41,8 +60,27 @@ function prt_seed_find_page(array $slugs)
     return null;
 }
 
+/**
+ * Seed (or top-up) the four core marketing pages with their designed block
+ * patterns, and set Home as the static front page.
+ *
+ * This is the theme's single "make the site look right on first activation"
+ * entry point — it's what turns a bare WordPress install into the fully
+ * designed matthummel site without the admin having to manually create
+ * pages or hunt for the right pattern. Safe to call repeatedly: existing
+ * pages are only touched if their content is still empty (see the
+ * `trim(...) === ''` guard below), so nothing here ever clobbers real edits.
+ *
+ * @return void
+ */
 function prt_seed_pages_now(): void
 {
+    // NOTE(audit): none of these page definitions set a 'template' key, so
+    // the `! empty($def['template'])` checks below (and the matching
+    // update_post_meta() calls) are always false and never run. Looks like
+    // dead code left over from an earlier version that set page templates
+    // per page; template assignment is instead handled by the separate
+    // "detach from Canvas template" pass further down this file.
     $pages = [
         'home' => [
             'slugs'    => ['home'],
@@ -115,7 +153,14 @@ add_action('after_switch_theme', function () {
     delete_option('prt_pages_seeded_v1');
 });
 
-/** Run once, in the admin, after block patterns are registered (init:12). */
+// Run once, in the admin, after block patterns are registered (init:12).
+// This is the first of several "one-time task" admin_init callbacks in this
+// file; they all share the same shape: a versioned `prt_*_v#` option acts as
+// a run-once flag (checked first, set last), and admin_init is used instead
+// of a dedicated activation hook because patterns/CPTs/taxonomies registered
+// on 'init' aren't guaranteed ready yet during after_switch_theme itself.
+// Bumping the option's `_v#` suffix (e.g. v1 -> v2) is the mechanism for
+// intentionally re-running a task after the underlying pattern/logic changes.
 add_action('admin_init', function () {
     if (get_option('prt_pages_seeded_v1')) {
         return;

@@ -33,11 +33,11 @@
 
 {{-- Title header --}}
 <section class="prt-wrap" style="padding-top:70px; padding-bottom:24px;">
-  <div style="font-family:var(--font-mono); font-size:13px; color:#7C5CFF; letter-spacing:.1em; margin-bottom:16px;">{{ strtoupper($cat) }}</div>
-  <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,6vw,64px); letter-spacing:-.03em; line-height:1.02; margin:0 0 18px; color:#1B1830;">{{ $title }}</h1>
+  <div style="font-family:var(--font-mono); font-size:13px; color:var(--color-eyebrow, var(--color-green)); letter-spacing:.1em; margin-bottom:16px;">{{ strtoupper($cat) }}</div>
+  <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,6vw,64px); letter-spacing:-.03em; line-height:1.02; margin:0 0 18px; color:var(--color-h1, var(--color-ink));">{{ $title }}</h1>
   @unless ($isRepo)
     @if ($desc)
-      <p style="font-size:20px; line-height:1.5; color:#4A4660; max-width:40em; margin:0 0 22px;">{{ $desc }}</p>
+      <p style="font-size:20px; line-height:1.5; color:var(--color-body); max-width:40em; margin:0 0 22px;">{{ $desc }}</p>
     @endif
     @if ($pills)
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px;">
@@ -64,11 +64,11 @@
 
 @if ($related)
 <section class="prt-wrap" style="padding-bottom:60px;">
-  <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(28px,3vw,34px); letter-spacing:-.02em; margin:0 0 24px; color:#1B1830;">More projects</h2>
+  <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(28px,3vw,34px); letter-spacing:-.02em; margin:0 0 24px; color:var(--color-h2, var(--color-ink));">More projects</h2>
   <div class="prt-grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
     @foreach ($related as $r)
       <a href="{{ $r['url'] }}" class="prt-lift" style="text-decoration:none; color:inherit; background:#fff; border:1.5px solid #ECE4F8; border-radius:20px; padding:24px; display:block;">
-        <h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#1B1830;">{!! $r['title'] !!}</h3>
+        <h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:var(--color-h3, var(--color-ink));">{!! $r['title'] !!}</h3>
         <p style="font-size:14.5px; color:#5A5676; line-height:1.5; margin:0;">{{ $r['excerpt'] }}</p>
       </a>
     @endforeach

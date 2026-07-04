@@ -49,7 +49,7 @@
 <section id="work" class="prt-wrap" style="padding-top:80px; padding-bottom:30px;">
   <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:36px;">
     <div>
-      <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:#1B1830;">Selected builds</h2>
+      <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:var(--color-h2, var(--color-ink));">Selected builds</h2>
       <p style="margin:0; font-size:16px; color:#7C75A8;">Real, open-source code you can read line by line — themes, plugins &amp; apps.</p>
     </div>
     <a href="{{ $allLink }}" style="text-decoration:none; font-weight:700; color:#7C5CFF; font-size:16px;">View all projects →</a>

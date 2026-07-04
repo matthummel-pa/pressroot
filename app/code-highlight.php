@@ -9,14 +9,29 @@
 
 namespace App;
 
+// Pinned Prism version/CDN base. Pinning (rather than an unversioned "latest"
+// URL) keeps highlighting output stable across page loads and avoids a
+// surprise breaking change from cdnjs; bump this constant deliberately when
+// upgrading Prism.
 const PRT_PRISM = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0';
 
+/**
+ * Whether code-block syntax highlighting is enabled. Single source of truth
+ * read by every hook below, backed by the Customizer checkbox registered
+ * just below (default on).
+ */
 function prt_code_hl_on()
 {
     return (bool) get_theme_mod('prt_code_highlight', true);
 }
 
-/** Toggle in the Performance section. */
+/**
+ * Registers the highlighting on/off checkbox into the theme's existing
+ * "Performance" Customizer section (registered by another file — this one
+ * just bails out if that section doesn't exist yet rather than creating its
+ * own section, since this is a minor sub-toggle of performance, not a
+ * feature important enough to warrant its own section).
+ */
 add_action('customize_register', function ($wp) {
     if (! $wp->get_section('prt_perf_section')) {
         return;
@@ -25,7 +40,12 @@ add_action('customize_register', function ($wp) {
     $wp->add_control('prt_code_highlight', ['label' => __('Syntax-highlight code blocks (Prism)', 'pressroot'), 'section' => 'prt_perf_section', 'type' => 'checkbox']);
 }, 28);
 
-/** Editor controls on core/code. */
+/**
+ * Loads the editor-side JS (resources/js/code-block-editor.js) that adds
+ * language/filename/line-numbers controls to the standard core/code block's
+ * Inspector panel. Editor-only enqueue — this doesn't touch the front end,
+ * where Prism itself (registered below) does the actual highlighting.
+ */
 add_action('enqueue_block_editor_assets', function () {
     if (! prt_code_hl_on()) {
         return;
@@ -40,7 +60,15 @@ add_action('enqueue_block_editor_assets', function () {
     );
 });
 
-/** Register Prism assets (enqueued on demand). */
+/**
+ * Registers (but does not enqueue) the Prism CSS/JS handles from cdnjs.
+ * Registering here, then enqueuing conditionally in the render_block filter
+ * below, means Prism is only ever actually loaded on pages that contain a
+ * highlighted code block — most pages pay zero cost for this feature.
+ * Note: 'prt-prism-ln' is registered as both a style handle and a script
+ * handle; WordPress keeps style and script handles in separate namespaces,
+ * so reusing the name for both isn't a collision.
+ */
 add_action('wp_enqueue_scripts', function () {
     if (! prt_code_hl_on()) {
         return;
@@ -50,15 +78,26 @@ add_action('wp_enqueue_scripts', function () {
     wp_register_script('prt-prism', PRT_PRISM . '/prism.min.js', [], '1.29.0', true);
     wp_register_script('prt-prism-auto', PRT_PRISM . '/plugins/autoloader/prism-autoloader.min.js', ['prt-prism'], '1.29.0', true);
     wp_register_script('prt-prism-ln', PRT_PRISM . '/plugins/line-numbers/prism-line-numbers.min.js', ['prt-prism'], '1.29.0', true);
+    // Tell Prism's autoloader plugin where to fetch per-language grammar
+    // files from, since they're not bundled in prism.min.js itself.
     wp_add_inline_script('prt-prism-auto', "if(window.Prism&&Prism.plugins&&Prism.plugins.autoloader){Prism.plugins.autoloader.languages_path='" . PRT_PRISM . "/components/';}");
 });
 
-/** Transform core/code on render: filename label + enqueue Prism when present. */
+/**
+ * Transform core/code on render: enqueues Prism only for requests that
+ * actually rendered a highlighted/labeled code block, and wraps the block in
+ * a <figure> with a filename caption when one was set. Hooking render_block
+ * (rather than enqueueing Prism unconditionally on wp_enqueue_scripts) is
+ * what makes the "only loads on pages with a code block" promise in the
+ * file-level doc comment true — by the time this filter runs, WordPress has
+ * already generated the block's final HTML, so we can inspect it to decide.
+ */
 add_filter('render_block', function ($content, $block) {
     if (! prt_code_hl_on() || ($block['blockName'] ?? '') !== 'core/code') {
         return $content;
     }
-    // Only enhance blocks the editor tagged with a language.
+    // Only enhance blocks the editor tagged with a language or filename;
+    // untouched core/code blocks are left completely alone.
     if (strpos($content, 'language-') === false && strpos($content, 'data-filename') === false) {
         return $content;
     }
@@ -79,6 +118,12 @@ add_filter('render_block', function ($content, $block) {
     return $content;
 }, 10, 2);
 
+/**
+ * Styles for the filename caption + rounded-corner join between the caption
+ * and the Prism-highlighted <pre>. Prism's own theme CSS (prism-tomorrow,
+ * enqueued above) handles syntax colors; this covers only the theme's own
+ * <figure>/<figcaption> wrapper markup, so it's kept separate from Prism's CSS.
+ */
 add_action('prt_head_end', function () {
     if (! prt_code_hl_on()) {
         return;

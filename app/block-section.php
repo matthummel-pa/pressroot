@@ -14,6 +14,9 @@ namespace App;
 
 /* ── Block category ─────────────────────────────────────────────────── */
 
+// Prepends the "pressroot" category to the inserter's category list (rather
+// than appending) so all prt/* blocks sort to the top, above core/WP
+// categories, making them easy to find.
 add_filter('block_categories_all', function (array $cats, $context): array {
     array_unshift($cats, [
         'slug'  => 'pressroot',
@@ -25,6 +28,15 @@ add_filter('block_categories_all', function (array $cats, $context): array {
 
 /* ── Section block attributes ───────────────────────────────────────── */
 
+/**
+ * Attribute schema for prt/section. These are deliberately separate from
+ * WordPress's built-in color/spacing block supports (which are turned off
+ * below) because a full-bleed section needs a background *image* with an
+ * overlay and named padding/width presets — options the native supports
+ * panel doesn't offer.
+ *
+ * @return array
+ */
 function prt_section_attrs(): array
 {
     return [
@@ -42,6 +54,9 @@ function prt_section_attrs(): array
 
 /* ── Registration ───────────────────────────────────────────────────── */
 
+// Registers prt/section on 'init' (the standard hook for block type
+// registration; priority 10 is the WordPress default — no ordering
+// dependency on the other prt/* blocks, which register at priority 12).
 add_action('init', function () {
     $path = 'resources/js/prt-section-editor.js';
     if (file_exists(get_theme_file_path($path))) {
@@ -71,6 +86,17 @@ add_action('init', function () {
 
 /* ── Render callback ────────────────────────────────────────────────── */
 
+/**
+ * Server-side render for prt/section. Wraps InnerBlocks ($content) in a
+ * <section> whose look is driven entirely by utility classes (prt-section--*)
+ * mapped from attributes, so the CSS variables/theme (colours, spacing
+ * scale) stay the single source of truth — only background-image (which
+ * can't be expressed as a class) falls back to an inline style.
+ *
+ * @param array  $attrs   Block attributes (see prt_section_attrs()).
+ * @param string $content Rendered InnerBlocks HTML.
+ * @return string Block HTML.
+ */
 function prt_section_render(array $attrs, string $content): string
 {
     $a = wp_parse_args($attrs, array_map(fn($v) => $v['default'], prt_section_attrs()));
@@ -86,6 +112,8 @@ function prt_section_render(array $attrs, string $content): string
     // Inline style (only for bg images — colours use CSS vars via class)
     $style = '';
     if (!empty($a['bgImageUrl'])) {
+        // Capped at 80 (not 100) so the background image is never fully
+        // obscured by the overlay — some image is always visible.
         $overlay = max(0, min(80, absint($a['bgOverlay'])));
         $alpha   = round($overlay / 100, 2);
         $style   = sprintf(

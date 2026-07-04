@@ -9,7 +9,7 @@
 @endphp
 <section class="prt-wrap" style="padding-top:80px; padding-bottom:10px;">
   <div style="margin-bottom:36px;">
-    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:#1B1830;">Why work <span style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:#7C5CFF;">with me</span></h2>
+    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:var(--color-h2, var(--color-ink));">Why work <span style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:#7C5CFF;">with me</span></h2>
     <p style="margin:0; font-size:17px; color:#7C75A8; max-width:40em;">No giant agency, no account managers — just a senior developer who's been shipping for 15+ years and cares about the details.</p>
   </div>
   <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;">
@@ -20,7 +20,7 @@
         @else
           <div style="font-size:38px;">{{ $p['emoji'] }}</div>
         @endif
-        <h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:14px 0 8px; color:#1B1830;">{{ $p['title'] }}</h3>
+        <h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:14px 0 8px; color:var(--color-h3, var(--color-ink));">{{ $p['title'] }}</h3>
         <p style="font-size:14.5px; color:#5A5676; line-height:1.55; margin:0;">{{ $p['desc'] }}</p>
       </div>
     @endforeach

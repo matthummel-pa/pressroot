@@ -61,17 +61,6 @@
         ),
 
         el(c.PanelBody, { title: __('Layout', 'pressroot'), initialOpen: false },
-          el(c.RangeControl, { label: __('Icon size (px)', 'pressroot'), value: a.size, min: 12, max: 64, onChange: set('size') }),
-          el(c.RangeControl, { label: __('Gap (px)', 'pressroot'), value: a.gap, min: 0, max: 48, onChange: set('gap') }),
-          el(c.SelectControl, {
-            label: __('Shape', 'pressroot'), value: a.shape,
-            options: [
-              { label: __('None (plain)', 'pressroot'), value: 'none' },
-              { label: __('Circle', 'pressroot'), value: 'circle' },
-              { label: __('Rounded', 'pressroot'), value: 'rounded' },
-              { label: __('Square', 'pressroot'), value: 'square' }
-            ], onChange: set('shape')
-          }),
           el(c.SelectControl, {
             label: __('Alignment', 'pressroot'), value: a.align,
             options: [
@@ -84,7 +73,24 @@
         ),
 
         el(c.PanelBody, { title: __('Style & color', 'pressroot'), initialOpen: false },
-          el(c.SelectControl, {
+          el(c.ToggleControl, {
+            label: __('Match site social icon style', 'pressroot'),
+            help: __('Use the size/shape/color set in Customizer → Theme Options → Social Icons, so this always matches the header, footer, and popout icons.', 'pressroot'),
+            checked: !!a.matchSite,
+            onChange: set('matchSite')
+          }),
+          !a.matchSite && el(c.RangeControl, { label: __('Icon size (px)', 'pressroot'), value: a.size, min: 12, max: 64, onChange: set('size') }),
+          !a.matchSite && el(c.RangeControl, { label: __('Gap (px)', 'pressroot'), value: a.gap, min: 0, max: 48, onChange: set('gap') }),
+          !a.matchSite && el(c.SelectControl, {
+            label: __('Shape', 'pressroot'), value: a.shape,
+            options: [
+              { label: __('None (plain)', 'pressroot'), value: 'none' },
+              { label: __('Circle', 'pressroot'), value: 'circle' },
+              { label: __('Rounded', 'pressroot'), value: 'rounded' },
+              { label: __('Square', 'pressroot'), value: 'square' }
+            ], onChange: set('shape')
+          }),
+          !a.matchSite && el(c.SelectControl, {
             label: __('Icon style', 'pressroot'), value: a.iconStyle,
             options: [
               { label: __('Mono (theme color)', 'pressroot'), value: 'mono' },
@@ -92,10 +98,10 @@
             ], onChange: set('iconStyle'),
             help: a.iconStyle === 'brand' ? __('Each icon uses its official brand color.', 'pressroot') : ''
           }),
-          a.iconStyle === 'mono' ? PanelColor(__('Icon color', 'pressroot'), a.color, set('color')) : null,
-          a.shape !== 'none' ? PanelColor(__('Chip background', 'pressroot'), a.bg, set('bg')) : null,
-          a.iconStyle === 'mono' ? PanelColor(__('Hover icon color', 'pressroot'), a.hoverColor, set('hoverColor')) : null,
-          (a.iconStyle === 'mono' && a.shape !== 'none') ? PanelColor(__('Hover chip background', 'pressroot'), a.hoverBg, set('hoverBg')) : null
+          (!a.matchSite && a.iconStyle === 'mono') ? PanelColor(__('Icon color', 'pressroot'), a.color, set('color')) : null,
+          (!a.matchSite && a.shape !== 'none') ? PanelColor(__('Chip background', 'pressroot'), a.bg, set('bg')) : null,
+          (!a.matchSite && a.iconStyle === 'mono') ? PanelColor(__('Hover icon color', 'pressroot'), a.hoverColor, set('hoverColor')) : null,
+          (!a.matchSite && a.iconStyle === 'mono' && a.shape !== 'none') ? PanelColor(__('Hover chip background', 'pressroot'), a.hoverBg, set('hoverBg')) : null
         )
       );
 

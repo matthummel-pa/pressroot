@@ -62,6 +62,8 @@
   "scripts": {
     "post-autoload-dump": [
       "Roots\\Acorn\\ComposerScripts::postAutoloadDump"
-    ]
+    ],
+    "lint": "pint --test",
+    "format": "pint"
   }
 }

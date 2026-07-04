@@ -12,12 +12,26 @@
 
 namespace App;
 
+/**
+ * Post-processes the Theme Options panel after every other module has had a
+ * chance to register its own sections/controls. Priority 999 is essential:
+ * WP_Customize_Manager only exposes get_section()/get_control() for controls
+ * that already exist, so this has to run after all of them are registered,
+ * and it mutates ->section / ->priority / ->description directly on the
+ * already-registered objects rather than re-registering anything — a purely
+ * cosmetic reorganization pass with no effect on what each control does.
+ * Bails out entirely if the panel doesn't exist (e.g. this file loaded
+ * standalone / the panel-owning module was removed).
+ */
 add_action('customize_register', function ($wp) {
     if (! $wp->get_panel('prt_theme_options')) {
         return;
     }
 
     // --- New grouping sections ---
+    // "Social Icons" and "Responsive" don't have a dedicated home elsewhere;
+    // create them here (defensively, in case another module already has)
+    // so the controls re-parented below have somewhere to move to.
     if (! $wp->get_section('prt_social_section')) {
         $wp->add_section('prt_social_section', [
             'title'       => __('Social Icons', 'pressroot'),
@@ -34,10 +48,16 @@ add_action('customize_register', function ($wp) {
     }
 
     // --- Re-parent controls into better homes (runtime only) ---
+    // Each control below was registered elsewhere (often bundled into a
+    // catch-all "Navigation" section by the module that owns its setting);
+    // moving it here at runtime avoids having to touch that module's code
+    // just to change where the control appears in the UI.
     $move = [
         'prt_social_section' => [
             'prt_nav_social', 'prt_nav_social_align', 'prt_social_style', 'prt_social_size', 'prt_social_shape',
             'prt_social_color', 'prt_social_bg', 'prt_social_hover',
+            'prt_social_gap', 'prt_social_icon_style', 'prt_social_hover_bg',
+            'prt_social_border_width', 'prt_social_border_color', 'prt_social_css',
             'prt_social_linkedin', 'prt_social_github', 'prt_social_devto', 'prt_social_x', 'prt_social_bluesky',
             'prt_social_youtube', 'prt_social_instagram', 'prt_social_facebook', 'prt_social_mastodon', 'prt_social_email', 'prt_social_rss',
         ],
@@ -62,6 +82,9 @@ add_action('customize_register', function ($wp) {
         foreach ($ids as $i => $id) {
             $c = $wp->get_control($id);
             if ($c) {
+                // Missing controls (e.g. a referenced ID that was renamed/removed
+                // elsewhere) are silently skipped rather than erroring, since this
+                // is cosmetic-only cleanup and shouldn't be able to break the page.
                 $c->section  = $section;
                 $c->priority = $base + $i;
             }
@@ -69,7 +92,12 @@ add_action('customize_register', function ($wp) {
     }
 
     // --- Logical section order within Theme Options ---
+    // Explicit priorities (rather than relying on registration order) so the
+    // panel reads top-to-bottom in the order a developer would actually want
+    // to configure a new site, regardless of which file registered which
+    // section first.
     $order = [
+        'prt_style_kit_section' => 15,
         'prt_colors' => 20, 'prt_type' => 30, 'prt_type_adv' => 35,
         'prt_headerlayout_section' => 40, 'prt_nav_section' => 45, 'prt_popout_section' => 50,
         'prt_social_section' => 55, 'prt_topbar_section' => 60, 'prt_ann_section' => 65,
@@ -77,7 +105,7 @@ add_action('customize_register', function ($wp) {
         'prt_content_section' => 85, 'prt_layout_section' => 90, 'prt_responsive_section' => 95,
         'prt_dark_section' => 100, 'prt_seo_section' => 110, 'prt_perf_section' => 120,
         'prt_code_section' => 130, 'prt_news_section' => 140, 'prt_cookie_section' => 150,
-        'prt_extras_section' => 160, 'prt_wl_section' => 170,
+        'prt_extras_section' => 160, 'prt_wl_section' => 170, 'prt_dev_section' => 180,
     ];
     foreach ($order as $sid => $prio) {
         $s = $wp->get_section($sid);
@@ -87,6 +115,9 @@ add_action('customize_register', function ($wp) {
     }
 
     // --- Short, dev-friendly section descriptions (only if one isn't already set) ---
+    // Only fills in a description when the section doesn't already have one, so
+    // this never overwrites a more specific description set by the module that
+    // owns the section.
     $desc = [
         'prt_nav_section'         => __('Primary menu layout (flexbox) and link styling.', 'pressroot'),
         'prt_popout_section'      => __('Off-canvas menu: breakpoints, panel style, columns and item styling.', 'pressroot'),

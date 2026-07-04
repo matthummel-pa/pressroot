@@ -12,10 +12,10 @@ namespace App;
 
 add_action('init', function () {
 
-    register_block_pattern_category('pressroot', [
-        'label'       => __('Matthummel', 'pressroot'),
-        'description' => __('Pre-built layouts for the matthummel.com theme.', 'pressroot'),
-    ]);
+    // The "pressroot" pattern category is registered once, in blocks.php
+    // (it loads first and runs at the default init priority, before this
+    // file's priority-20 callback). Registering it again here used to throw
+    // a WordPress "doing_it_wrong" notice for a duplicate category — removed.
 
     /* ── 1. Hero — dark with availability badge ────────────────────── */
     register_block_pattern('matthummel/hero', [
