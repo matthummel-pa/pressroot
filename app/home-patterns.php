@@ -21,12 +21,12 @@ add_action('init', function () {
 
     // Per-page pattern categories so the inserter groups patterns by page.
     foreach ([
-        'prt-home'      => __('Matt Hummel · Home', 'pressroot'),
-        'prt-about'     => __('Matt Hummel · About', 'pressroot'),
-        'prt-resume'    => __('Matt Hummel · Résumé', 'pressroot'),
-        'prt-resources' => __('Matt Hummel · Resources', 'pressroot'),
-        'prt-contact'   => __('Matt Hummel · Contact', 'pressroot'),
-        'prt-sections'  => __('Matt Hummel · Sections', 'pressroot'),
+        'prt-home'      => __('Pressroot · Home', 'pressroot'),
+        'prt-about'     => __('Pressroot · About', 'pressroot'),
+        'prt-resume'    => __('Pressroot · Résumé', 'pressroot'),
+        'prt-resources' => __('Pressroot · Resources', 'pressroot'),
+        'prt-contact'   => __('Pressroot · Contact', 'pressroot'),
+        'prt-sections'  => __('Pressroot · Sections', 'pressroot'),
     ] as $catSlug => $catLabel) {
         register_block_pattern_category($catSlug, ['label' => $catLabel]);
     }
@@ -160,7 +160,7 @@ HTML,
     // exposes the curated "— Full page" patterns).
 
     /* ── Full homepage — one-click block version of the designed front page ──
-       Insert this into the Home page (Edit page → Patterns → Matthummel →
+       Insert this into the Home page (Edit page → Patterns → Pressroot →
        "Home — Full page") to make the homepage fully editable in the block
        editor. Once the page has this content, front-page.blade.php renders it
        instead of the Blade partials.

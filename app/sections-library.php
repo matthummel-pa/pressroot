@@ -14,11 +14,11 @@ add_action('init', function () {
     }
 
     foreach ([
-        'prt-heroes'      => __('MH · Heroes', 'pressroot'),
-        'prt-cta'         => __('MH · Call to action', 'pressroot'),
-        'prt-content'     => __('MH · Content', 'pressroot'),
-        'prt-socialproof' => __('MH · Social proof', 'pressroot'),
-        'prt-dev'         => __('MH · Developer', 'pressroot'),
+        'prt-heroes'      => __('Pressroot · Heroes', 'pressroot'),
+        'prt-cta'         => __('Pressroot · Call to action', 'pressroot'),
+        'prt-content'     => __('Pressroot · Content', 'pressroot'),
+        'prt-socialproof' => __('Pressroot · Social proof', 'pressroot'),
+        'prt-dev'         => __('Pressroot · Developer', 'pressroot'),
     ] as $slug => $label) {
         register_block_pattern_category($slug, ['label' => $label]);
     }

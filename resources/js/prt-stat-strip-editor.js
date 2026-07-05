@@ -4,6 +4,22 @@
   var be = wp.blockEditor || wp.editor, IC = be.InspectorControls, ubp = be.useBlockProps;
   var c = wp.components, SSR = wp.serverSideRender || wp.components.ServerSideRender;
 
+  /** Static, non-SSR skeleton for the Patterns-inserter preview — see the
+   * matching comment in prt-skills-grid-editor.js for why this exists. */
+  function skeleton(a) {
+    var items = [];
+    try { items = JSON.parse(a.stats); } catch (e) { items = []; }
+    var cols = a.columns || 4;
+    return el('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', 1fr)', gap: 12, padding: '24px 0', textAlign: 'center' } },
+      items.map(function (item, i) {
+        return el('div', { key: i },
+          el('strong', { style: { display: 'block', fontSize: 28 } }, item.value || ''),
+          el('span', { style: { display: 'block', fontSize: 12, color: '#646970' } }, item.label || '')
+        );
+      })
+    );
+  }
+
   function Repeater(items, onChange, defaultItem, renderRow) {
     return el('div', { className: 'prt-repeater' },
       items.map(function (item, i) {
@@ -51,7 +67,12 @@
           el(c.RangeControl, { label: __('Columns', 'pressroot'), value: a.columns, min: 2, max: 4, onChange: set('columns') })
         )
       );
-      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, { block: 'prt/stat-strip', attributes: a })));
+      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, {
+        block: 'prt/stat-strip',
+        attributes: a,
+        LoadingResponsePlaceholder: function () { return skeleton(a); },
+        EmptyResponsePlaceholder: function () { return skeleton(a); }
+      })));
     },
     save: function () { return null; }
   });

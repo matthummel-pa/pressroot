@@ -65,7 +65,7 @@ function prt_pattern_library_page(): void
 
         <p class="description" style="margin-bottom:1.5rem;">
             <?php esc_html_e(
-                'Pre-built block patterns for the matthummel theme. Open any page in the block editor, click the + Inserter, then choose Patterns → Matthummel to insert these layouts.',
+                'Pre-built block patterns for the Pressroot theme. Open any page in the block editor, click the + Inserter, then choose Patterns → Pressroot to insert these layouts.',
                 'pressroot'
             ); ?>
         </p>
@@ -157,7 +157,7 @@ function prt_pattern_library_page(): void
             <li><?php esc_html_e('Open any page or post in the block editor.', 'pressroot'); ?></li>
             <li><?php esc_html_e('Click the blue + button (top-left or in the document body).', 'pressroot'); ?></li>
             <li><?php esc_html_e('Switch to the "Patterns" tab.', 'pressroot'); ?></li>
-            <li><?php esc_html_e('Choose "Matthummel" from the category list.', 'pressroot'); ?></li>
+            <li><?php esc_html_e('Choose "Pressroot" from the category list.', 'pressroot'); ?></li>
             <li><?php esc_html_e('Click any pattern to insert it, then customise the content.', 'pressroot'); ?></li>
         </ol>
 

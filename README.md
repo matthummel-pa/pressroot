@@ -13,6 +13,12 @@ Server-rendered, accessible, deliberately light on plugins — with a deep, poin
 
 > **Experimental / marketable build.** Pressroot is a rebrandable productization of a bespoke Sage theme — a starting point for a commercial premium theme. The internals (`prt_` prefix, `prt-` CSS classes, `pressroot` text domain) are namespaced for clean distribution.
 
+## About
+
+Pressroot started as a bespoke Sage theme built for the author's own portfolio site. Rather than keep it as a one-off, it's been generalized into a reusable framework other developers can pick up and rebrand — the design system, admin experience, and block library aren't tied to any one site's content.
+
+Part of that generalization is **Site Types** (Appearance → Pressroot → Site Types): rather than a single portfolio layout, the theme ships matching design + starter-page profiles for several common business categories — Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content site, and Marketing/Landing page — so it's a fast starting point whether the next project looks nothing like the original one.
+
 ## Features
 
 ### Design system & theming
@@ -36,12 +42,29 @@ Server-rendered, accessible, deliberately light on plugins — with a deep, poin
 - **Responsive controls** — per-device hide toggles (social, buttons, "Menu" label, logo shrink) and per-breakpoint widths. Mobile ≤640px · tablet 641–1024px.
 
 ### Blocks, content & performance
-- **Blocks** — Social Icons, Icon (Blade), Post Grid, GitHub repo card/grid/stats/releases + 17 starter patterns.
+- **Blocks** — Social Icons, Icon (Blade), Post Grid, GitHub repo card/grid/stats/releases + 22 general-purpose starter patterns, browsable from a dedicated **Pattern Library** admin page.
 - **Live GitHub project pages** — repo metadata, stars/forks, latest release, README intro (cached); device-flow "Connect with GitHub".
+- **Reading UX** — auto table of contents, reading-progress bar, estimated reading time, and copy buttons on code blocks for single posts.
 - **Plugin-free contact form**, newsletter, cookie notice, code injection.
-- **Performance** — disable bloat, self-host fonts, split block CSS, critical CSS, Prism highlighting.
+- **Performance** — disable bloat, split block CSS, critical CSS, Prism syntax highlighting on code blocks.
+- **Fonts** — self-host the active families (Appearance → Local Fonts), or browse & self-host any of 1,500+ Google Fonts families via the native block-editor Font Library.
 - **SEO** — Open Graph, Twitter, JSON-LD; auto-off under Rank Math/Yoast.
-- **Agency** — white-label login, dashboard widget, one-click starter pages.
+- **White-label & onboarding** — branded login screen, admin footer credit, and a "Get started" dashboard widget checklist.
+
+### Pressroot AI
+- **Site Types** — pick a business category (Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content site, Marketing/Landing page) to apply its matching Style Kit and create starter pages together, pre-filled with 26 dedicated, hand-built patterns (two swappable variants per page) rather than generic filler.
+- **Regenerate** — swap any starter page (or a whole site type at once) to its other hand-built variant with one click, with a live preview before committing.
+- **Starter hero copy generator** — a one-line business description in, a draft headline + subheadline out.
+- **AI Connectors** — bring your own free API key for Google Gemini, Groq, or OpenRouter, alongside the always-on, keyless Pollinations default — picked per generation from a model dropdown.
+- **AI in the block editor** — a "Generate with AI" toolbar button on paragraph/heading/list blocks for everyday content writing, not just the one-time setup screen.
+- Switchable off entirely as a **Theme Addon** if a site doesn't want the AI surface at all.
+
+### Settings, developer tools & support
+- **Appearance → Pressroot** — one consolidated, left-sidebar settings page: **Site Types** (above), **GitHub** (owner, token, cache, OAuth device-flow connect), and **Support** (live status — stats, languages, releases, open issues — for the theme's own repo, plus curated links to its docs).
+- **Export / Import / Reset** — back up every theme setting as JSON and restore it on another install.
+- **WP-CLI suite** (`wp pressroot ...`) — settings export/import/reset, Style Kit list/apply, clear compiled views, and a hook registry printer.
+- **Hook Registry** — every custom filter/action the theme exposes, documented in one place for child themes and mu-plugins to extend.
+- **Dev Mode** — a one-click admin-bar toggle plus a debug panel (environment, template, query count, memory, load time).
 
 ## Requirements
 
@@ -60,7 +83,7 @@ npm install
 npm run build      # or: npm run dev  (Vite HMR)
 ```
 
-Activate **Pressroot**, then open **Appearance → Theme Tools** to apply a Style Kit, and fine-tune under **Customize → Theme Options**.
+Activate **Pressroot**, then open **Appearance → Pressroot** (Site Types tab) to pick a site type — it applies a matching Style Kit and creates starter pages together — and fine-tune under **Customize → Theme Options**.
 
 ## License
 

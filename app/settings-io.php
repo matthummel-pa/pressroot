@@ -1,8 +1,26 @@
 <?php
 
 /**
- * Theme Tools: Style Kit presets + Import / Export / Reset of all theme settings.
- * Appearance -> Theme Tools. All actions are nonce-protected and capability-gated.
+ * Style Kit presets (data + apply logic) + Import / Export / Reset of all
+ * theme settings.
+ *
+ * The Style Kits were originally also exposed as their own manually-applied
+ * tab on Appearance -> Pressroot. That tab is gone: every Site Type (see
+ * app/ai-assistant.php) already applies its own matching kit automatically
+ * when chosen, which made a separate "pick a kit yourself" grid redundant —
+ * one obvious way to set the site's look instead of two. `prt_style_kits()`
+ * and `prt_apply_style_kit()` are unchanged and still do the real work
+ * (site-type selection calls `prt_apply_style_kit()` directly); only the
+ * manual swatch-picker UI and its `admin_post_prt_apply_kit` handler were
+ * removed.
+ *
+ * Export/Import/Reset are still here (still real, still useful as a backup/
+ * restore/migrate tool), just relocated: `prt_settings_backup_fields_html()`
+ * now renders inside a collapsed "Advanced" section on the Site Types tab
+ * (app/ai-assistant.php), the same pattern already used there for AI
+ * Connectors. This used to be its own "Theme Tools" page, then the "Style
+ * Kits" tab. All actions are nonce-protected and capability-gated, unchanged
+ * from before.
  */
 
 namespace App;
@@ -22,13 +40,14 @@ function prt_owned_mods()
 
 /**
  * Gate an admin_post handler behind the standard nonce + capability check
- * used identically by all four Theme Tools actions below (apply kit, export,
- * import, reset): the current user must be able to 'edit_theme_options' AND
- * the request must carry a valid nonce for $nonceAction (matching the
- * wp_nonce_field($nonceAction) each form in prt_tools_render() emits). On
- * failure, dies with the same "Not allowed" message every handler used
- * before this was extracted — behavior is unchanged, just no longer
- * duplicated four times.
+ * used identically by the Export/Import/Reset actions below (the manual
+ * "apply kit" action this was originally written for four of was removed —
+ * see the file docblock): the current user must be able to
+ * 'edit_theme_options' AND the request must carry a valid nonce for
+ * $nonceAction (matching the wp_nonce_field($nonceAction) each form in
+ * prt_settings_backup_fields_html() emits). On failure, dies with the same
+ * "Not allowed" message every handler used before this was extracted —
+ * behavior is unchanged, just no longer duplicated.
  *
  * @param string $nonceAction The nonce action string (also the admin_post 'action' value).
  * @return void Returns normally (falls through) when the check passes; wp_die()s otherwise.
@@ -42,10 +61,13 @@ function prt_require_admin_post(string $nonceAction): void
 
 /**
  * Apply a Style Kit's `mods` array to theme mods via set_theme_mod().
- * Shared by the "Apply" buttons on Appearance -> Theme Tools
- * (admin_post_prt_apply_kit below) and `wp pressroot kit apply <slug>`
- * (Prt_Kit_Command::apply() in app/cli.php), so both call sites use the
- * exact same lookup + loop instead of maintaining independent copies.
+ * Called when a Site Type is chosen (admin_post_prt_apply_site_type in
+ * app/ai-assistant.php, which looks up that type's `kit` slug) and by
+ * `wp pressroot kit apply <slug>` (Prt_Kit_Command::apply() in app/cli.php),
+ * so both call sites use the exact same lookup + loop instead of maintaining
+ * independent copies. (The manual per-kit "Apply" button that used to call
+ * this directly via its own admin_post_prt_apply_kit handler was removed —
+ * see the file docblock above.)
  *
  * @param string $slug Kit slug, must be a key in prt_style_kits().
  * @return bool True if the slug was found and its mods were applied, false if unknown.
@@ -129,18 +151,15 @@ function prt_style_kits()
     ]);
 }
 
-/** Admin page registration. */
-add_action('admin_menu', function () {
-    add_theme_page(
-        __('Theme Tools', 'pressroot'),
-        __('Theme Tools', 'pressroot'),
-        'edit_theme_options',
-        'prt-theme-tools',
-        __NAMESPACE__ . '\\prt_tools_render'
-    );
-});
-
-function prt_tools_render()
+/**
+ * Renders just the Export/Import/Reset controls — no page wrapper, no <h1>.
+ * Embedded inside a collapsed "Advanced" `<details>` on the Site Types tab
+ * (app/ai-assistant.php's prt_pressroot_ai_tab_html()), the same way AI
+ * Connectors is. The manual Style Kits swatch grid that used to sit above
+ * these controls (with its own "Apply" button per kit) was removed — see the
+ * file docblock above for why.
+ */
+function prt_settings_backup_fields_html()
 {
     if (! current_user_can('edit_theme_options')) {
         return;
@@ -148,12 +167,7 @@ function prt_tools_render()
     $notice = isset($_GET['prt_done']) ? sanitize_key($_GET['prt_done']) : '';
     $post   = admin_url('admin-post.php');
     ?>
-    <div class="wrap">
-        <h1><?php esc_html_e('Theme Tools', 'pressroot'); ?></h1>
-
-        <?php if ($notice === 'kit') : ?>
-            <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Style kit applied.', 'pressroot'); ?></p></div>
-        <?php elseif ($notice === 'import') : ?>
+        <?php if ($notice === 'import') : ?>
             <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Settings imported.', 'pressroot'); ?></p></div>
         <?php elseif ($notice === 'reset') : ?>
             <div class="notice notice-success is-dismissible"><p><?php esc_html_e('Theme settings reset to defaults.', 'pressroot'); ?></p></div>
@@ -161,73 +175,32 @@ function prt_tools_render()
             <div class="notice notice-error is-dismissible"><p><?php esc_html_e('Could not import that file. Make sure it is a JSON export from this theme.', 'pressroot'); ?></p></div>
         <?php endif; ?>
 
-        <h2 style="margin-top:24px"><?php esc_html_e('Style Kits', 'pressroot'); ?></h2>
-        <p class="description"><?php esc_html_e('One click applies a full palette + font + radius set. You can still fine-tune everything afterward in the Customizer.', 'pressroot'); ?></p>
-        <div style="display:flex;flex-wrap:wrap;gap:14px;margin:16px 0 32px">
-            <?php foreach (prt_style_kits() as $id => $kit) :
-                $m = $kit['mods']; ?>
-                <form method="post" action="<?php echo esc_url($post); ?>" style="width:230px;border:1px solid #dcdcde;border-radius:10px;padding:14px;background:#fff">
-                    <div style="display:flex;gap:6px;margin-bottom:10px">
-                        <?php foreach (['prt_color_paper', 'prt_color_action', 'prt_color_ink', 'prt_color_body'] as $ck) : ?>
-                            <span style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.1);background:<?php echo esc_attr($m[$ck]); ?>"></span>
-                        <?php endforeach; ?>
-                    </div>
-                    <strong style="font-size:14px"><?php echo esc_html($kit['label']); ?></strong>
-                    <p style="margin:4px 0 10px;color:#646970;font-size:12px"><?php echo esc_html($kit['desc']); ?></p>
-                    <p style="margin:0 0 12px;font-size:12px;color:#646970"><?php echo esc_html($m['prt_font_heading'] . ' / ' . $m['prt_font_body']); ?></p>
-                    <input type="hidden" name="action" value="prt_apply_kit">
-                    <input type="hidden" name="kit" value="<?php echo esc_attr($id); ?>">
-                    <?php wp_nonce_field('prt_apply_kit'); ?>
-                    <button class="button button-primary" style="width:100%"><?php esc_html_e('Apply', 'pressroot'); ?></button>
-                </form>
-            <?php endforeach; ?>
-        </div>
-
-        <hr>
-
-        <h2 style="margin-top:24px"><?php esc_html_e('Export settings', 'pressroot'); ?></h2>
+        <h4 style="margin-top:0"><?php esc_html_e('Export settings', 'pressroot'); ?></h4>
         <p class="description"><?php esc_html_e('Download all theme settings as a JSON file you can re-import on another site.', 'pressroot'); ?></p>
-        <form method="post" action="<?php echo esc_url($post); ?>" style="margin:12px 0 28px">
+        <form method="post" action="<?php echo esc_url($post); ?>" style="margin:12px 0 24px">
             <input type="hidden" name="action" value="prt_export_settings">
             <?php wp_nonce_field('prt_export_settings'); ?>
             <button class="button"><?php esc_html_e('Download export (.json)', 'pressroot'); ?></button>
         </form>
 
-        <h2><?php esc_html_e('Import settings', 'pressroot'); ?></h2>
+        <h4><?php esc_html_e('Import settings', 'pressroot'); ?></h4>
         <p class="description"><?php esc_html_e('Upload a JSON export to apply those settings here.', 'pressroot'); ?></p>
-        <form method="post" enctype="multipart/form-data" action="<?php echo esc_url($post); ?>" style="margin:12px 0 28px">
+        <form method="post" enctype="multipart/form-data" action="<?php echo esc_url($post); ?>" style="margin:12px 0 24px">
             <input type="file" name="prt_import_file" accept="application/json,.json" required>
             <input type="hidden" name="action" value="prt_import_settings">
             <?php wp_nonce_field('prt_import_settings'); ?>
             <button class="button button-primary"><?php esc_html_e('Import file', 'pressroot'); ?></button>
         </form>
 
-        <hr>
-
-        <h2 style="color:#b32d2e"><?php esc_html_e('Reset', 'pressroot'); ?></h2>
+        <h4 style="color:#b32d2e"><?php esc_html_e('Reset', 'pressroot'); ?></h4>
         <p class="description"><?php esc_html_e('Remove all of this theme\'s settings and return to defaults. This cannot be undone, so export first.', 'pressroot'); ?></p>
         <form method="post" action="<?php echo esc_url($post); ?>" style="margin:12px 0" onsubmit="return confirm('<?php echo esc_js(__('Reset all theme settings to defaults?', 'pressroot')); ?>');">
             <input type="hidden" name="action" value="prt_reset_settings">
             <?php wp_nonce_field('prt_reset_settings'); ?>
             <button class="button" style="border-color:#b32d2e;color:#b32d2e"><?php esc_html_e('Reset theme settings', 'pressroot'); ?></button>
         </form>
-    </div>
     <?php
 }
-
-/**
- * Apply a style kit. Unknown/missing slugs are a silent no-op (same as
- * before this was extracted to prt_apply_style_kit()) — the redirect still
- * reports success either way, since the previous behavior never
- * distinguished "applied" from "unknown slug" here.
- */
-add_action('admin_post_prt_apply_kit', function () {
-    prt_require_admin_post('prt_apply_kit');
-    $id = isset($_POST['kit']) ? sanitize_key($_POST['kit']) : '';
-    prt_apply_style_kit($id);
-    wp_safe_redirect(admin_url('themes.php?page=prt-theme-tools&prt_done=kit'));
-    exit;
-});
 
 /** Export all prt_* theme mods as JSON download. */
 add_action('admin_post_prt_export_settings', function () {
@@ -261,7 +234,7 @@ add_action('admin_post_prt_import_settings', function () {
             $ok = true;
         }
     }
-    wp_safe_redirect(admin_url('themes.php?page=prt-theme-tools&prt_done=' . ($ok ? 'import' : 'importerr')));
+    wp_safe_redirect(prt_settings_tab_url('ai', ['prt_done' => $ok ? 'import' : 'importerr']) . '#prt-settings-advanced');
     exit;
 });
 
@@ -271,6 +244,6 @@ add_action('admin_post_prt_reset_settings', function () {
     foreach (array_keys(prt_owned_mods()) as $k) {
         remove_theme_mod($k);
     }
-    wp_safe_redirect(admin_url('themes.php?page=prt-theme-tools&prt_done=reset'));
+    wp_safe_redirect(prt_settings_tab_url('ai', ['prt_done' => 'reset']) . '#prt-settings-advanced');
     exit;
 });

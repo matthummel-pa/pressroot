@@ -4,6 +4,24 @@
   var be = wp.blockEditor || wp.editor, IC = be.InspectorControls, ubp = be.useBlockProps;
   var c = wp.components, SSR = wp.serverSideRender || wp.components.ServerSideRender;
 
+  /** Static, non-SSR skeleton for the Patterns-inserter preview — see the
+   * matching comment in prt-skills-grid-editor.js for why this exists. */
+  function skeleton(a) {
+    var tags = (a.tags || '').split(',').map(function (t) { return t.trim(); }).filter(Boolean);
+    return el('div', { style: { border: '1px solid #e2e2e5', borderRadius: 10, overflow: 'hidden', background: '#fff' } },
+      el('div', { style: { height: 120, background: a.imageUrl ? ('url(' + a.imageUrl + ') center/cover') : '#f0f0f2' } }),
+      el('div', { style: { padding: 16 } },
+        el('strong', { style: { display: 'block', fontSize: 16, marginBottom: 6 } }, a.heading || ''),
+        el('p', { style: { fontSize: 13, color: '#646970', margin: '0 0 10px' } }, a.excerpt || ''),
+        el('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+          tags.map(function (t, i) {
+            return el('span', { key: i, style: { fontSize: 11, padding: '3px 9px', borderRadius: 999, background: '#f0f0f2', color: '#3c434a' } }, t);
+          })
+        )
+      )
+    );
+  }
+
   wp.blocks.registerBlockType('prt/project-card', {
     apiVersion: 2,
     title: __('Project Card', 'pressroot'),
@@ -41,7 +59,12 @@
           el(c.TextControl, { label: __('GitHub URL', 'pressroot'), value: a.githubUrl, type: 'url', onChange: set('githubUrl') })
         )
       );
-      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, { block: 'prt/project-card', attributes: a })));
+      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, {
+        block: 'prt/project-card',
+        attributes: a,
+        LoadingResponsePlaceholder: function () { return skeleton(a); },
+        EmptyResponsePlaceholder: function () { return skeleton(a); }
+      })));
     },
     save: function () { return null; }
   });

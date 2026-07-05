@@ -17,12 +17,14 @@ add_action('admin_init', function () {
         return ($p && ! empty($p['content'])) ? $p['content'] : '';
     };
 
+    // NOTE(fix): 'services'/'pricing'/'blog'/'contact' were removed from this
+    // list — the AI Setup Assistant (app/ai-assistant.php) now owns those
+    // exact page slugs with type-specific patterns. Seeding them here first
+    // permanently blocked the Assistant's "don't touch existing pages" safety
+    // check from ever creating its own versions. 'now' and
+    // 'privacy-policy-preview' are untouched by the Assistant, so they stay.
     $pages = [
-        ['slug' => 'services',  'title' => 'Services',  'template' => 'template-services.blade.php',  'pattern' => 'matthummel/services-full'],
-        ['slug' => 'pricing',   'title' => 'Pricing',   'template' => '',                             'pattern' => 'matthummel/pricing-full'],
-        ['slug' => 'blog',      'title' => 'Blog',      'template' => 'template-blog.blade.php',      'pattern' => 'matthummel/blog-full'],
         ['slug' => 'now',       'title' => 'Now',       'template' => 'template-now.blade.php',       'pattern' => ''],
-        ['slug' => 'contact',   'title' => 'Contact',   'template' => 'template-contact.blade.php',   'pattern' => 'matthummel/contact-full'],
         ['slug' => 'privacy-policy-preview', 'title' => 'Privacy Policy', 'template' => 'template-legal.blade.php', 'pattern' => ''],
     ];
 
@@ -155,7 +157,11 @@ add_action('admin_init', function () {
             wp_update_post(['ID' => $res->ID, 'post_content' => $p['content']]);
         }
     }
-    if (($c = get_page_by_path('contact')) && trim($c->post_content) !== '') {
+    // NOTE(fix): skip pages the AI Setup Assistant created and owns — this
+    // step used to unconditionally blank any 'contact' page's content, which
+    // would wipe out a fresh Assistant-generated Contact page after a
+    // database reset (see the matching notes on v1/v6/v11 in this file).
+    if (($c = get_page_by_path('contact')) && ! get_post_meta($c->ID, '_prt_site_type', true) && trim($c->post_content) !== '') {
         wp_update_post(['ID' => $c->ID, 'post_content' => '']);
     }
     update_option('prt_preview_seed_v4', 1);
@@ -187,10 +193,12 @@ add_action('admin_init', function () {
     if (! current_user_can('edit_theme_options')) {
         return;
     }
+    // NOTE(fix): 'services'/'pricing'/'blog' removed from this map — those
+    // slugs now belong to the AI Setup Assistant. Re-stamping them here with
+    // the old generic patterns would overwrite type-specific Assistant
+    // content on every fresh database reset. 'resources' isn't an Assistant
+    // slug, so it's unaffected.
     $map = [
-        'services'  => 'matthummel/services-full',
-        'pricing'   => 'matthummel/pricing-full',
-        'blog'      => 'matthummel/blog-full',
         'resources' => 'matthummel/resources-full',
     ];
     foreach ($map as $slug => $pat) {
@@ -303,19 +311,17 @@ add_action('admin_init', function () {
     }
 }, 99);
 
-/** v11: re-apply Services/Pricing patterns (SR-only h2 heading fix). */
+/**
+ * v11: re-apply Services/Pricing patterns (SR-only h2 heading fix).
+ *
+ * NOTE(fix): disabled — 'services'/'pricing' are now owned by the AI Setup
+ * Assistant, and re-stamping the old generic patterns here would overwrite
+ * type-specific Assistant content on every fresh database reset. The version
+ * flag is still set so this stays a one-time no-op rather than re-running.
+ */
 add_action('admin_init', function () {
     if (get_option('prt_preview_seed_v11') || wp_get_theme()->get('TextDomain') !== 'pressroot') {
         return;
-    }
-    if (! current_user_can('edit_theme_options')) {
-        return;
-    }
-    foreach (['services' => 'matthummel/services-full', 'pricing' => 'matthummel/pricing-full'] as $slug => $pat) {
-        $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered($pat);
-        if (($page = get_page_by_path($slug)) && $reg && ! empty($reg['content'])) {
-            wp_update_post(['ID' => $page->ID, 'post_content' => wp_slash($reg['content'])]);
-        }
     }
     update_option('prt_preview_seed_v11', 1);
 });

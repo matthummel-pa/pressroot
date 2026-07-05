@@ -115,7 +115,7 @@ add_action('init', function () {
 <!-- wp:paragraph {"className":"eyebrow"} --><p class="eyebrow">Core skills</p><!-- /wp:paragraph -->
 <!-- wp:heading {"level":2,"className":"display-lg"} --><h2 class="wp-block-heading display-lg">What I work with.</h2><!-- /wp:heading -->
 <!-- wp:paragraph {"className":"lead"} --><p class="lead">A broad toolkit — from pixel-perfect themes to enterprise Power Platform.</p><!-- /wp:paragraph -->
-<!-- wp:prt/skills-grid {"skills":"[{\"icon\":\"🌐\",\"title\":\"WordPress\",\"description\":\"Sage / Roots themes, Gutenberg blocks, WooCommerce, REST API, headless CMS.\"},{\"icon\":\"⚡\",\"title\":\"Power Platform\",\"description\":\"Power Apps, Power Automate, Power BI, SharePoint, Dataverse solutions.\"},{\"icon\":\"🎨\",\"title\":\"Design & UX\",\"description\":\"Accessible interfaces, responsive CSS, Figma, Core Web Vitals, performance.\"}]","columns":3} /-->
+<!-- wp:prt/skills-grid {"cards":"[{\"title\":\"WordPress\",\"body\":\"Sage / Roots themes, Gutenberg blocks, WooCommerce, REST API, headless CMS.\"},{\"title\":\"Power Platform\",\"body\":\"Power Apps, Power Automate, Power BI, SharePoint, Dataverse solutions.\"},{\"title\":\"Design & UX\",\"body\":\"Accessible interfaces, responsive CSS, Figma, Core Web Vitals, performance.\"}]","columns":3} /-->
 <!-- /wp:prt/section -->',
     ]);
 
@@ -248,7 +248,7 @@ add_action('init', function () {
             . '<!-- wp:prt/section {"paddingTop":"lg","paddingBottom":"lg","containerWidth":"contained"} -->
 <!-- wp:paragraph {"className":"eyebrow"} --><p class="eyebrow">Core skills</p><!-- /wp:paragraph -->
 <!-- wp:heading {"level":2} --><h2 class="wp-block-heading">What I work with.</h2><!-- /wp:heading -->
-<!-- wp:prt/skills-grid {"skills":"[{\"icon\":\"🌐\",\"title\":\"WordPress\",\"description\":\"Sage themes, Gutenberg blocks, WooCommerce, REST API.\"},{\"icon\":\"⚡\",\"title\":\"Power Platform\",\"description\":\"Power Apps, Power Automate, Power BI, Dataverse.\"},{\"icon\":\"🎨\",\"title\":\"Design & UX\",\"description\":\"Accessible UI, responsive CSS, Figma, performance.\"}]","columns":3} /-->
+<!-- wp:prt/skills-grid {"cards":"[{\"title\":\"WordPress\",\"body\":\"Sage themes, Gutenberg blocks, WooCommerce, REST API.\"},{\"title\":\"Power Platform\",\"body\":\"Power Apps, Power Automate, Power BI, Dataverse.\"},{\"title\":\"Design & UX\",\"body\":\"Accessible UI, responsive CSS, Figma, performance.\"}]","columns":3} /-->
 <!-- /wp:prt/section -->
 '
             /* Timeline */
@@ -298,7 +298,7 @@ add_action('init', function () {
             /* Skills */
             . '<!-- wp:prt/section {"bgColor":"cream","paddingTop":"md","paddingBottom":"lg","containerWidth":"narrow"} -->
 <!-- wp:paragraph {"className":"eyebrow"} --><p class="eyebrow">Skills</p><!-- /wp:paragraph -->
-<!-- wp:prt/skills-grid {"skills":"[{\"icon\":\"🌐\",\"title\":\"WordPress & PHP\",\"description\":\"Sage, WooCommerce, Gutenberg, ACF, REST API.\"},{\"icon\":\"⚡\",\"title\":\"Power Platform\",\"description\":\"Power Apps, Power Automate, Power BI, Dataverse.\"},{\"icon\":\"🖥️\",\"title\":\"Front-End\",\"description\":\"HTML5, CSS3, JavaScript ES6+, React, Tailwind, Vite.\"}]","columns":3} /-->
+<!-- wp:prt/skills-grid {"cards":"[{\"title\":\"WordPress & PHP\",\"body\":\"Sage, WooCommerce, Gutenberg, ACF, REST API.\"},{\"title\":\"Power Platform\",\"body\":\"Power Apps, Power Automate, Power BI, Dataverse.\"},{\"title\":\"Front-End\",\"body\":\"HTML5, CSS3, JavaScript ES6+, React, Tailwind, Vite.\"}]","columns":3} /-->
 <!-- /wp:prt/section -->
 '
             /* CTA */

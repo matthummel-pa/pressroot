@@ -4,6 +4,28 @@
   var be = wp.blockEditor || wp.editor, IC = be.InspectorControls, ubp = be.useBlockProps;
   var c = wp.components, SSR = wp.serverSideRender || wp.components.ServerSideRender;
 
+  /**
+   * Static, non-SSR skeleton shown while ServerSideRender's REST round-trip
+   * is in flight (its LoadingResponsePlaceholder). The Patterns inserter and
+   * "Choose a pattern" modal render pattern thumbnails in a lightweight
+   * preview iframe that doesn't reliably wait for/complete the SSR fetch, so
+   * without this the pattern preview can appear blank. This gives a real,
+   * attribute-driven approximation instantly, no network round-trip needed.
+   */
+  function skeleton(a) {
+    var items = [];
+    try { items = JSON.parse(a.cards); } catch (e) { items = []; }
+    var cols = a.columns || 3;
+    return el('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', 1fr)', gap: 12, padding: '24px 0' } },
+      items.map(function (item, i) {
+        return el('div', { key: i, style: { border: '1px solid #e2e2e5', borderRadius: 10, padding: 16, background: a.style === 'focus' ? '#f2f0ff' : '#fff' } },
+          el('strong', { style: { display: 'block', marginBottom: 6, fontSize: 15 } }, item.title || ''),
+          el('span', { style: { display: 'block', fontSize: 13, color: '#646970' } }, item.body || '')
+        );
+      })
+    );
+  }
+
   function Repeater(items, onChange, defaultItem, renderRow) {
     return el('div', { className: 'prt-repeater' },
       items.map(function (item, i) {
@@ -57,7 +79,12 @@
             onChange: set('style') })
         )
       );
-      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, { block: 'prt/skills-grid', attributes: a })));
+      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, {
+        block: 'prt/skills-grid',
+        attributes: a,
+        LoadingResponsePlaceholder: function () { return skeleton(a); },
+        EmptyResponsePlaceholder: function () { return skeleton(a); }
+      })));
     },
     save: function () { return null; }
   });

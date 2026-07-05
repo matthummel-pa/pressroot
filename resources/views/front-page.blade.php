@@ -5,7 +5,7 @@
 
   1. BLOCK-EDITABLE — if the Home page has block content of its own, that content
      is rendered and is fully editable in the block editor. Populate it in one
-     click: edit the Home page → Patterns → Matthummel → "Home — Full page".
+     click: edit the Home page → Patterns → Pressroot → "Home — Full page".
 
   2. DESIGNED FALLBACK — if the page is empty, the designed homepage is composed
      from the partials/home/* sections (dynamic: work grid → projects CPT,

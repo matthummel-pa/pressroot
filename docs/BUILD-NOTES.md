@@ -159,6 +159,315 @@ site theme:
   because they only show up when you ask "does everything I built actually
   get used?"
 
+## "add wordpress block dev js tools + a GUI block builder" — reverted
+- Added, then asked to be rolled back before landing: `@wordpress/scripts`
+  wp-scripts tooling (a `blocks/` directory + a test `pressroot/testimonial`
+  block) and a "Block Builder" no-code admin page for defining custom blocks
+  from a form. Removed the new files (`app/block-builder.php`,
+  `app/wp-scripts-blocks.php`, `resources/js/custom-block-editor.js`,
+  `resources/js/block-builder-admin.js`, the whole `blocks/` directory) and
+  reverted `functions.php`, `package.json`, and `.gitignore` back to their
+  state from before this addition.
+- **Takeaway:** worth building out again later if wanted — the design (shared
+  render callback + shared editor script reading a schema, wp-scripts living
+  in its own directory independent of Vite) held up fine technically; this
+  was a scope/direction call, not a bug.
+
+## "individual patterns per site type + regenerate option"
+The AI Setup Assistant's 5 site types used to all share the same generic
+Services/Pricing/About/etc. patterns from page-patterns.php. Replaced with:
+- **24 dedicated patterns, 2 variants each, across 5 new files**
+  (`app/site-type-agency.php`, `-freelance.php`, `-saas.php`, `-blog.php`,
+  `-marketing.php`): Agency (services/pricing/contact), Freelance
+  (about/résumé/projects), SaaS (features/pricing/contact — dark "Midnight"
+  kit, built for a dark canvas via `prt/section` bgColor:ink), Blog
+  (index/about — live `prt/post-grid`, warm/editorial tone), Marketing (one
+  full single-page landing home + contact — sharp "Mono Slate" kit). Each
+  variant differs in layout AND copy angle, not just color, so regenerating
+  actually gives something different. Real, specific dummy content per
+  category (not lorem ipsum) — placeholder names like "[Your Name]" for
+  freelance/SaaS rather than reusing the site's own "Matt Hummel" content.
+- **Regenerate**: pages created by this tool are tagged with post meta
+  (`_prt_site_type` / `_prt_page_role` / `_prt_pattern_variant`). A new
+  "Your starter pages" table on the AI Setup Assistant screen lists them with
+  a Regenerate button that swaps that one page to its other hand-built
+  variant. Deliberately NOT a live LLM call rewriting block markup on click —
+  a free text API can't be trusted to reliably emit valid Gutenberg syntax,
+  so cycling between two pre-built, verified-good variants is the robust
+  version of "try again."
+- **Takeaway:** built via 5 parallel agents (one per site type, fully isolated
+  files) plus a slug cross-check afterward (grep every slug referenced in
+  `prt_site_types()` against every slug actually registered) — caught zero
+  mismatches, but that check is cheap insurance worth doing any time pattern
+  registration and pattern usage live in different files.
+
+## "patterns and views seem to not be updating on selection, something is causing a hangup"
+- **Cause:** `.playground/mu-plugins/10-prt-preview-seed.php` — an 11-version
+  dev-only script that auto-seeds local preview content — creates pages named
+  `services`/`pricing`/`blog`/`contact` on every fresh database reset (v1),
+  then re-stamps them with the *old* generic patterns twice more (v6, v11),
+  and even explicitly blanks a fresh Contact page's content once (v4). Those
+  are the exact same slugs the new AI Setup Assistant (see above) creates
+  per site type — and its page-creation step correctly, safely, but silently
+  skips any slug that already exists. So every time the local database got
+  reset this session, the dev-seed script always won the race and the
+  Assistant's "Use this" button appeared to do nothing.
+- **Fix:** removed `services`/`pricing`/`blog`/`contact` from v1's seed list
+  (kept `now`/`privacy-policy-preview`, which the Assistant doesn't touch);
+  removed the same 3 slugs from v6's re-stamp map (kept `resources`);
+  disabled v11 entirely (it only re-stamped services/pricing); guarded v4's
+  Contact-blanking step to skip any Contact page tagged `_prt_site_type` (i.e.
+  one the Assistant created). v7/v8/v9/v10 didn't need changes — they only
+  touch `now`/`privacy-policy-preview`/menus/widgets/reading-settings, none of
+  which collide.
+- **Action needed on the current local site:** the stale pages already exist
+  right now (Services/Pricing/Blog/Contact) from before this fix. Delete them
+  from Pages in wp-admin (or Trash → Delete Permanently), then re-click "Use
+  this" in the AI Setup Assistant — the fixed script will no longer recreate
+  them, so the Assistant's own type-specific pages will get created cleanly.
+- **Takeaway:** a dev-only seed/preview script and a real content-generation
+  feature must never target the same page slugs — even one being idempotent
+  ("skip if exists") just means whichever one runs first silently wins forever.
+
+## "clean switching + live previews + refresh + patterns not previewing" (AI Setup Assistant round 2)
+Four related asks in one pass:
+- **Switching site types now cleans up.** `admin_post_prt_apply_site_type`
+  force-deletes (bypasses Trash entirely) every page tagged with a
+  *different* `_prt_site_type` than the one just chosen, plus a defensive
+  sweep of any already-trashed tagged pages — so picking a new type always
+  gets a clean set of starter pages instead of every type ever clicked piling
+  up. Only pages this tool tagged are ever touched.
+- **Live design previews on the site-type cards.** Added a `prt_pattern_preview`
+  query var + `template_redirect` handler that renders one registered pattern
+  as a real standalone page (`wp_head()`/`wp_footer()`, so it uses the theme's
+  actual compiled CSS/fonts — not a mockup), gated to signed-in
+  `edit_theme_options` users. Each "Choose a site type" card embeds its first
+  page's pattern in a scaled-down `<iframe>` (400%/scale(0.25), the standard
+  iframe-thumbnail technique) so you see the real design before clicking.
+- **"Regenerate all" per site type.** New `admin_post_prt_regenerate_site_type`
+  bulk-toggles every page tagged with one site type to its other variant in
+  one click (reuses the same one-page-at-a-time logic as the existing
+  per-page Regenerate). The "Your starter pages" table now groups pages by
+  site type with this button per group.
+- **Patterns not showing previews in the block editor's Patterns tab/"Choose a
+  pattern" modal — root cause + fix.** All 6 `prt/*` dynamic blocks that lean
+  on `ServerSideRender` for their editor preview (skills-grid, stat-strip,
+  timeline, cta-band, project-card, post-grid) depend on a REST round-trip
+  that the lightweight pattern-preview iframe doesn't reliably wait for or
+  complete, leaving the thumbnail blank. Gave each block a static,
+  attribute-driven `skeleton()` fallback passed as ServerSideRender's
+  `LoadingResponsePlaceholder`/`EmptyResponsePlaceholder`, so a real
+  approximation renders instantly with no network dependency. Also fixed an
+  unrelated but real bug found while investigating: 3 `prt/skills-grid`
+  instances in `app/block-patterns.php` serialized the wrong attribute key
+  (`"skills"` instead of the registered `"cards"`, with item keys
+  `icon`/`description` instead of `title`/`body`), silently falling back to
+  default placeholder cards instead of their intended content.
+- **Takeaway:** `ServerSideRender`-based block editors look fine in the normal
+  post editor (which patiently waits for the REST call) but can silently fail
+  to preview anywhere a block is rendered inside a lightweight/sandboxed
+  preview surface (pattern thumbnails, "Choose a pattern" modals) — any block
+  built this way needs a synchronous, non-network fallback for those contexts.
+
+## "connect free AI tools + model picker + AI in the block editor"
+- **AI Connectors** (`app/ai-connectors.php`, Appearance -> AI Connectors):
+  a settings screen to optionally connect the best currently-available FREE
+  (no credit card) AI text APIs beyond the built-in keyless Pollinations —
+  Google Gemini (generous indefinite free tier), Groq (fast free-tier
+  inference), and OpenRouter (one key, several always-free models). Each
+  connector's API key + model ID are stored as theme_mods (same pattern as
+  the existing GitHub token). A single `prt_ai_generate_text($slug, $prompt)`
+  is the one place that knows how to call any of them — Gemini's native REST
+  shape, Groq/OpenRouter's shared OpenAI-compatible chat-completions shape —
+  so every consumer feature just calls one function regardless of provider.
+- **Security:** every key stays server-side. A `wp_ajax_prt_ai_generate_copy`
+  endpoint replaced the AI Setup Assistant's old direct
+  `fetch('https://text.pollinations.ai/...')` call from the browser — now
+  Pollinations included, every model goes through the same PHP proxy, so a
+  connected Gemini/Groq/OpenRouter key never appears in any page source or
+  browser request.
+- **Model dropdown:** the AI Setup Assistant's starter-copy generator (step 3)
+  now shows a model `<select>` populated from `prt_ai_configured_connectors()`
+  — Pollinations always, plus anything with a saved key.
+- **AI in the block editor** (`app/ai-content-block.php` +
+  `resources/js/ai-content-block.js`): a "Generate with AI" toolbar button on
+  paragraph/heading/list-item blocks, added via an `editor.BlockEdit` filter
+  (not a new custom block) so it works on ordinary content blocks anywhere in
+  the editor, not just a dedicated AI Setup Assistant screen. Opens a small
+  popover — pick a connected model, describe what the block should say,
+  replace its content with the result. Reuses the same `prt_ai_generate_text()`
+  through its own AJAX endpoint (`prt_ai_generate_block_content`), gated at
+  `edit_posts` rather than `edit_theme_options` since this is an everyday
+  writing aid for any author, not a theme-owner setting.
+- **Takeaway:** centralizing "call an AI provider" behind one server-side
+  function early (`prt_ai_generate_text`) meant the block-editor feature was
+  just a new AJAX endpoint + a toolbar button — no new provider-calling code
+  needed.
+
+## "rename to Pressroot AI, make it an addon, merge connectors in as Advanced"
+- **Renamed** "AI Setup Assistant" -> "Pressroot AI" everywhere user-facing
+  (menu label, page `<h1>`, doc comments). Internal slugs/hooks/meta keys
+  (`prt-ai-assistant`, `_prt_site_type`, etc.) were left alone — only labels
+  changed, so nothing already saved on a site breaks.
+- **Theme Addons** (`app/theme-addons.php`, new Customizer section under
+  Theme Options): a `prt_addon_enabled($slug)` helper + one checkbox so far
+  ("Enable Pressroot AI", default on). Every entry point for the feature —
+  the admin_menu registration, all three admin-post handlers, the pattern
+  preview route, the AI Connectors save handler, and the block-editor
+  enqueue + its AJAX endpoint — checks this flag and no-ops if it's off, so
+  switching the addon off actually removes the whole surface (menu items
+  disappear, endpoints refuse requests) rather than just hiding a link.
+- **AI Connectors folded in**: it's no longer its own "Appearance -> AI
+  Connectors" page. `prt_ai_connectors_render()` became
+  `prt_ai_connectors_fields_html()` — same settings table, no page chrome —
+  embedded in a collapsed `<details id="prt-ai-advanced">` "Advanced: Connect
+  more AI models" section at the bottom of the Pressroot AI screen. Saving
+  redirects back to that page with `#prt-ai-advanced`, which browsers
+  natively auto-expand a `<details>` for when the URL fragment targets
+  something inside it — no extra JS needed to reopen it after saving.
+- **Takeaway:** an "addon" isn't just a rename — every place that feature can
+  be reached (menu, admin-post, AJAX, template_redirect) needs the same
+  on/off check, or the toggle is cosmetic.
+
+## "consolidate Theme Tools/Starter Sites/Pressroot AI/GitHub into one page"
+- **Cause:** four separate Appearance submenu pages for one theme, each with
+  its own `<h1>` and no shared chrome — no obvious single home for the theme,
+  and the old "Starter Sites" demo importer (`app/demo-import.php`) had gone
+  stale: grepping its 11 referenced pattern slugs against every
+  `register_block_pattern()` call in the theme showed 10 of the 11 no longer
+  exist, so running it today mostly produced blank pages. It was also a
+  strictly weaker duplicate of Pressroot AI's site-type picker (5 personas,
+  2 hand-built variants each, live previews, regenerate), which solves the
+  same "give me a starter site" job better.
+- **Fix:** new `app/pressroot-settings.php` registers one page, Appearance ->
+  Pressroot, with a branded header (small "P" mark in the theme's own brand
+  purple `#7C5CFF` — no image logo asset exists, so this was used instead of
+  inventing one) and a tab per area: **Style Kits** (`app/settings-io.php`),
+  **Starter** (new — explains the retirement and links to Pressroot AI),
+  **Pressroot AI** (`app/ai-assistant.php`, hidden entirely when the Theme
+  Addons toggle is off), **GitHub** (`app/github-settings.php`). Each file's
+  `prt_..._render()` was extracted down to a `prt_..._tab_html()` with no
+  page wrapper, callable from the new page. `prt_settings_tab_url($tab,
+  $extra)` is the one place that knows the page's slug (`prt-settings`) —
+  every admin-post handler across all four files redirects through it
+  instead of hardcoding a URL. Deleted `app/demo-import.php` outright, and
+  removed its duplicate "Create starter pages" button from the dashboard
+  widget in `app/whitelabel.php` (same job, worse result — 4 blank pages vs.
+  a full designed site type). Added an editable Docs/Support links row
+  (`prt_docs_url`/`prt_support_url` theme mods) to the page header, defaulted
+  to the theme's real GitHub repo/issues URLs.
+- **Takeaway:** before deleting a feature as "redundant," check the evidence
+  concretely (grep every referenced slug/asset) rather than assuming — it's
+  the difference between an opinion and a fact the user can verify themselves.
+
+## "remove the Starter tab"
+- **Cause:** once the retired Starter Sites importer's "here's why, go use
+  Pressroot AI" placeholder tab had been sitting on Appearance -> Pressroot
+  for a cycle, it had nothing left to do — Pressroot AI is one click away in
+  its own tab, so the explainer was just an extra click for no new
+  information.
+- **Fix:** removed the `starter` entry from `prt_settings_tabs()` and deleted
+  `prt_render_starter_tab()`, both in `app/pressroot-settings.php` — no
+  separate file existed for it, since it was a small explainer function
+  added during the consolidation rather than its own page. Appearance ->
+  Pressroot is now three tabs: Style Kits, Pressroot AI, GitHub. Updated the
+  file's docblock and `docs/ARCHITECTURE.md`, `docs/THEME-SETTINGS.md`, and
+  `docs/index.md` to match.
+- **Takeaway:** a placeholder tab that only exists to point somewhere else is
+  a temporary bridge, not a permanent fixture — worth removing once the
+  destination is well-established rather than leaving it as dead weight.
+
+## "replace Style Kits with Site Types, rename tab, keep AI on it"
+- **Cause:** the consolidated settings page had two tabs doing overlapping
+  jobs — "Style Kits" (a manual swatch grid to apply a palette/font/radius
+  preset by itself) and "Pressroot AI" (pick a site type, which already
+  applies its own matching kit automatically). Picking a kit manually was a
+  redundant second path to the same result the site-type picker already
+  covers, and "Pressroot AI" undersold what had become the primary tab.
+- **Fix:** removed the `style-kits` tab entirely — the swatch grid UI and its
+  `admin_post_prt_apply_kit` handler are gone from `app/settings-io.php`, but
+  `prt_style_kits()` and `prt_apply_style_kit()` (the data + apply logic)
+  are untouched, since the site-type picker calls the latter directly.
+  Renamed the former "Pressroot AI" tab to **Site Types** (internal tab id
+  stays `ai` — only the label changed, so no redirect/AJAX/enqueue code
+  needed touching beyond the one default-tab fallback). Per explicit
+  direction, AI stayed fully visible on the renamed tab: the hero-copy
+  generator and the "Connect more AI models" Advanced section are unchanged.
+  Export/Import/Reset weren't dropped with the swatch grid — they moved into
+  their own new collapsed "Advanced: Backup & restore settings" section
+  (`prt_settings_backup_fields_html()`, still in `app/settings-io.php`) on
+  the Site Types tab, right below the AI Connectors one, following the same
+  pattern. `prt_settings_render()`'s default tab moved from `style-kits` to
+  `ai`, with a fallback that picks the first visible tab if `ai` is hidden
+  (Pressroot AI addon off), rather than assuming one tab is always visible.
+- **Takeaway:** two UI paths to the same setting is worth collapsing into
+  one, but "collapse" doesn't mean "delete" — the underlying data/logic and
+  the genuinely distinct sub-features (export/import/reset) just need a new,
+  single home.
+
+## "add a Support tab with repo info, left-sidebar layout for the whole page"
+- **Added**: a new **Support** tab on Appearance -> Pressroot
+  (`app/support-settings.php`, `prt_support_tab_html()`) — always visible,
+  not gated by the Pressroot AI addon toggle, since getting help shouldn't
+  depend on an unrelated feature flag. Shows live status for "this theme's
+  repository" (stats, topics, language breakdown, recent releases +
+  changelog link, open issues) reusing the existing `App\Github` class —
+  `Github::renderRepo($owner, $repo, ['readme' => false])` for the status
+  card, plus a new `Github::fetchIssues()` method (filters GitHub's
+  `/issues` endpoint down to actual issues, since it also returns pull
+  requests) for the open-issues list. Also added `open_issues_count` to
+  `Github::fetch()`'s data. Below that, a curated, filterable
+  (`matthummel/support_doc_links`) list of links to the theme's own docs,
+  resolved against the configured repo's `blob/main/...` URLs so a fork
+  that repoints its own repo gets correct links automatically. "This
+  theme's repository" (owner + slug, `prt_support_repo()`) is deliberately
+  separate from the GitHub tab's default-owner setting — that one's a
+  fallback for individual Projects, this one specifically means "the repo
+  this Support tab is about" — editable inline via its own collapsed "Edit
+  repository" section, same UI pattern as the page header's Docs/Support
+  link editor.
+- **Layout change**: replaced the page's top `nav-tab-wrapper` with a left
+  sidebar menu + right content area (`prt_settings_render()` in
+  `app/pressroot-settings.php`) for the whole settings page, not just this
+  tab. Every section still hangs off the same `prt_settings_tab_url()`
+  links as before — only the surrounding chrome (a `<nav>` list instead of
+  a row of WP admin tab links) changed, so no other file needed touching
+  for the layout swap.
+- **Takeaway:** reusing `App\Github` (already built for live repo data on
+  public project pages) meant the new admin-facing Support tab needed almost
+  no new data-fetching code — just one small addition (`fetchIssues()`) and
+  a different rendering context for functions that already existed.
+
+## Correction: "Starter Sites' patterns are dead" was wrong
+- **What happened:** the "consolidate Theme Tools/Starter Sites/Pressroot
+  AI/GitHub" entry above claims grepping demo-import.php's 11 referenced
+  pattern slugs showed 10 no longer existed. Re-checked while auditing the
+  README for missing features (below) and that's false: all 11 are still
+  registered — 8 in `app/sections-library.php` (`matthummel/hero-dev`,
+  `services-three`, `stats-four`, `testimonial-single`, `contact-cta`,
+  `about-two-col`, `hero-centered-minimal`, `cta-split`) and 3 in
+  `app/patterns-extra.php` (`feature-grid`, `pricing`, `testimonials`). The
+  original check must have grepped too narrow a file set. `demo-import.php`
+  would in fact still have produced working, designed pages, not blank ones.
+- **What this changes:** nothing about the actual decision — Starter Sites
+  was still a strictly weaker duplicate of Pressroot AI's site-type picker
+  (2 fixed personas vs. 5, no regenerate, no live previews, no per-type
+  dedicated patterns), which is reason enough on its own to have retired it
+  in favor of Site Types. The file stays deleted (recoverable via
+  `git show <prior-commit>:app/demo-import.php` if ever wanted back — it was
+  never actually committed as deleted before this working session, so `git
+  checkout` can still restore it from history if needed).
+- **Docs corrected:** `app/pressroot-settings.php`, `docs/ARCHITECTURE.md`
+  docblocks/notes reworded to drop the false "dead patterns" claim and keep
+  only the still-true redundancy reasoning; this entry documents the
+  correction rather than silently rewriting the earlier log entry.
+- **Takeaway:** the irony of the original takeaway ("check the evidence
+  concretely... rather than assuming") stands — the mistake here was an
+  insufficiently thorough grep, not a lack of trying to verify. Worth
+  re-verifying a "the evidence shows X" claim with a *broader* search
+  (all of `app/*.php`, not an assumed subset) before it hardens into
+  permanent documentation.
+
 ---
 
 ## Recurring bug patterns

@@ -10,11 +10,10 @@ where noted) and render with no build step.
 
 Two places hold settings:
 
-1. **Customize â†’ Theme Options** â€” the live, preview-as-you-edit panel, and the
-   home for everything except the GitHub connection below.
-2. **Appearance â†’ GitHub / Theme Tools / Local Fonts** â€” utilities and the one
-   settings group with no Customizer equivalent (GitHub token/owner/OAuth), plus
-   presets, import/export, and font hosting.
+1. **Customize â†’ Theme Options** â€” the live, preview-as-you-edit panel.
+2. **Appearance â†’ Pressroot** â€” one consolidated settings page (Site Types,
+   GitHub, Support) for everything that isn't a live visual preview, plus
+   **Appearance â†’ Local Fonts**, which stayed separate.
 
 ---
 
@@ -130,37 +129,81 @@ Two places hold settings:
 
 ---
 
-## Appearance â†’ GitHub
+## Appearance â†’ Pressroot
 
 Everything above (General, Design, Layout, Header, Footer, Social Links, etc.)
 used to also be mirrored on a tabbed "Theme Settings" admin page. That page was
-removed â€” it was pure duplication of the Customizer controls above. The only
-settings that page had with no Customizer equivalent were GitHub/Projects, so
-those got their own small page:
+removed â€” it was pure duplication of the Customizer controls above. What
+remained was four separate Appearance submenu pages (Theme Tools, Starter
+Sites, Pressroot AI, GitHub); those are now one page, **Appearance â†’
+Pressroot**, navigated with a left-sidebar menu (one section per area) and
+the active section's content on the right:
 
+### Site Types (tab)
+The default tab, and the one-click way to set the site's whole look and starter
+content in one step (replaces the old standalone "Style Kits" tab — every
+site type below already applies its own matching palette/font/radius preset,
+so a separate manual kit picker was a redundant second way to do the same
+thing).
+- **Choose a site type** â€” Agency, Freelance/Portfolio, SaaS, Blog, or
+  Marketing landing, each with live design previews and a matching Style Kit.
+- **Your starter pages** â€” regenerate any page to its other hand-built
+  variant, or regenerate a whole site type at once.
+- **Generate starter hero copy** â€” a headline + subheadline from a one-line
+  description, using whichever AI model is selected.
+- **Advanced: Connect more AI models** â€” optional free API keys for Google
+  Gemini, Groq, and OpenRouter, alongside the always-available, keyless
+  Pollinations default.
+- **Advanced: Backup & restore settings** â€” Export all theme settings as
+  JSON, Import a previous export, or Reset everything to defaults (moved here
+  from the old Style Kits tab â€” same tools, same behavior).
+- Can be switched off entirely via Customize â†’ Theme Options â†’ Theme Addons
+  ("Enable Pressroot AI") â€” the tab disappears when disabled.
+
+### GitHub (tab)
 - **Default GitHub owner**, **API token**, **data cache (hours)**, **OAuth Client ID**, and **Connect with GitHub** (device-flow login) â€” raises the API rate limit for the live repo data shown on project pages.
 
+### Support (tab)
+Always visible, regardless of the Pressroot AI addon toggle.
+- **Repository status** â€” live stats, topics, language breakdown, and recent
+  releases/changelog for "this theme's repository," pulled through the same
+  live GitHub data engine (`App\Github`) that powers project pages.
+- **Open issues** â€” the most recently updated open issues, with links to view
+  all issues or open a new one.
+- **Documentation** â€” a curated list of links straight to the theme's own
+  docs (Architecture, Settings reference, Development, Build log, Brand &
+  design system).
+- **Edit repository** â€” which owner/repo counts as "this theme," separate
+  from the GitHub tab's default owner (that one's just a fallback for
+  individual Projects).
+
 ---
 
-## Appearance â†’ utilities
-
-### Theme Tools
-- **Style Kits** â€” one-click palette + font + radius presets (Editorial, Sage Classic, Warm Sand, Midnight, Mono Slate).
-- **Export / Import** â€” download all theme settings as JSON and re-import elsewhere.
-- **Reset** â€” return to defaults.
-
-### Local Fonts
+## Appearance â†’ Local Fonts
 - **Download fonts now** â€” fetch the active families' woff2 into `uploads/prt-fonts/`.
 - **Serve fonts locally** â€” use the local stylesheet and remove every Google Fonts request + preconnect.
+- Separately, the full **Google Fonts library (1,500+ families)** is registered as a Font Collection in the native block editor Font Library (Appearance â†’ Editor â†’ Styles â†’ Typography â†’ "Manage fonts") â€” browsable/filterable by category, downloaded and self-hosted on install.
+
+## Appearance â†’ Pattern Library
+A read-only admin page listing every pattern registered in the "Pressroot" category (the general-purpose ones below, not the Site Type patterns, which live under their own "AI Site Types" category and are reached through Site Types instead), plus a link to the Synced Patterns editor and a short "how to insert a pattern" walkthrough.
 
 ---
 
-## Blocks (in the inserter, "Matt Hummel" category)
+## Reading experience (single posts)
+Always on, no settings â€” automatic on every single post:
+- **Table of contents** â€” auto-built from the post's headings.
+- **Reading progress bar** and **estimated reading time**.
+- **Copy buttons** on code blocks (pairs with the Prism syntax highlighting below).
+
+---
+
+## Blocks (in the inserter, "Pressroot" category)
 
 - **Social Icons** â€” inline Blade SVG social icons; pulls from site social links by default, fully styleable (size, shape, brand/mono, colors, hover, alignment).
 - **Icon (Blade)** â€” drop in any Blade icon by name (`si-â€¦`, `heroicon-o-â€¦`, `lucide-â€¦`, `prt-â€¦`), with size, color, alignment.
 - **Post Grid** â€” query posts/projects/pages into a responsive card grid (columns, count, order, image/excerpt/date/category toggles).
-- **Patterns** â€” Hero, Pricing, Testimonials, Logo cloud, Feature grid, Callout, CTA band, Stat strip, FAQ.
+- **GitHub blocks** â€” repo card, repo grid, user/org stats, and releases, all backed by the same live/cached `App\Github` data used by the Support tab and project pages.
+- **Patterns** â€” 22 general-purpose patterns (Hero, Pricing, Testimonials, Logo cloud, Feature grid, Callout, CTA band, Stat strip, FAQ, and more) â€” browse the full, current list on **Appearance â†’ Pattern Library** rather than here, since it's kept in sync with what's actually registered. Site Type patterns (26 more, two hand-built variants per starter page) are separate â€” see the Site Types tab above.
 
 ## Shortcodes
 - `[prt_newsletter]` â€” newsletter signup form (Customizer â†’ Newsletter).

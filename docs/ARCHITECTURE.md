@@ -90,12 +90,78 @@ edit those settings.
 
 The one exception was the GitHub/Projects tab (default owner, API token, cache
 hours, OAuth Client ID, the "Connect with GitHub" device-flow widget), which had
-no Customizer equivalent. That survived as its own small page:
-`app/github-settings.php`, under Appearance -> GitHub.
+no Customizer equivalent. That, plus Style Kits/export-import-reset and
+Pressroot AI, now live together as tabs on one consolidated admin page —
+Appearance -> Pressroot (`app/pressroot-settings.php`) — rather than four
+separate Appearance submenu pages. See "Appearance -> Pressroot" below for
+the full breakdown. This also folded in the retirement of the old Starter
+Sites importer — superseded by Pressroot AI's site-type picker (more
+personas, regenerate, live previews, dedicated patterns per type), not
+because its own patterns were missing (an earlier version of this note
+claimed that; it was wrong — all of Starter Sites' referenced patterns are
+still registered, mostly in app/sections-library.php). A placeholder
+"Starter" tab briefly explained the retirement, then was removed once
+Pressroot AI was reachable directly from its own tab. The standalone Style
+Kits tab was retired the same way, once its per-tab "Apply" swatch grid
+became redundant with each Site Type already applying its own kit — see
+"Appearance -> Pressroot" below.
 
-Two other admin pages remain, both non-duplicative: Appearance -> Theme Tools
-(`app/settings-io.php` — style kits, export/import/reset) and Appearance ->
-Local Fonts / Starter Sites.
+Appearance -> Local Fonts remains its own small page
+(`app/fonts-local.php`) — unrelated in purpose, left as-is.
+
+### Appearance -> Pressroot (`app/pressroot-settings.php`)
+
+One admin page, one branded header, a left-sidebar menu with the active
+section's content on the right — replacing both the four separate
+Appearance submenu pages this page originally consolidated, and the top
+`nav-tab-wrapper` it used at first (`prt_settings_render()` now renders a
+`<nav>` list on the left instead; every section still hangs off the same
+`prt_settings_tab_url($tab, $extra)` links, so nothing downstream needed to
+change for the layout swap):
+
+| Tab | Source | What it does |
+|---|---|---|
+| Site Types | `app/ai-assistant.php` (`prt_pressroot_ai_tab_html()`) — tab id `ai`, unchanged internally | Site-type picker (which also applies that type's Style Kit), regenerate, hero-copy generator, plus two collapsed Advanced sections: "Connect more AI models" (AI Connectors) and "Backup & restore settings" (Export/Import/Reset, from `app/settings-io.php`'s `prt_settings_backup_fields_html()`) |
+| GitHub | `app/github-settings.php` (`prt_github_tab_html()`) | Default owner, API token, cache hours, OAuth Client ID, Connect with GitHub |
+| Support | `app/support-settings.php` (`prt_support_tab_html()`) | Live status (stats, languages, latest releases, open issues) for "this theme's repository", pulled through the existing `App\Github` class, plus a curated list of links to the theme's own documentation. Always visible — not gated by the Pressroot AI addon toggle, since getting help shouldn't depend on an unrelated feature flag. |
+
+Site Types was previously two separate tabs: "Style Kits" (a manual swatch
+grid to apply a palette/font/radius preset by itself) and "Pressroot AI" (the
+site-type picker). The manual Style Kits grid was removed — every Site Type
+already applies its matching kit automatically, so picking one by itself was
+a redundant second way to do the same thing — and the "Pressroot AI" tab was
+renamed **Site Types** to reflect that it's now the primary tab. The Style
+Kits data + apply logic (`prt_style_kits()`, `prt_apply_style_kit()` in
+`app/settings-io.php`) are unchanged and still power the site-type picker;
+only the standalone manual-picker UI and its `admin_post_prt_apply_kit`
+handler were removed. Export/Import/Reset weren't dropped, just relocated
+into their own collapsed Advanced section on the Site Types tab.
+
+Support's "this theme's repository" (owner + repo slug, `prt_support_repo()`
+in `app/support-settings.php`) is a small setting of its own, separate from
+the GitHub tab's "Default GitHub owner" (`prt_proj_owner`) — that owner is
+just the fallback for individual Projects around the site (each can point at
+its own repo), whereas Support's setting is specifically "which one repo IS
+this theme," used only to drive its live status card and doc links. It
+defaults to the GitHub tab's owner plus `pressroot`, editable inline
+via its own "Edit repository" `<details>`, same pattern as the page header's
+Docs/Support link editor. Doc links themselves are resolved against that
+repo's `blob/main/...` URLs (filterable via `matthummel/support_doc_links`),
+so a fork that repoints "this theme's repository" at its own copy gets
+correct links without editing PHP.
+
+Every tab's render function used to be a full `prt_..._render()` with its own
+`<div class="wrap"><h1>`; those were extracted to `prt_..._tab_html()`
+functions with no page chrome, so `prt_settings_render()` can call whichever
+one is active. `prt_settings_tab_url($tab, $extra)` is the one place that
+knows this page's slug (`prt-settings`) — every admin-post handler across
+these files redirects through it rather than hardcoding a URL.
+
+The Site Types tab is gated by the "Enable Pressroot AI" addon toggle
+(Theme Options -> Theme Addons, `app/theme-addons.php`) — it simply isn't in
+the tab list when that's off. `prt_settings_render()` defaults to this tab
+(falling back to the first visible tab if it's hidden) since it's now the
+primary one, replacing Style Kits as the previous default.
 
 ## Developer CLI (`wp pressroot ...`)
 
@@ -113,7 +179,8 @@ Registered in `app/cli.php`, only loaded when `WP_CLI` is true:
 
 These share their underlying logic with the web UI (`prt_owned_mods()` /
 `prt_style_kits()` in `app/settings-io.php`, `prt_clear_compiled_views()` in
-`app/setup.php`) so the CLI and Appearance -> Theme Tools can't drift apart.
+`app/setup.php`) so the CLI and the Style Kits tab on Appearance -> Pressroot
+can't drift apart.
 
 ## Dev Mode / Standard Mode
 
@@ -131,7 +198,8 @@ seeing the site the way a real visitor would while working locally.
 
 When active, the admin-bar node expands into: environment, resolved
 template file, DB query count so far, peak memory, elapsed load time, and
-quick links to Theme Tools and clearing compiled views.
+quick links to Appearance -> Pressroot (Style Kits tab) and clearing
+compiled views.
 
 ## Header/Nav CSS selectors (2026-07 fix)
 

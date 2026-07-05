@@ -41,38 +41,19 @@ function prt_github_get($key)
 }
 
 /**
- * Appearance -> GitHub admin page.
- *
- * This is a plain settings page (not a Customizer panel) because these
- * values — API token, OAuth client ID — are secrets/integration config
- * rather than visual/design choices, and don't need the Customizer's live
- * preview. See the file-level comment for why this is the one settings group
- * that lives outside the Customizer.
+ * Renders just the GitHub settings fields + connect widget — no page
+ * wrapper, no <h1>. This USED to be its own "GitHub" admin page; it's now
+ * the "GitHub" tab on the consolidated Appearance -> Pressroot settings page
+ * (see app/pressroot-settings.php). Posts to admin-post.php (handled below)
+ * rather than options.php, since these are theme_mods, not a registered
+ * Settings API option group.
  */
-add_action('admin_menu', function () {
-    add_theme_page(
-        __('GitHub', 'pressroot'),
-        __('GitHub', 'pressroot'),
-        'manage_options',
-        'prt-github-settings',
-        __NAMESPACE__ . '\\prt_github_render'
-    );
-});
-
-/**
- * Render the GitHub settings page: default owner, API token, cache duration,
- * OAuth Client ID, and the "Connect with GitHub" widget. Posts to
- * admin-post.php (handled below) rather than options.php, since these are
- * theme_mods, not a registered Settings API option group.
- */
-function prt_github_render()
+function prt_github_tab_html()
 {
     if (! current_user_can('manage_options')) {
         return;
     }
     ?>
-    <div class="wrap" style="max-width:720px">
-        <h1><?php esc_html_e('GitHub', 'pressroot'); ?></h1>
         <p class="description">
             <?php esc_html_e('Powers the live repo data (stars, forks, latest release, README intro) shown on project pages. Everything else about the theme lives in the Customizer.', 'pressroot'); ?>
             <a href="<?php echo esc_url(admin_url('customize.php')); ?>"><?php esc_html_e('Open Customizer', 'pressroot'); ?></a>
@@ -120,12 +101,11 @@ function prt_github_render()
         </form>
 
         <p class="description"><?php esc_html_e('Per-project owner/repo, eyebrow, and demo URL are set on each project via the Project Details box.', 'pressroot'); ?></p>
-    </div>
     <?php
 }
 
 /**
- * Persist the GitHub settings form (prt_github_render() above) as theme_mods.
+ * Persist the GitHub settings form (prt_github_tab_html() above) as theme_mods.
  * Hooked to the `admin_post_{action}` convention (action="prt_save_github_settings"
  * hidden field in the form) rather than the Settings API, since these values
  * are theme_mods and don't need register_setting()'s option-group machinery.
@@ -141,6 +121,6 @@ add_action('admin_post_prt_save_github_settings', function () {
     set_theme_mod('prt_proj_cache_hours', isset($_POST['prt_proj_cache_hours']) ? absint($_POST['prt_proj_cache_hours']) : 6);
     set_theme_mod('prt_gh_client_id', isset($_POST['prt_gh_client_id']) ? sanitize_text_field(wp_unslash($_POST['prt_gh_client_id'])) : '');
 
-    wp_safe_redirect(add_query_arg(['page' => 'prt-github-settings', 'updated' => '1'], admin_url('themes.php')));
+    wp_safe_redirect(prt_settings_tab_url('github', ['updated' => '1']));
     exit;
 });

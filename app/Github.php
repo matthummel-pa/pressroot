@@ -109,6 +109,48 @@ class Github
         return $out;
     }
 
+    /**
+     * Fetch + cache open issues for a repo (most recently updated first —
+     * GitHub's default sort). Used by the Support tab (app/support-settings.php)
+     * to give a theme owner a quick "what's open on the repo" glance without
+     * leaving wp-admin.
+     *
+     * NOTE: GitHub's /issues endpoint also returns pull requests (a PR is a
+     * kind of issue in their data model) — each is flagged with a
+     * `pull_request` key that a plain issue doesn't have, so those are
+     * filtered out here to keep this genuinely "issues only".
+     */
+    public static function fetchIssues(string $owner, string $repo, int $count = 5): array
+    {
+        $count = max(1, min(20, $count));
+        $key   = 'prt_ghi_' . md5("{$owner}/{$repo}/{$count}");
+        if (($d = get_transient($key)) !== false) {
+            return $d;
+        }
+        $out = [];
+        // Ask for a few more than needed since PRs will be filtered out of the results.
+        $r = wp_remote_get("https://api.github.com/repos/{$owner}/{$repo}/issues?state=open&per_page=" . ($count * 2), self::args());
+        if (! is_wp_error($r) && wp_remote_retrieve_response_code($r) === 200) {
+            foreach ((array) json_decode(wp_remote_retrieve_body($r), true) as $j) {
+                if (isset($j['pull_request'])) {
+                    continue;
+                }
+                $out[] = [
+                    'number'   => (int) ($j['number'] ?? 0),
+                    'title'    => $j['title'] ?? '',
+                    'url'      => $j['html_url'] ?? '',
+                    'date'     => isset($j['created_at']) ? date_i18n(get_option('date_format'), strtotime($j['created_at'])) : '',
+                    'comments' => (int) ($j['comments'] ?? 0),
+                ];
+                if (count($out) >= $count) {
+                    break;
+                }
+            }
+        }
+        set_transient($key, $out, self::ttl());
+        return $out;
+    }
+
     /** Fetch + cache repo data. */
     public static function fetch(string $owner, string $repo): array
     {
@@ -143,6 +185,7 @@ class Github
             $data['owner']   = $owner;
             $data['repo']    = $repo;
             $data['homepage'] = $j['homepage'] ?? '';
+            $data['open_issues'] = (int) ($j['open_issues_count'] ?? 0);
         }
 
         $rel = wp_remote_get("https://api.github.com/repos/{$owner}/{$repo}/releases/latest", $jargs);

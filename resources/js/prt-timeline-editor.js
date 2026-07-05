@@ -4,6 +4,23 @@
   var be = wp.blockEditor || wp.editor, IC = be.InspectorControls, ubp = be.useBlockProps;
   var c = wp.components, SSR = wp.serverSideRender || wp.components.ServerSideRender;
 
+  /** Static, non-SSR skeleton for the Patterns-inserter preview — see the
+   * matching comment in prt-skills-grid-editor.js for why this exists. */
+  function skeleton(a) {
+    var items = [];
+    try { items = JSON.parse(a.entries); } catch (e) { items = []; }
+    return el('div', { style: { padding: '24px 0' } },
+      items.map(function (item, i) {
+        return el('div', { key: i, style: { borderLeft: '2px solid #ddd', paddingLeft: 16, marginBottom: 16 } },
+          el('span', { style: { display: 'block', fontSize: 12, color: '#646970' } }, item.dates || ''),
+          el('strong', { style: { display: 'block', fontSize: 16, margin: '2px 0' } }, item.title || ''),
+          el('span', { style: { display: 'block', fontSize: 13, color: '#646970' } }, item.org || ''),
+          el('p', { style: { fontSize: 13, margin: '4px 0 0' } }, item.body || '')
+        );
+      })
+    );
+  }
+
   function Repeater(items, onChange, defaultItem, renderRow) {
     return el('div', { className: 'prt-repeater' },
       items.map(function (item, i) {
@@ -51,7 +68,12 @@
           )
         )
       );
-      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, { block: 'prt/timeline', attributes: a })));
+      return el(Fragment, {}, controls, el('div', ubp ? ubp() : {}, el(SSR, {
+        block: 'prt/timeline',
+        attributes: a,
+        LoadingResponsePlaceholder: function () { return skeleton(a); },
+        EmptyResponsePlaceholder: function () { return skeleton(a); }
+      })));
     },
     save: function () { return null; }
   });

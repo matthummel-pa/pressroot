@@ -21,7 +21,7 @@ add_action('customize_register', function (\WP_Customize_Manager $wp) {
     $wp->add_section('prt_style_kit_section', [
         'title'       => __('Style Kits', 'pressroot'),
         'panel'       => 'prt_theme_options',
-        'description' => __('Apply a one-click design preset (palette + fonts + radius), then fine-tune anything below. Full import/export tools live at Appearance → Theme Tools.', 'pressroot'),
+        'description' => __('Apply a one-click design preset (palette + fonts + radius), then fine-tune anything below. Full import/export tools live at Appearance → Pressroot → Site Types → Advanced.', 'pressroot'),
     ]);
 
     $kits = function_exists('App\\prt_style_kits') ? array_combine(

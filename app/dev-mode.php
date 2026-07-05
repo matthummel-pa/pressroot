@@ -173,8 +173,8 @@ add_action('admin_bar_menu', function (\WP_Admin_Bar $bar) {
     $bar->add_node([
         'id'     => 'prt-debug-tools',
         'parent' => 'prt-debug',
-        'title'  => __('Theme Tools (export / import / kits)', 'pressroot'),
-        'href'   => admin_url('themes.php?page=prt-theme-tools'),
+        'title'  => __('Pressroot settings (Site Types / export / import)', 'pressroot'),
+        'href'   => admin_url('themes.php?page=prt-settings&tab=ai'),
     ]);
     $bar->add_node([
         'id'     => 'prt-debug-clearviews',

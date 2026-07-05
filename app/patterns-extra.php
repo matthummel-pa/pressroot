@@ -2,7 +2,7 @@
 
 /**
  * Additional premium starter patterns (Hero, Pricing, Testimonials, Logo cloud,
- * Feature grid) in the "Matt Hummel" pattern category. Composed from core blocks.
+ * Feature grid) in the "Pressroot" pattern category. Composed from core blocks.
  */
 
 namespace App;

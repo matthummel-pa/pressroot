@@ -93,18 +93,19 @@ add_action('wp_dashboard_setup', function () {
     if (! get_theme_mod('prt_wl_dash', true) || ! current_user_can('edit_theme_options')) {
         return;
     }
-    wp_add_dashboard_widget('prt_get_started', __('Matt Hummel theme — Get started', 'pressroot'), __NAMESPACE__ . '\\prt_dashboard_widget');
+    wp_add_dashboard_widget('prt_get_started', __('Pressroot — Get started', 'pressroot'), __NAMESPACE__ . '\\prt_dashboard_widget');
 });
 
 /**
  * Renders the "Get started" dashboard widget body: the checklist links plus
- * the "Create starter pages + menu" form (posts to prt_starter_pages below).
+ * a button into Pressroot AI for building real starter pages (see the
+ * NOTE below — this used to have its own blank-page quick action).
  */
 function prt_dashboard_widget()
 {
-    $tools = admin_url('themes.php?page=prt-theme-tools');
+    $settings = admin_url('themes.php?page=prt-settings');
     $items = [
-        [__('Pick a Style Kit', 'pressroot'), $tools],
+        [__('Choose a site type & style', 'pressroot'), $settings . '&tab=ai'],
         [__('Set your logo & site identity', 'pressroot'), admin_url('customize.php?autofocus[section]=title_tagline')],
         [__('Add your social links', 'pressroot'), admin_url('customize.php?autofocus[section]=prt_popout_section')],
         [__('Configure SEO & schema', 'pressroot'), admin_url('customize.php?autofocus[section]=prt_seo_section')],
@@ -116,88 +117,12 @@ function prt_dashboard_widget()
         echo '<li style="margin:6px 0"><a href="' . esc_url($it[1]) . '">' . esc_html($it[0]) . '</a></li>';
     }
     echo '</ol>';
-    echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(\'' . esc_js(__('Create Home, About, Projects and Contact pages and a primary menu?', 'pressroot')) . '\');">';
-    echo '<input type="hidden" name="action" value="prt_starter_pages">';
-    wp_nonce_field('prt_starter_pages');
-    echo '<button class="button button-primary">' . esc_html__('Create starter pages + menu', 'pressroot') . '</button>';
-    echo ' <a class="button" href="' . esc_url($tools) . '">' . esc_html__('Theme Tools', 'pressroot') . '</a>';
-    echo '</form>';
+    // NOTE: this used to have its own "Create starter pages + menu" button
+    // that inserted 4 blank pages with no content. Removed in favor of
+    // pointing straight at the Site Types tab (Appearance -> Pressroot ->
+    // Site Types, tab id "ai"), which builds real, pattern-filled starter
+    // pages per site type instead of blank ones — no reason to keep the
+    // weaker duplicate around.
+    echo '<a class="button button-primary" href="' . esc_url($settings . '&tab=ai') . '">' . esc_html__('Build starter pages with Pressroot AI', 'pressroot') . '</a>';
+    echo ' <a class="button" href="' . esc_url($settings) . '">' . esc_html__('Pressroot settings', 'pressroot') . '</a>';
 }
-
-/**
- * ---- One-click starter pages + menu ----
- * Creates Home/About/Projects/Contact pages (skipping any that already exist
- * by slug, so this is safe to run more than once), sets Home as the static
- * front page, and builds a "Primary" nav menu from those pages — assigned to
- * the primary_navigation location registered in app/setup.php. This exists so
- * a brand-new install isn't a blank site: one click gives the owner a
- * navigable structure to start editing instead of an empty page list and menu.
- */
-add_action('admin_post_prt_starter_pages', function () {
-    if (! current_user_can('edit_theme_options') || ! check_admin_referer('prt_starter_pages')) {
-        wp_die('Not allowed');
-    }
-
-    $defs = [
-        'home'     => __('Home', 'pressroot'),
-        'about'    => __('About', 'pressroot'),
-        'projects' => __('Projects', 'pressroot'),
-        'contact'  => __('Contact', 'pressroot'),
-    ];
-    $ids = [];
-    foreach ($defs as $slug => $title) {
-        $existing = get_page_by_path($slug);
-        if ($existing) {
-            $ids[$slug] = $existing->ID;
-            continue;
-        }
-        $ids[$slug] = wp_insert_post([
-            'post_title'   => $title,
-            'post_name'    => $slug,
-            'post_status'  => 'publish',
-            'post_type'    => 'page',
-            'post_content' => '<!-- wp:paragraph --><p>' . esc_html($title) . '</p><!-- /wp:paragraph -->',
-        ]);
-    }
-
-    // Front page = Home
-    if (! empty($ids['home'])) {
-        update_option('show_on_front', 'page');
-        update_option('page_on_front', $ids['home']);
-    }
-
-    // Primary menu
-    $menu_name = __('Primary', 'pressroot');
-    $menu = wp_get_nav_menu_object($menu_name);
-    $menu_id = $menu ? $menu->term_id : wp_create_nav_menu($menu_name);
-    if (! is_wp_error($menu_id)) {
-        $existing_items = wp_get_nav_menu_items($menu_id) ?: [];
-        if (empty($existing_items)) {
-            foreach (['home', 'about', 'projects', 'contact'] as $slug) {
-                if (! empty($ids[$slug])) {
-                    wp_update_nav_menu_item($menu_id, 0, [
-                        'menu-item-title'     => $defs[$slug],
-                        'menu-item-object'    => 'page',
-                        'menu-item-object-id' => $ids[$slug],
-                        'menu-item-type'      => 'post_type',
-                        'menu-item-status'    => 'publish',
-                    ]);
-                }
-            }
-        }
-        $locations = get_theme_mod('nav_menu_locations', []);
-        $locations['primary_navigation'] = $menu_id;
-        set_theme_mod('nav_menu_locations', $locations);
-    }
-
-    wp_safe_redirect(admin_url('index.php?prt_starter=done'));
-    exit;
-});
-
-// Success banner for the redirect at the end of the handler above
-// (?prt_starter=done); read-only query flag, nothing to nonce-check here.
-add_action('admin_notices', function () {
-    if (isset($_GET['prt_starter']) && $_GET['prt_starter'] === 'done') {
-        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Starter pages and primary menu created.', 'pressroot') . '</p></div>';
-    }
-});

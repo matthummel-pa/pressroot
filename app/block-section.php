@@ -20,7 +20,7 @@ namespace App;
 add_filter('block_categories_all', function (array $cats, $context): array {
     array_unshift($cats, [
         'slug'  => 'pressroot',
-        'title' => __('Matthummel', 'pressroot'),
+        'title' => __('Pressroot', 'pressroot'),
         'icon'  => null,
     ]);
     return $cats;

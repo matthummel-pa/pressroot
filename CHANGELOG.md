@@ -4,6 +4,38 @@ All notable changes to Pressroot are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-07-05
+
+**Pressroot AI, Site Types, and a consolidated settings page.** The theme's admin experience moved from four separate Appearance pages to one, and its AI-assisted setup grew from a one-off "generate some copy" tool into the theme's primary way to start a new site.
+
+### Added
+- **Pressroot AI — Site Types**: pick a business category (Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content site, Marketing/Landing page) to apply its matching Style Kit and create starter pages together, each pre-filled with one of two hand-built pattern variants. Live, scaled-down previews of each type's first page render before you commit.
+- **Regenerate**: swap any starter page — or every page in a site type at once — to its other hand-built variant with one click.
+- **Starter hero copy generator**: a one-line business description in, a draft headline + subheadline out.
+- **AI Connectors**: optional free API keys for Google Gemini, Groq, and OpenRouter, alongside the always-on, keyless Pollinations default, selectable per-generation from a model dropdown. All generation is proxied server-side — API keys never reach the browser.
+- **AI in the block editor**: a "Generate with AI" toolbar button on paragraph, heading, and list blocks for everyday content editing, not just initial setup.
+- **Theme Addons**: a new Customizer section to switch the entire Pressroot AI feature (menu entry, endpoints, admin-post actions) off if a site doesn't want the AI surface at all.
+- **Appearance → Pressroot**: Theme Tools, Starter Sites, Pressroot AI, and GitHub — four separate admin pages — are now one page with a left-sidebar menu and the active section's content on the right.
+- **Support tab**: live status for the theme's own GitHub repository (stats, languages, latest releases, open issues) via the existing GitHub data engine, plus a curated, filterable list of links to the theme's documentation. Always visible, independent of the Pressroot AI addon toggle.
+- **Editable Docs/Support links** in the settings page header, defaulted to the theme's real repo.
+- **Export / Import / Reset** moved into a collapsed "Advanced" section on the Site Types tab (same tool, new home).
+
+### Changed
+- The former "Pressroot AI" tab is renamed **Site Types**, reflecting its role as the primary "set up your site" tab.
+- The standalone **Style Kits** tab is retired — every Site Type already applies its own matching kit automatically, so a separate manual picker was a second way to do the same thing. The underlying Style Kit data/apply logic is unchanged and still powers Site Types.
+- The **Starter Sites** demo importer is retired in favor of Site Types (more personas, regenerate, live previews, dedicated per-type patterns); its dashboard "Create starter pages" button (blank pages, no design) is removed the same way.
+- README and the settings reference now document Pressroot AI, Site Types, the consolidated settings page, WP-CLI, Dev Mode, Reading UX, Pattern Library, and Google Fonts Collection — all previously undocumented — and the stale "17 starter patterns" count is corrected to the actual 22 general-purpose + 26 Site Type patterns.
+- Repository references corrected from `matthummel-pa/matthummel-theme` to `matthummel-pa/pressroot` throughout the code and docs.
+- Leftover "Matt Hummel"/"Matthummel" branding in user-facing strings (pattern category labels, the dashboard widget title, Pattern Library help text) now reads "Pressroot".
+- README, the Support doc, and the in-admin Support tab now include a short origin story: Pressroot started as the author's personal portfolio theme and was generalized into a rebrandable framework, with Site Types as the piece aimed at multiple business categories.
+
+### Fixed
+- A dev-seed mu-plugin collided with Pressroot AI's page slugs, corrupting preview content on some installs.
+- Switching site types now force-deletes the previous type's pages (bypassing Trash) instead of leaving them to accumulate.
+- A `prt/skills-grid` pattern attribute mismatch (wrong key/shape) that silently fell back to placeholder card content.
+- Block-editor pattern/thumbnail previews that depend on a `ServerSideRender` REST round-trip now show an instant static skeleton instead of staying blank inside lightweight preview surfaces (pattern thumbnails, the "Choose a pattern" modal).
+- Corrected an inaccurate claim in the docs that the Starter Sites importer's patterns were mostly dead — they weren't; the decision to retire it in favor of Site Types stands on its own merits (see BUILD-NOTES.md for the full correction).
+
 ## [1.1.0] - 2026-07-01
 
 Imported upstream matthummel-theme v1.2.0–v2.0.0 framework updates, adapted to

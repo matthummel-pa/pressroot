@@ -17,7 +17,7 @@
  * one of those section patterns on every page load — that's been removed; see
  * the note below the $keep array.)
  *
- * Insert from the editor: Patterns → Matt Hummel / MH ·.
+ * Insert from the editor: Patterns → Pressroot / Pressroot ·.
  */
 
 namespace App;
@@ -286,7 +286,7 @@ add_action('init', function () {
         '20px', '50px');
     $patterns['matthummel/legal-full'] = ['title' => __('Legal — Full page', 'pressroot'), 'content' => $legal];
 
-    /* ── Register (single "Matt Hummel" pattern category) ───────────── */
+    /* ── Register (single "Pressroot" pattern category) ───────────── */
     foreach ($patterns as $slug => $pat) {
         register_block_pattern($slug, [
             'title'      => $pat['title'],

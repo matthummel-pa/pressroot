@@ -1,16 +1,21 @@
 /* AI Setup Assistant — starter hero copy generator.
- * Same free/no-API-key Pollinations service as the Hero Image Finder
- * (resources/js/hero-image-finder.js), but the text endpoint instead of the
- * image one: https://text.pollinations.ai/{prompt} returns plain text, no
- * key, no server proxy needed. We ask it to answer in a fixed
- * "HEADLINE: ... / SUBHEAD: ..." shape so it's easy to split back into the
- * two fields the UI shows; if the model ever ignores that shape, we fall
+ * Routes through the server-side prt_ai_generate_copy AJAX endpoint
+ * (app/ai-connectors.php) rather than calling any AI provider directly from
+ * the browser — Pollinations needs no key so calling it client-side used to
+ * be simplest, but the optional connectors (Gemini/Groq/OpenRouter) need a
+ * secret API key that must never reach the browser, so ALL models now go
+ * through the same PHP proxy for one consistent, secure code path. The
+ * dropdown (#prt-ai-copy-model) lists Pollinations plus any connector with a
+ * saved key (see Appearance -> AI Connectors). We ask the model to answer in
+ * a fixed "HEADLINE: ... / SUBHEAD: ..." shape so it's easy to split back
+ * into the two fields the UI shows; if it ever ignores that shape, we fall
  * back to just showing the raw text as the headline so nothing silently
  * breaks.
  */
 (function () {
   var input   = document.getElementById('prt-ai-copy-input');
   var go      = document.getElementById('prt-ai-copy-go');
+  var modelEl = document.getElementById('prt-ai-copy-model');
   var note    = document.getElementById('prt-ai-copy-note');
   var result  = document.getElementById('prt-ai-copy-result');
   var headEl  = document.getElementById('prt-ai-copy-headline');
@@ -22,13 +27,6 @@
 
   function setNote(text) {
     note.textContent = text || '';
-  }
-
-  function buildPrompt(description) {
-    return 'Write website hero copy for this business: "' + description + '". ' +
-      'Respond in exactly this format with no extra commentary:\n' +
-      'HEADLINE: <a punchy headline, under 10 words>\n' +
-      'SUBHEAD: <one supporting sentence, under 25 words>';
   }
 
   function parse(text) {
@@ -50,14 +48,26 @@
     lastPrompt = description;
     setNote('Generating…');
     result.style.display = 'none';
-    var url = 'https://text.pollinations.ai/' + encodeURIComponent(buildPrompt(description));
-    fetch(url)
-      .then(function (r) {
-        if (!r.ok) throw new Error('bad response');
-        return r.text();
-      })
-      .then(function (text) {
-        var parsed = parse(text);
+
+    if (!window.prtAI) {
+      setNote('Generation is unavailable on this screen.');
+      return;
+    }
+
+    var body = new URLSearchParams();
+    body.set('action', 'prt_ai_generate_copy');
+    body.set('nonce', window.prtAI.nonce);
+    body.set('description', description);
+    body.set('model', modelEl ? modelEl.value : 'pollinations');
+
+    fetch(window.prtAI.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
+      .then(function (r) { return r.json(); })
+      .then(function (json) {
+        if (!json.success) {
+          setNote((json.data && json.data.message) || 'Generation failed — try again.');
+          return;
+        }
+        var parsed = parse(json.data.text || '');
         headEl.textContent = parsed.headline;
         subEl.textContent = parsed.subhead;
         result.style.display = parsed.headline ? 'block' : 'none';
