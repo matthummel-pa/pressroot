@@ -551,6 +551,58 @@ Four related asks in one pass:
 - **Takeaway:** when a preview looks "uncached but wrong", check which
   head hooks the standalone route actually fires before blaming caching.
 
+## v1.6.0 — "one brief, whole sites" (core instructions + site chrome)
+- **Core AI instructions:** every Theme Settings + Brand answer compiles into
+  one saved CORE SITE BRIEF (option `prt_core_ai_instructions`) prepended to
+  EVERY AI call; a viewer on the settings page shows exactly what the model
+  receives. AI instructions field became a WYSIWYG (1,000-word cap, live
+  counter, server-side trim) + uploadable `.md` instruction files stored in
+  one option and appended to the brief (per-doc word trim keeps prompts sized).
+- **Site chrome builder** (`prt_build_site_chrome()`): generated "Pressroot
+  Menu" (Home + starter pages, only ever manages its OWN menu), goal-driven
+  header CTA (leads/sell/book/read → Get a quote/Shop now/Book now/Subscribe,
+  URL prefers reservations → contact → top-picks), footer tagline + light/dark
+  ground from brand answers. Runs on apply, 🎲 refresh-all, and auto-build.
+  Live-verified: brewery test site's "Hire Me" became "Shop now" (goal=sell).
+- **Design generated in the backend:** kit/colors/fonts/corners/hero controls
+  hidden behind a collapsed "Advanced fine-tuning" panel (absent entirely
+  before first build); save handler guards hidden checkboxes so an absent
+  field can't silently reset a mod (prt_avail_open bug caught pre-ship).
+- **Takeaway:** when form sections become conditional, audit every
+  `!empty($_POST[...])` checkbox write — absent fields read as "off".
+
+## Docs website + beta program (marketable project pass)
+- Replaced the stock Jekyll/Cayman docs page with a 5-page static site in the
+  theme's own design language (docs/index+documentation+testers+collaborate+
+  feedback .html + shared assets/pressroot.css). Kept Jekyll rendering for
+  the existing .md pages (THEME-SETTINGS, recipes) — plain .html passes
+  through untouched, so both coexist in docs/ on Pages.
+- Tester funnel: friends & family concierge path (free domain, keep the
+  site), feedback form → FormSubmit AJAX (emails directly, no backend on
+  GitHub Pages) + prefilled GitHub issue for public tracking, branded
+  1200×630 og:image on every page, Beta badge in the nav.
+- Attribution: style.css Author URI → github.com/matthummel-pa + MIT
+  copyright block; footer credit "Pressroot theme by matthummel"
+  (respects prt_footer_credit toggle); settings-hero byline.
+- **Takeaway:** GitHub Pages + FormSubmit + issue-URL prefill = a full
+  feedback pipeline with zero servers; remember FormSubmit's one-time
+  activation email before announcing.
+
+## "Could not insert post into the database" (Playground corruption)
+- Symptom: every wp_posts INSERT failed while reads worked fine — even
+  wp-admin's Add New Page died on its auto-draft insert.
+- Root cause (via a temp `$wpdb->insert` probe printing `last_error`):
+  `SQLSTATE[HY000]: General error 11 — database disk image is malformed`.
+  The Playground's SQLite file (.playground/database/.ht.sqlite) was
+  corrupted, likely by a worker file-lock deadlock mid-write (the CLI warns
+  below 6 workers).
+- Fix: python sqlite3 iterdump → rebuild (all 39 posts + 283 options kept,
+  integrity_check ok), swap with server stopped, restart. Corrupt original
+  kept as .ht.sqlite.corrupt-backup.
+- **Takeaway:** "Could not insert post" with working reads = check the DB
+  file itself before the code; SQLite `PRAGMA integrity_check` answers in
+  one line, and iterdump-rebuild recovers without data loss.
+
 ---
 
 ## Recurring bug patterns

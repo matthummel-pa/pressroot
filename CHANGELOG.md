@@ -4,6 +4,15 @@ All notable changes to Pressroot are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Beta program on the docs site**: Friends & Family concierge path (free domain for testers, site free to keep), tester feedback form (`docs/feedback.html`) that emails directly via FormSubmit and generates a pre-filled GitHub tracker issue, branded 1200×630 `og:image` share card on every page, and a Beta badge in the site nav.
+- README rewritten around the v1.6 product story: AI site-builder positioning, docs-site links, beta program, and the full model/provider matrix.
+
+### Fixed
+- Documented the Playground SQLite corruption recovery ("Could not insert post into the database" → `database disk image is malformed` → iterdump rebuild) in BUILD-NOTES.
+
 ## [1.6.0] - 2026-07-08
 
 **One brief, whole sites.** Theme Settings becomes the single prompting surface for the entire site, and builds now generate the full shell — navigation, header, and footer — not just content.
