@@ -62,6 +62,28 @@ The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio
 - **Appearance → Pressroot** — one page, five tabs in the Repofolio docs-site design: **AI Models → Theme Settings → Site Types → GitHub → Support**, with build status bars on every generate.
 - **Export / Import / Reset**, **WP-CLI suite** (`wp pressroot ...`), **Hook Registry**, **Dev Mode** debug panel.
 
+## Brand & theme colors
+
+<p align="center">
+  <img src="brand/palette.svg" alt="Pressroot palette — Iris, Pink, Coral, Amber, Lime, Cyan, Ink, Paper + brand and spectrum gradients" width="880">
+</p>
+
+| Token | Hex | Used for |
+|---|---|---|
+| **Iris** | `#6C4CF1` | Primary brand / actions / links |
+| **Pink** | `#FF4D9D` | Gradient mid-stop, accents |
+| **Coral** | `#FF7A3D` | Gradient end-stop, warm accents |
+| **Amber** | `#FFC53D` | Highlights, chips |
+| **Lime** | `#37E29A` | Success, availability dot |
+| **Cyan** | `#22CFEE` | Info accents, floaters |
+| **Ink** | `#17151F` | Headings, dark grounds, footer |
+| **Paper** | `#FFF9F5` | Page background |
+| **Hairline** | `#ECE6FB` | Borders, dividers |
+| **Brand gradient** | `135° iris → pink → coral` | Buttons, logo mark, badges |
+| **Spectrum** | 6-stop, all of the above accents | Top bars, card tops, progress bars |
+
+All tokens live as Tailwind v4 `@theme` variables in [`resources/css/app.css`](resources/css/app.css) and in [`theme.json`](theme.json); the full spec is in [BRAND-DESIGN-SYSTEM.md](docs/BRAND-DESIGN-SYSTEM.md). Style Kits and the design generator recolor *on top of* these — the Repofolio palette is the theme's own identity.
+
 ## Requirements
 
 | Tool | Version |
