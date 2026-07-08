@@ -51,8 +51,9 @@
         </button>
       @endif
 
-      <a class="btn btn-hire" href="{{ esc_url(home_url('/contact')) }}">
-        {{ __('Hire Me', 'pressroot') }}
+      @php($prtCta = function_exists('App\prt_header_cta') ? \App\prt_header_cta() : ['text' => __('Get a quote', 'pressroot'), 'url' => home_url('/contact')])
+      <a class="btn btn-hire" href="{{ esc_url($prtCta['url']) }}">
+        {{ $prtCta['text'] }}
       </a>
 
       <button class="menu-toggle" aria-expanded="false" aria-controls="prt-popout" aria-label="{{ __('Open menu', 'pressroot') }}">
@@ -66,8 +67,9 @@
 <aside id="prt-popout" class="prt-popout" aria-label="{{ __('Menu', 'pressroot') }}">
   <button class="prt-popout-close" aria-label="{{ __('Close menu', 'pressroot') }}">&times;</button>
 
-  <a class="btn btn-hire prt-popout-cta" href="{{ esc_url(home_url('/contact')) }}">
-    {{ __('Hire Me', 'pressroot') }}
+  @php($prtCta2 = function_exists('App\prt_header_cta') ? \App\prt_header_cta() : ['text' => __('Get a quote', 'pressroot'), 'url' => home_url('/contact')])
+  <a class="btn btn-hire prt-popout-cta" href="{{ esc_url($prtCta2['url']) }}">
+    {{ $prtCta2['text'] }}
   </a>
 
   @if (has_nav_menu('primary_navigation'))

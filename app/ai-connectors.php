@@ -55,6 +55,7 @@ function prt_ai_connectors_defs(): array
             'label'         => __('Google Gemini', 'pressroot'),
             'needs_key'     => true,
             'model_default' => 'gemini-2.0-flash',
+            'models'        => ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'],
             'docs_url'      => 'https://ai.google.dev/gemini-api/docs',
             'note'          => __('Free tier via Google AI Studio — no credit card required. Get a key at aistudio.google.com/apikey.', 'pressroot'),
         ],
@@ -62,13 +63,31 @@ function prt_ai_connectors_defs(): array
             'label'         => __('Groq', 'pressroot'),
             'needs_key'     => true,
             'model_default' => 'llama-3.3-70b-versatile',
+            'models'        => ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'deepseek-r1-distill-llama-70b'],
             'docs_url'      => 'https://console.groq.com/keys',
             'note'          => __('Free tier, very fast inference (Llama/Qwen/DeepSeek). Get a key at console.groq.com/keys.', 'pressroot'),
+        ],
+        'anthropic' => [
+            'label'         => __('Anthropic Claude', 'pressroot'),
+            'needs_key'     => true,
+            'model_default' => 'claude-sonnet-4-5',
+            'models'        => ['claude-opus-4-8', 'claude-sonnet-4-5', 'claude-haiku-4-5-20251001'],
+            'docs_url'      => 'https://platform.claude.com/',
+            'note'          => __('The website-generator pick: strongest at structured copy + long instructions, so AI-write results need the least editing. Paid API (no free tier) — optional; the keyless default stays free.', 'pressroot'),
+        ],
+        'openai' => [
+            'label'         => __('OpenAI (ChatGPT)', 'pressroot'),
+            'needs_key'     => true,
+            'model_default' => 'gpt-4o-mini',
+            'models'        => ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini', 'gpt-4.1'],
+            'docs_url'      => 'https://platform.openai.com/api-keys',
+            'note'          => __('gpt-4o-mini is fast and inexpensive for site copy. Paid API — optional.', 'pressroot'),
         ],
         'openrouter' => [
             'label'         => __('OpenRouter', 'pressroot'),
             'needs_key'     => true,
             'model_default' => 'openrouter/free',
+            'models'        => ['openrouter/free', 'meta-llama/llama-3.3-70b-instruct:free', 'google/gemini-2.0-flash-exp:free', 'deepseek/deepseek-chat:free'],
             'docs_url'      => 'https://openrouter.ai/keys',
             'note'          => __('One key, several always-free models (auto-routed by default). Get a key at openrouter.ai/keys.', 'pressroot'),
         ],
@@ -82,9 +101,29 @@ function prt_ai_get_key(string $slug): string
 
 function prt_ai_get_model(string $slug): string
 {
-    $defs = prt_ai_connectors_defs();
+    $defs = function_exists('App\\prt_ai_all_connector_defs') ? prt_ai_all_connector_defs() : prt_ai_connectors_defs();
     $default = $defs[$slug]['model_default'] ?? '';
-    return get_theme_mod('prt_ai_model_' . $slug, $default) ?: $default;
+    $saved   = get_theme_mod('prt_ai_model_' . $slug, $default) ?: $default;
+    // If the provider publishes a model list, only honor saved values on it.
+    if (! empty($defs[$slug]['models']) && ! in_array($saved, $defs[$slug]['models'], true)) {
+        return $default;
+    }
+    return $saved;
+}
+
+/** A model <select> for one provider (used by both the writing table and the AI Models tab). */
+function prt_ai_model_select_html(string $slug, array $def): void
+{
+    if (empty($def['models'])) {
+        return;
+    }
+    $current = prt_ai_get_model($slug);
+    echo '<label style="display:block;margin-top:8px;font-size:12px;color:#646970">' . esc_html__('Model', 'pressroot') . ' ';
+    echo '<select name="prt_ai_model_' . esc_attr($slug) . '">';
+    foreach ($def['models'] as $m) {
+        echo '<option value="' . esc_attr($m) . '" ' . selected($current, $m, false) . '>' . esc_html($m) . '</option>';
+    }
+    echo '</select></label>';
 }
 
 /** A connector is "configured" if it needs no key (Pollinations) or has one saved. */
@@ -131,6 +170,7 @@ function prt_ai_connectors_fields_html(): void
     </p>
     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
         <input type="hidden" name="action" value="prt_save_ai_connectors">
+        <input type="hidden" name="prt_return_tab" value="<?php echo esc_attr(sanitize_key(wp_unslash($_GET['tab'] ?? 'ai'))); ?>">
         <?php wp_nonce_field('prt_save_ai_connectors'); ?>
         <table class="form-table" role="presentation">
             <?php foreach (prt_ai_connectors_defs() as $slug => $def) :
@@ -160,19 +200,13 @@ function prt_ai_connectors_fields_html(): void
                             autocomplete="off"
                             id="prt_ai_key_<?php echo esc_attr($slug); ?>"
                             name="prt_ai_key_<?php echo esc_attr($slug); ?>"
-                            value="<?php echo esc_attr(prt_ai_get_key($slug)); ?>"
-                            placeholder="<?php esc_attr_e('Paste API key…', 'pressroot'); ?>"
+                            value=""
+                            placeholder="<?php echo $configured ? esc_attr(str_repeat('•', 12)) : esc_attr__('Paste API key…', 'pressroot'); ?>"
                         >
-                        <br><br>
-                        <label for="prt_ai_model_<?php echo esc_attr($slug); ?>"><?php esc_html_e('Model', 'pressroot'); ?></label><br>
-                        <input
-                            type="text"
-                            class="regular-text"
-                            id="prt_ai_model_<?php echo esc_attr($slug); ?>"
-                            name="prt_ai_model_<?php echo esc_attr($slug); ?>"
-                            value="<?php echo esc_attr(prt_ai_get_model($slug)); ?>"
-                            placeholder="<?php echo esc_attr($def['model_default']); ?>"
-                        >
+                        <?php if ($configured) : ?>
+                            <p class="description" style="margin:4px 0 0"><?php esc_html_e('Leave blank to keep the saved key.', 'pressroot'); ?></p>
+                        <?php endif; ?>
+                        <?php prt_ai_model_select_html($slug, $def); ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -186,22 +220,49 @@ function prt_ai_connectors_fields_html(): void
  *  settings). Redirects back to the merged Pressroot AI screen, which shows
  *  the notice and re-opens the Advanced section (see app/ai-assistant.php). */
 add_action('admin_post_prt_save_ai_connectors', function () {
-    if (! current_user_can('manage_options') || ! prt_addon_enabled('pressroot_ai')) {
+    if (! current_user_can('manage_options') || ! prt_ai_features_enabled()) {
         wp_die(__('You do not have permission to do this.', 'pressroot'));
     }
     check_admin_referer('prt_save_ai_connectors');
 
-    foreach (prt_ai_connectors_defs() as $slug => $def) {
-        if (empty($def['needs_key'])) {
-            continue;
-        }
+    foreach (prt_ai_all_connector_defs() as $slug => $def) {
         $keyField   = 'prt_ai_key_' . $slug;
         $modelField = 'prt_ai_model_' . $slug;
-        set_theme_mod($keyField, isset($_POST[$keyField]) ? sanitize_text_field(wp_unslash($_POST[$keyField])) : '');
-        set_theme_mod($modelField, isset($_POST[$modelField]) ? sanitize_text_field(wp_unslash($_POST[$modelField])) : '');
+        // Keys: only for providers that have one. Blank submissions keep
+        // the stored key (so saving one section doesn't wipe another's),
+        // matching the Repofolio secret pattern.
+        if (! empty($def['needs_key'])) {
+            $postedKey = isset($_POST[$keyField]) ? trim(sanitize_text_field(wp_unslash($_POST[$keyField]))) : '';
+            if ($postedKey !== '') {
+                set_theme_mod($keyField, $postedKey);
+            }
+        }
+        // Models: saved for EVERY provider, keyless ones included — the
+        // old needs_key skip silently dropped Pollinations' model choice.
+        if (isset($_POST[$modelField])) {
+            $postedModel = sanitize_text_field(wp_unslash($_POST[$modelField]));
+            // Providers with a published list only accept listed models.
+            if (empty($def['models']) || in_array($postedModel, $def['models'], true)) {
+                set_theme_mod($modelField, $postedModel);
+            }
+        }
     }
 
-    wp_safe_redirect(prt_settings_tab_url('ai', ['connectors_updated' => '1']) . '#prt-ai-advanced');
+    // Image-provider selection (AI Models tab).
+    if (isset($_POST['prt_ai_image_model'])) {
+        $img = sanitize_key($_POST['prt_ai_image_model']);
+        if (isset(prt_ai_image_connectors_defs()[$img])) {
+            set_theme_mod('prt_ai_image_model', $img);
+        }
+    }
+
+    $ret = sanitize_key($_POST['prt_return_tab'] ?? '');
+    if (isset($_POST['prt_models_group']) || isset($_POST['prt_ai_image_model']) || $ret === 'models') {
+        $dest = prt_settings_tab_url('models', ['connectors_updated' => '1']);
+    } else {
+        $dest = prt_settings_tab_url('ai', ['connectors_updated' => '1']) . '#prt-ai-advanced';
+    }
+    wp_safe_redirect($dest);
     exit;
 });
 
@@ -240,7 +301,9 @@ function prt_ai_build_hero_prompt(string $description, string $siteType = ''): s
             $brandLine .= 'Brand personality: ' . $vibes[$brand['vibe']] . '. ';
         }
     }
-    return 'Write website hero copy for this business: "' . $description . '". '
+    $core = function_exists('App\\prt_get_core_instructions') ? prt_get_core_instructions() : '';
+    return ($core !== '' ? $core . "\n" : '')
+        . 'Write website hero copy for this business: "' . $description . '". '
         . $typeLine
         . $brandLine
         . 'Voice: confident, concise, a little playful — lead with the outcome, no jargon, never overpromise. '
@@ -294,11 +357,38 @@ function prt_ai_generate_text(string $slug, string $prompt): array
         return ['ok' => true, 'text' => $text];
     }
 
-    if ($slug === 'groq' || $slug === 'openrouter') {
-        // Both speak the same OpenAI-compatible chat-completions shape.
-        $endpoint = $slug === 'groq'
-            ? 'https://api.groq.com/openai/v1/chat/completions'
-            : 'https://openrouter.ai/api/v1/chat/completions';
+    if ($slug === 'anthropic') {
+        $response = wp_remote_post('https://api.anthropic.com/v1/messages', [
+            'timeout' => 30,
+            'headers' => [
+                'Content-Type'      => 'application/json',
+                'x-api-key'         => $key,
+                'anthropic-version' => '2023-06-01',
+            ],
+            'body' => wp_json_encode([
+                'model'      => $model,
+                'max_tokens' => 2048,
+                'messages'   => [['role' => 'user', 'content' => $prompt]],
+            ]),
+        ]);
+        if (is_wp_error($response)) {
+            return ['ok' => false, 'error' => $response->get_error_message()];
+        }
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        $text = $body['content'][0]['text'] ?? '';
+        if ($text === '' && ! empty($body['error']['message'])) {
+            return ['ok' => false, 'error' => $body['error']['message']];
+        }
+        return ['ok' => true, 'text' => $text];
+    }
+
+    if ($slug === 'groq' || $slug === 'openrouter' || $slug === 'openai') {
+        // All three speak the same OpenAI-compatible chat-completions shape.
+        $endpoint = [
+            'groq'       => 'https://api.groq.com/openai/v1/chat/completions',
+            'openrouter' => 'https://openrouter.ai/api/v1/chat/completions',
+            'openai'     => 'https://api.openai.com/v1/chat/completions',
+        ][$slug];
 
         $headers = [
             'Content-Type'  => 'application/json',
@@ -339,7 +429,7 @@ function prt_ai_generate_text(string $slug, string $prompt): array
  * Pressroot AI screen, plus the addon on/off switch (app/theme-addons.php).
  */
 add_action('wp_ajax_prt_ai_generate_copy', function () {
-    if (! current_user_can('edit_theme_options') || ! prt_addon_enabled('pressroot_ai') || ! check_ajax_referer('prt_ai_generate_copy', 'nonce', false)) {
+    if (! current_user_can('edit_theme_options') || ! prt_ai_features_enabled() || ! check_ajax_referer('prt_ai_generate_copy', 'nonce', false)) {
         wp_send_json_error(['message' => __('Not allowed.', 'pressroot')], 403);
     }
 
@@ -372,3 +462,224 @@ add_action('wp_ajax_prt_ai_generate_copy', function () {
 
     wp_send_json_success(['text' => $result['text']]);
 });
+
+
+/* ─────────────────────── Image & video model registries ─────────────────────── */
+
+/**
+ * Image-generation providers. Pollinations stays the always-on keyless
+ * default (the money-saving path); the paid providers are strictly optional
+ * upgrades. Keys use the same theme_mod convention as the text connectors
+ * (prt_ai_key_{slug}), saved by the same handler.
+ */
+function prt_ai_image_connectors_defs(): array
+{
+    return apply_filters('matthummel/ai_image_connectors', [
+        'pollinations_img' => [
+            'label'         => __('Pollinations Images (default)', 'pressroot'),
+            'needs_key'     => false,
+            'model_default' => 'flux',
+            'models'        => ['flux', 'turbo'],
+            'docs_url'      => 'https://pollinations.ai/',
+            'note'          => __('Free, keyless image generation — already powers "Generate brand image" and the Customizer image finder. Always available.', 'pressroot'),
+        ],
+        'openai_img' => [
+            'label'         => __('OpenAI Images (gpt-image-1)', 'pressroot'),
+            'needs_key'     => true,
+            'model_default' => 'gpt-image-1',
+            'models'        => ['gpt-image-1'],
+            'docs_url'      => 'https://platform.openai.com/api-keys',
+            'note'          => __('Higher-fidelity brand imagery. Uses the same OpenAI key as the ChatGPT text connector if you saved one there.', 'pressroot'),
+        ],
+        'stability' => [
+            'label'         => __('Stability AI (SD 3.5)', 'pressroot'),
+            'needs_key'     => true,
+            'model_default' => 'sd3.5-large-turbo',
+            'models'        => ['sd3.5-large-turbo', 'sd3.5-large', 'sd3.5-medium', 'core'],
+            'docs_url'      => 'https://platform.stability.ai/account/keys',
+            'note'          => __('Stable Diffusion 3.5 — strong photographic + illustration styles.', 'pressroot'),
+        ],
+    ]);
+}
+
+/**
+ * Video-generation providers. Keys are stored and validated NOW; the theme
+ * feature that consumes them (AI Video Hero — a generated looping hero
+ * background) is the next milestone, and this registry is where it will
+ * look. Being upfront: saving a key here does not generate video yet.
+ */
+function prt_ai_video_connectors_defs(): array
+{
+    return apply_filters('matthummel/ai_video_connectors', [
+        'luma' => [
+            'label'         => __('Luma Dream Machine', 'pressroot'),
+            'needs_key'     => true,
+            'model_default' => 'ray-2',
+            'models'        => ['ray-2', 'ray-flash-2'],
+            'docs_url'      => 'https://lumalabs.ai/api',
+            'note'          => __('For the upcoming AI Video Hero (looping hero backgrounds). Key stored + kept server-side now; generation ships next milestone.', 'pressroot'),
+        ],
+        'runway' => [
+            'label'         => __('Runway', 'pressroot'),
+            'needs_key'     => true,
+            'model_default' => 'gen4_turbo',
+            'models'        => ['gen4_turbo', 'gen3a_turbo'],
+            'docs_url'      => 'https://dev.runwayml.com/',
+            'note'          => __('Alternative video provider for the same upcoming feature.', 'pressroot'),
+        ],
+    ]);
+}
+
+/** Every connector def across text/image/video — used by the save handler. */
+function prt_ai_all_connector_defs(): array
+{
+    return prt_ai_connectors_defs() + prt_ai_image_connectors_defs() + prt_ai_video_connectors_defs();
+}
+
+/** The image provider currently selected for generation (Brand tab image + future block fills). */
+function prt_ai_active_image_connector(): string
+{
+    $slug = (string) get_theme_mod('prt_ai_image_model', 'pollinations_img');
+    $defs = prt_ai_image_connectors_defs();
+    if (! isset($defs[$slug]) || (! empty($defs[$slug]['needs_key']) && prt_ai_get_key($slug) === '' && prt_ai_get_key('openai') === '')) {
+        return 'pollinations_img';
+    }
+    return $slug;
+}
+
+/**
+ * Generate one image server-side. Returns ['ok'=>bool, 'file'=>tmp path] —
+ * callers sideload the temp file into the Media Library. Falls back to the
+ * keyless default on any provider failure so image generation never costs
+ * a click twice.
+ */
+function prt_ai_generate_image(string $prompt, int $w = 1024, int $h = 1024, string $slug = ''): array
+{
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    $slug = $slug !== '' ? $slug : prt_ai_active_image_connector();
+
+    if ($slug === 'openai_img') {
+        $key = prt_ai_get_key('openai_img') ?: prt_ai_get_key('openai');
+        $response = wp_remote_post('https://api.openai.com/v1/images/generations', [
+            'timeout' => 90,
+            'headers' => ['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . $key],
+            'body'    => wp_json_encode(['model' => prt_ai_get_model('openai_img'), 'prompt' => $prompt, 'size' => $w >= $h ? '1536x1024' : '1024x1536']),
+        ]);
+        $body = ! is_wp_error($response) ? json_decode(wp_remote_retrieve_body($response), true) : null;
+        $b64  = $body['data'][0]['b64_json'] ?? '';
+        if ($b64 !== '') {
+            $tmp = wp_tempnam('prt-ai-image.png');
+            file_put_contents($tmp, base64_decode($b64));
+            return ['ok' => true, 'file' => $tmp];
+        }
+        // fall through to keyless default
+    }
+
+    if ($slug === 'stability') {
+        $sdModel  = prt_ai_get_model('stability');
+        $sdPath   = $sdModel === 'core' ? 'core' : 'sd3';
+        $response = wp_remote_post('https://api.stability.ai/v2beta/stable-image/generate/' . $sdPath, [
+            'timeout' => 90,
+            'headers' => ['Authorization' => 'Bearer ' . prt_ai_get_key('stability'), 'Accept' => 'image/*'],
+            'body'    => array_filter(['prompt' => $prompt, 'aspect_ratio' => $w >= $h ? '3:2' : '2:3', 'output_format' => 'jpeg', 'model' => $sdPath === 'sd3' ? $sdModel : null]),
+        ]);
+        if (! is_wp_error($response) && (int) wp_remote_retrieve_response_code($response) === 200) {
+            $tmp = wp_tempnam('prt-ai-image.jpg');
+            file_put_contents($tmp, wp_remote_retrieve_body($response));
+            return ['ok' => true, 'file' => $tmp];
+        }
+        // fall through to keyless default
+    }
+
+    // Keyless default (and universal fallback): Pollinations.
+    $url = 'https://image.pollinations.ai/prompt/' . rawurlencode($prompt) . '?width=' . absint($w) . '&height=' . absint($h) . '&nologo=true&model=' . rawurlencode(prt_ai_get_model('pollinations_img'));
+    $tmp = download_url($url, 90);
+    if (is_wp_error($tmp)) {
+        return ['ok' => false, 'file' => '', 'error' => $tmp->get_error_message()];
+    }
+    return ['ok' => true, 'file' => $tmp];
+}
+
+/* ─────────────────────────── AI Models tab ─────────────────────────── */
+
+/**
+ * "AI Models" tab on Appearance -> Pressroot: writing, image, and video
+ * providers in one place (previously buried in an Advanced accordion).
+ * Philosophy printed right on the tab: the free keyless defaults do the
+ * whole job — paid keys are optional quality upgrades, never requirements.
+ */
+function prt_ai_models_tab_html(): void
+{
+    if (! current_user_can('manage_options')) {
+        return;
+    }
+    if (! function_exists('App\\prt_ai_features_enabled') || ! prt_ai_features_enabled()) {
+        echo '<h2 style="margin-top:0">' . esc_html__('AI Models', 'pressroot') . '</h2>';
+        echo '<p class="description">' . esc_html__('AI features are switched off (Brand tab → "Powered by AI — or not"). Flip them on to connect models.', 'pressroot') . '</p>';
+        return;
+    }
+    if (isset($_GET['connectors_updated'])) {
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('AI models saved.', 'pressroot') . '</p></div>';
+    }
+    ?>
+    <h2 style="margin-top:0"><?php esc_html_e('AI Models', 'pressroot'); ?></h2>
+    <p class="description" style="max-width:680px"><?php esc_html_e('Built to save you money: the keyless free models already power everything — copywriting, images, the editor button. Add a key only where you want a quality upgrade. Every key is stored server-side and never reaches the browser.', 'pressroot'); ?></p>
+
+    <h3 style="margin:22px 0 4px">✍️ <?php esc_html_e('Writing', 'pressroot'); ?></h3>
+    <p class="description"><?php esc_html_e('Used by AI-write, the copy generator, and the block editor\'s "Generate with AI".', 'pressroot'); ?></p>
+    <?php prt_ai_connectors_fields_html(); ?>
+
+    <h3 style="margin:26px 0 4px">🎨 <?php esc_html_e('Images', 'pressroot'); ?></h3>
+    <p class="description"><?php esc_html_e('Used by "Generate brand image" and the Customizer image finder.', 'pressroot'); ?></p>
+    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+        <input type="hidden" name="action" value="prt_save_ai_connectors">
+        <input type="hidden" name="prt_models_group" value="image">
+        <?php wp_nonce_field('prt_save_ai_connectors'); ?>
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row"><?php esc_html_e('Generate images with', 'pressroot'); ?></th>
+                <td>
+                    <select name="prt_ai_image_model">
+                        <?php foreach (prt_ai_image_connectors_defs() as $slug => $def) : ?>
+                            <option value="<?php echo esc_attr($slug); ?>" <?php selected(get_theme_mod('prt_ai_image_model', 'pollinations_img'), $slug); ?>><?php echo esc_html($def['label']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="description"><?php esc_html_e('Falls back to the free default automatically if a paid provider errors.', 'pressroot'); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><?php echo esc_html(prt_ai_image_connectors_defs()['pollinations_img']['label']); ?></th>
+                <td>
+                    <p class="description" style="margin:0 0 8px"><?php echo esc_html(prt_ai_image_connectors_defs()['pollinations_img']['note']); ?></p>
+                    <?php prt_ai_model_select_html('pollinations_img', prt_ai_image_connectors_defs()['pollinations_img']); ?>
+                </td>
+            </tr>
+            <?php foreach (prt_ai_image_connectors_defs() as $slug => $def) :
+                if (empty($def['needs_key'])) { continue; } ?>
+                <tr>
+                    <th scope="row"><?php echo esc_html($def['label']); ?><?php if (prt_ai_is_configured($slug) || ($slug === 'openai_img' && prt_ai_get_key('openai') !== '')) : ?> <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#edfaef;color:#1e7a34;font-size:11px;font-weight:600"><?php esc_html_e('Connected', 'pressroot'); ?></span><?php endif; ?></th>
+                    <td>
+                        <p class="description" style="margin:0 0 8px"><?php echo esc_html($def['note']); ?> <a href="<?php echo esc_url($def['docs_url']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Get a key ↗', 'pressroot'); ?></a></p>
+                        <input type="password" class="regular-text" autocomplete="off" name="prt_ai_key_<?php echo esc_attr($slug); ?>" value="" placeholder="<?php echo prt_ai_get_key($slug) !== '' ? esc_attr(str_repeat('•', 12)) : ''; ?>">
+                        <?php prt_ai_model_select_html($slug, $def); ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <?php foreach (prt_ai_video_connectors_defs() as $slug => $def) : ?>
+                <?php if ($slug === array_key_first(prt_ai_video_connectors_defs())) : ?>
+                    <tr><th colspan="2" style="padding-bottom:0"><h3 style="margin:14px 0 0">🎬 <?php esc_html_e('Video (keys stored now — AI Video Hero ships next milestone)', 'pressroot'); ?></h3></th></tr>
+                <?php endif; ?>
+                <tr>
+                    <th scope="row"><?php echo esc_html($def['label']); ?><?php if (prt_ai_get_key($slug) !== '') : ?> <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#edfaef;color:#1e7a34;font-size:11px;font-weight:600"><?php esc_html_e('Saved', 'pressroot'); ?></span><?php endif; ?></th>
+                    <td>
+                        <p class="description" style="margin:0 0 8px"><?php echo esc_html($def['note']); ?> <a href="<?php echo esc_url($def['docs_url']); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Get a key ↗', 'pressroot'); ?></a></p>
+                        <input type="password" class="regular-text" autocomplete="off" name="prt_ai_key_<?php echo esc_attr($slug); ?>" value="" placeholder="<?php echo prt_ai_get_key($slug) !== '' ? esc_attr(str_repeat('•', 12)) : ''; ?>">
+                        <?php prt_ai_model_select_html($slug, $def); ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php submit_button(__('Save image & video models', 'pressroot')); ?>
+    </form>
+    <?php
+}

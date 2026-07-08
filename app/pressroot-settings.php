@@ -88,14 +88,19 @@ function prt_settings_tab_url(string $tab, array $extra = []): string
 function prt_settings_tabs(): array
 {
     return [
-        'brand' => [
-            'label'    => __('Brand', 'pressroot'),
-            'render'   => __NAMESPACE__ . '\\prt_brand_tab_html',
-            // The questionnaire that steers the Site Types design generator
-            // (app/site-type-remix.php): light/dark + vibe filter which
-            // design kits get dealt, brand color overrides each kit's
-            // accent, and the AI copywriter reads the whole profile.
-            'visible'  => function_exists('App\\prt_brand_tab_html'),
+        'models' => [
+            'label'    => __('AI Models', 'pressroot'),
+            'render'   => __NAMESPACE__ . '\\prt_ai_models_tab_html',
+            // Writing / image / video providers in one place. Free keyless
+            // defaults always work; keys are optional upgrades.
+            'visible'  => function_exists('App\\prt_ai_models_tab_html') && prt_addon_enabled('pressroot_ai'),
+        ],
+        'settings' => [
+            'label'    => __('Theme Settings', 'pressroot'),
+            'render'   => __NAMESPACE__ . '\\prt_theme_settings_tab_html',
+            // The Customizer's front door: same theme_mods, native fields,
+            // no live-preview detour needed for the common 90%.
+            'visible'  => function_exists('App\\prt_theme_settings_tab_html'),
         ],
         'ai' => [
             'label'    => __('Site Types', 'pressroot'),
@@ -152,7 +157,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
         'prt-settings-admin',
         get_theme_file_uri('resources/css/admin-settings.css'),
         [],
-        (string) wp_get_theme()->get('Version')
+        (string) @filemtime(get_theme_file_path('resources/css/admin-settings.css')) ?: (string) wp_get_theme()->get('Version')
     );
 });
 
@@ -206,6 +211,11 @@ function prt_settings_header(): void
         <div class="prt-rf-eyebrow"><?php esc_html_e('WordPress theme', 'pressroot'); ?></div>
         <h1 class="prt-rf-title"><?php esc_html_e('Pressroot', 'pressroot'); ?></h1>
         <p class="prt-rf-lead"><?php esc_html_e('Site types, AI, and integrations — all in one place.', 'pressroot'); ?></p>
+        <p class="prt-rf-byline" style="margin:-6px 0 18px;font-size:13px;opacity:.85"><?php printf(
+            /* translators: %s: theme author link */
+            esc_html__('Created by %s', 'pressroot'),
+            '<a href="https://github.com/matthummel-pa" target="_blank" rel="author noopener noreferrer" style="font-weight:600;text-decoration:underline;color:inherit">matthummel ↗</a>'
+        ); ?></p>
 
         <div class="prt-rf-cta">
             <?php if ($docsUrl !== '') : ?>

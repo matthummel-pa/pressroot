@@ -52,19 +52,44 @@ add_action('customize_register', function ($wp) {
     ]);
 
     // Editable homepage hero copy — the homepage (resources/views/partials/home/hero.blade.php)
-    // has its own hand-built layout (not the .prt-hero pattern styled above), so it only reads
-    // these two fields. Defaults match the built-in copy exactly, so nothing changes until edited.
-    // "Eyebrow" isn't included here: the homepage's small badge above the title is the
-    // "Availability" section's own text (prt_avail_text), already editable there.
-    $wp->add_setting('prt_hero_title', ['default' => __("Hi there! I'm Matt — I build", 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    // has its own hand-built layout (not the .prt-hero pattern styled above).
+    // GENERIC BASE-THEME DEFAULTS: this used to ship the original owner's
+    // personal copy hardcoded ("Hi there! I'm Matt…", "15+ yrs building");
+    // every visible hero string is now a theme_mod with a neutral default,
+    // so a fresh install reads like a starting point rather than someone
+    // else's portfolio. The two-tone sentence is fully editable now too:
+    // opening line + gradient word + serif word + closing phrase.
+    // "Eyebrow" isn't included here: the homepage's small badge above the
+    // title is the availability text (prt_avail_text), read by the partial.
+    $wp->add_setting('prt_hero_title', ['default' => __('Your brand in.', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
     $wp->add_control('prt_hero_title', [
         'label'       => __('Homepage headline (opening line)', 'pressroot'),
-        'description' => __('The rest of the sentence ("delightful things for the web.") keeps its two-tone styling and stays fixed.', 'pressroot'),
+        'description' => __('Followed by the gradient word, serif word, and closing phrase below.', 'pressroot'),
         'section'     => 'prt_hero_section',
         'type'        => 'text',
     ]);
-    $wp->add_setting('prt_hero_subtext', ['default' => __('Full-stack developer with 15+ years building fast, accessible WordPress & Sage sites and Microsoft Power Platform tools — from Gettysburg, PA.', 'pressroot'), 'sanitize_callback' => 'sanitize_textarea_field']);
+    $wp->add_setting('prt_hero_accent', ['default' => __('Your site', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_accent', ['label' => __('Headline gradient word', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
+    $wp->add_setting('prt_hero_serif', ['default' => __('out.', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_serif', ['label' => __('Headline serif word', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
+    $wp->add_setting('prt_hero_suffix', ['default' => '', 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_suffix', ['label' => __('Headline closing phrase', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
+    $wp->add_setting('prt_hero_subtext', ['default' => __('Deep enough for developers, sharp enough for marketers, simple enough for any business owner to run solo. Pick a site type, deal a design, make it yours.', 'pressroot'), 'sanitize_callback' => 'sanitize_textarea_field']);
     $wp->add_control('prt_hero_subtext', ['label' => __('Homepage subtext (paragraph)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'textarea']);
+
+    // Hero CTAs + floating chips — generic by default, all editable.
+    $wp->add_setting('prt_hero_btn1_text', ['default' => __('See the work →', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_btn1_text', ['label' => __('Primary button text', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
+    $wp->add_setting('prt_hero_btn1_url', ['default' => '', 'sanitize_callback' => 'esc_url_raw']);
+    $wp->add_control('prt_hero_btn1_url', ['label' => __('Primary button URL (blank = projects archive)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'url']);
+    $wp->add_setting('prt_hero_btn2_text', ['default' => __("Let's talk", 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_btn2_text', ['label' => __('Secondary button text', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
+    $wp->add_setting('prt_hero_btn2_url', ['default' => '', 'sanitize_callback' => 'esc_url_raw']);
+    $wp->add_control('prt_hero_btn2_url', ['label' => __('Secondary button URL (blank = contact page)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'url']);
+    $wp->add_setting('prt_hero_chip1', ['default' => __('⚡ Fast by default', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_chip1', ['label' => __('Floating chip 1 (blank to hide)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
+    $wp->add_setting('prt_hero_chip2', ['default' => __('♿ Accessible first', 'pressroot'), 'sanitize_callback' => 'sanitize_text_field']);
+    $wp->add_control('prt_hero_chip2', ['label' => __('Floating chip 2 (blank to hide)', 'pressroot'), 'section' => 'prt_hero_section', 'type' => 'text']);
 
     $sel('prt_hero_cols', __('Columns', 'pressroot'), ['1' => '1', '2' => '2', '3' => '3'], '1', 'prt_hero_section');
     $sel('prt_hero_align_h', __('Content horizontal position', 'pressroot'), ['left' => __('Left', 'pressroot'), 'center' => __('Center', 'pressroot'), 'right' => __('Right', 'pressroot')], 'center', 'prt_hero_section');

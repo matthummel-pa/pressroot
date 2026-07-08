@@ -188,6 +188,7 @@ function prt_site_types()
  */
 add_filter('query_vars', function ($vars) {
     $vars[] = 'prt_pattern_preview';
+    $vars[] = 'prt_preview_kit';
     return $vars;
 });
 
@@ -204,6 +205,7 @@ add_action('template_redirect', function () {
     $pattern  = $registry ? $registry->get_registered(sanitize_text_field(wp_unslash($slug))) : null;
 
     show_admin_bar(false);
+    nocache_headers(); // design previews must never be cached stale
     header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
     ?><!DOCTYPE html>
     <html <?php language_attributes(); ?>>
@@ -212,6 +214,62 @@ add_action('template_redirect', function () {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>html{background:#fff}body{margin:0}</style>
         <?php wp_head(); ?>
+        <?php
+        // The layout template normally fires prt_head_end AFTER wp_head so
+        // the Customizer palette/font variables (app/customizer.php) and
+        // theme vars (app/footer-content.php) override app.css. This
+        // standalone preview page skipped it, which is why previews used to
+        // render with the raw stylesheet defaults instead of the live
+        // design. Fire it here too so previews match the real site.
+        do_action('prt_head_end');
+
+        // Per-kit previews: ?prt_preview_kit=<slug> re-skins this preview
+        // with any registered Style Kit's palette + fonts, so each site
+        // type's card can show its designs in its OWN kit — not whatever
+        // kit the live site happens to be wearing right now.
+        $previewKit = sanitize_key(get_query_var('prt_preview_kit'));
+        $kits       = function_exists('App\\prt_style_kits') ? prt_style_kits() : [];
+
+        if ($previewKit === 'bare') {
+            // BAREBONES previews: no main-theme branding at all — neutral
+            // grayscale so pattern structure is judged on its own. Brand
+            // answers later upgrade previews to 'brand' mode automatically.
+            echo '<style id="prt-preview-bare">:root{'
+                . '--color-green:#3a3a44;--color-khaki:#ffffff;--color-ink:#16161a;'
+                . '--color-heading:#16161a;--color-body:#46464f;'
+                . '--font-display:ui-sans-serif,system-ui,sans-serif;--font-body:ui-sans-serif,system-ui,sans-serif;'
+                . '--gradient-brand:linear-gradient(135deg,#3a3a44,#5a5a66);'
+                . '--gradient-spectrum:linear-gradient(90deg,#c9c9d2,#e3e3ea);'
+                . '}body{background:#fff}</style>';
+        } elseif ($previewKit === 'brand' && function_exists('App\\prt_brand_profile')) {
+            // BRAND previews: derived live from the Brand tab answers, so
+            // the boxes silently re-skin themselves as settings change.
+            $bp    = prt_brand_profile();
+            $dark  = $bp['mode'] === 'dark';
+            $accent = $bp['color'] !== '' ? $bp['color'] : '#6C4CF1';
+            echo '<style id="prt-preview-brand">:root{'
+                . '--color-green:' . esc_html($accent) . ';'
+                . '--color-khaki:' . ($dark ? '#15122a' : '#FFF9F5') . ';'
+                . '--color-ink:' . ($dark ? '#F5F2FF' : '#17151F') . ';'
+                . '--color-heading:' . ($dark ? '#F5F2FF' : '#17151F') . ';'
+                . '--color-body:' . ($dark ? '#CFCBE6' : '#4A4660') . ';'
+                . '}body{background:' . ($dark ? '#15122a' : '#FFF9F5') . '}</style>';
+        } elseif ($previewKit !== '' && isset($kits[$previewKit]['mods'])) {
+            $m     = $kits[$previewKit]['mods'];
+            $fonts = function_exists('App\\prt_fonts') ? prt_fonts() : [];
+            $h     = $fonts[$m['prt_font_heading'] ?? ''][1] ?? "'Outfit', ui-sans-serif, sans-serif";
+            $b     = $fonts[$m['prt_font_body'] ?? ''][1] ?? "'Outfit', ui-sans-serif, sans-serif";
+            echo '<style id="prt-preview-kit">:root{'
+                . '--color-green:' . esc_html($m['prt_color_action'] ?? '#6C4CF1') . ';'
+                . '--color-khaki:' . esc_html($m['prt_color_paper'] ?? '#FFF9F5') . ';'
+                . '--color-ink:' . esc_html($m['prt_color_ink'] ?? '#17151F') . ';'
+                . '--color-heading:' . esc_html($m['prt_color_ink'] ?? '#17151F') . ';'
+                . '--color-body:' . esc_html($m['prt_color_body'] ?? '#4A4660') . ';'
+                . '--font-display:' . $h . ';'
+                . '--font-body:' . $b . ';'
+                . '}body{background:' . esc_html($m['prt_color_paper'] ?? '#FFF9F5') . '}</style>';
+        }
+        ?>
     </head>
     <body <?php body_class('prt-pattern-preview'); ?>>
         <?php if ($pattern && ! empty($pattern['content'])) : ?>
@@ -228,11 +286,19 @@ add_action('template_redirect', function () {
 
 /**
  * @return string URL to embed in an <iframe> for a live preview of one
- *                registered pattern (see the template_redirect handler above).
+ *                registered pattern (see the template_redirect handler
+ *                above), optionally re-skinned with a specific Style Kit.
  */
-function prt_pattern_preview_url(string $patternSlug): string
+function prt_pattern_preview_url(string $patternSlug, string $kit = ''): string
 {
-    return add_query_arg('prt_pattern_preview', rawurlencode($patternSlug), home_url('/'));
+    $args = ['prt_pattern_preview' => rawurlencode($patternSlug)];
+    if ($kit !== '') {
+        $args['prt_preview_kit'] = rawurlencode($kit);
+    }
+    // Cache-buster: previews must always show the CURRENT design system —
+    // never a stale cached render from before the last kit/trend deal.
+    $args['v'] = (string) time();
+    return add_query_arg($args, home_url('/'));
 }
 
 /**
@@ -251,7 +317,7 @@ function prt_pattern_preview_url(string $patternSlug): string
 add_action('admin_enqueue_scripts', function ($hook) {
     $onSettingsPage = $hook === 'appearance_page_prt-settings';
     $onAiTab        = ($_GET['tab'] ?? 'ai') === 'ai';
-    if (! $onSettingsPage || ! $onAiTab || ! prt_addon_enabled('pressroot_ai')) {
+    if (! $onSettingsPage || ! $onAiTab || ! prt_ai_features_enabled()) {
         return;
     }
     $path = 'resources/js/ai-assistant.js';
@@ -311,6 +377,16 @@ function prt_site_type_page_variants(array $def): array
             $variants[$v] = $def['pattern_' . $v];
         }
     }
+    // Core-blocks-only mode (default ON): generated sites use only the C/D
+    // variants, which are pure core Gutenberg + prt/smart-* theme blocks —
+    // no Custom HTML blocks ever land in an owner's content. The hand-built
+    // A/B patterns stay available in the inserter for developers.
+    if (get_theme_mod('prt_core_blocks_only', true)) {
+        $coreOnly = array_intersect_key($variants, ['c' => 1, 'd' => 1]);
+        if ($coreOnly) {
+            return $coreOnly;
+        }
+    }
     return $variants;
 }
 
@@ -367,6 +443,21 @@ function prt_pressroot_ai_tab_html()
     ?>
         <p class="description"><?php esc_html_e('Pick the kind of site you\'re building to apply a matching design and create starter pages, regenerate any page you don\'t love, then generate hero copy to fill them in.', 'pressroot'); ?></p>
 
+        <?php if ($result !== '' && function_exists('App\prt_build_status_bar')) {
+            prt_build_status_bar([
+                __('Creating & refreshing pages', 'pressroot'),
+                __('Dealing a design kit + trend', 'pressroot'),
+                __('Building navigation, header & footer', 'pressroot'),
+                __('Re-asserting your branding', 'pressroot'),
+                __('Refreshing previews', 'pressroot'),
+            ], __('Jump to your pages', 'pressroot'), '#prt-pages');
+        } elseif (isset($_GET['prt_bulk_regenerated']) && function_exists('App\prt_build_status_bar')) {
+            prt_build_status_bar([
+                __('Dealing new designs per page', 'pressroot'),
+                __('Rotating kit + design trend', 'pressroot'),
+                __('Refreshing previews', 'pressroot'),
+            ], __('Jump to your pages', 'pressroot'), '#prt-pages');
+        } ?>
         <?php if ($result !== '') : ?>
             <div class="notice notice-success is-dismissible">
                 <p>
@@ -421,65 +512,54 @@ function prt_pressroot_ai_tab_html()
                     ?>
                 </p>
             </div>
+        <?php elseif (isset($_GET['prt_ai_filled'])) : ?>
+            <div class="notice notice-success is-dismissible"><p>
+                <?php
+                printf(esc_html__('✨ AI wrote %d lines of copy from your brand profile.', 'pressroot'), absint($_GET['prt_ai_filled']));
+                if (! empty($_GET['prt_ai_fill_errors'])) {
+                    echo ' ' . esc_html(sprintf(__('(%d pages could not be written — try again or switch models.)', 'pressroot'), absint($_GET['prt_ai_fill_errors'])));
+                }
+                ?>
+            </p></div>
+        <?php elseif (isset($_GET['prt_ai_img_done'])) : ?>
+            <div class="notice notice-success is-dismissible"><p><?php esc_html_e('🖼 AI image generated, attached to the page, saved in the Media Library, and set as its featured image.', 'pressroot'); ?></p></div>
+        <?php elseif (isset($_GET['prt_ai_fill_error'])) : ?>
+            <div class="notice notice-error is-dismissible"><p><?php echo esc_html(sanitize_text_field(wp_unslash($_GET['prt_ai_fill_error']))); ?></p></div>
         <?php elseif ($connectorsUpdated) : ?>
             <div class="notice notice-success is-dismissible">
                 <p><?php esc_html_e('AI connectors saved.', 'pressroot'); ?></p>
             </div>
         <?php endif; ?>
 
-        <h2 style="margin-top:24px"><?php esc_html_e('1. Choose a site type', 'pressroot'); ?></h2>
-        <p class="description"><?php esc_html_e('Each preview is a live, scaled-down render of that type\'s first starter page — the actual pattern you\'ll get, not a mockup.', 'pressroot'); ?></p>
-        <div style="display:flex;flex-wrap:wrap;gap:14px;margin:16px 0 32px">
-            <?php
-            $appliedTypes = array_unique(array_filter(wp_list_pluck(prt_get_site_type_pages(), 'prt_site_type')));
-            foreach ($types as $id => $type) :
-                $firstPage = $type['pages'][0] ?? null;
-            ?>
-                <div style="width:260px;border:1px solid #dcdcde;border-radius:10px;padding:16px;background:#fff">
-                    <?php if ($firstPage) : ?>
-                        <div style="width:100%;height:150px;overflow:hidden;border-radius:8px;border:1px solid #e2e2e5;background:#f6f6f7;margin-bottom:12px;position:relative">
-                            <iframe
-                                src="<?php echo esc_url(prt_pattern_preview_url($firstPage['pattern_a'])); ?>"
-                                title="<?php echo esc_attr(sprintf(__('%s preview', 'pressroot'), $type['label'])); ?>"
-                                loading="lazy"
-                                style="width:400%;height:400%;transform:scale(0.25);transform-origin:0 0;border:0;pointer-events:none"
-                            ></iframe>
-                        </div>
-                    <?php endif; ?>
-                    <strong style="font-size:14px"><?php echo esc_html($type['label']); ?></strong>
-                    <p style="margin:6px 0 10px;color:#646970;font-size:12px"><?php echo esc_html($type['desc']); ?></p>
-                    <p style="margin:0 0 12px;font-size:12px;color:#646970">
-                        <?php
-                        printf(
-                            /* translators: %s: comma-separated list of starter page titles */
-                            esc_html__('Creates: %s', 'pressroot'),
-                            esc_html(implode(', ', wp_list_pluck($type['pages'], 'title')))
-                        );
-                        ?>
-                    </p>
-                    <form method="post" action="<?php echo esc_url($post); ?>" style="margin:0">
-                        <input type="hidden" name="action" value="prt_apply_site_type">
-                        <input type="hidden" name="site_type" value="<?php echo esc_attr($id); ?>">
-                        <?php wp_nonce_field('prt_apply_site_type'); ?>
-                        <button class="button button-primary" style="width:100%">
-                            <?php in_array($id, $appliedTypes, true) ? esc_html_e('Regenerate this design', 'pressroot') : esc_html_e('Use this', 'pressroot'); ?>
-                        </button>
-                    </form>
-                    <?php if (in_array($id, $appliedTypes, true)) : ?>
-                        <form method="post" action="<?php echo esc_url($post); ?>" style="margin:8px 0 0">
-                            <input type="hidden" name="action" value="prt_regenerate_site_type">
-                            <input type="hidden" name="site_type" value="<?php echo esc_attr($id); ?>">
-                            <?php wp_nonce_field('prt_regenerate_site_type'); ?>
-                            <button class="button" style="width:100%">🎲 <?php esc_html_e('Refresh — random new design', 'pressroot'); ?></button>
-                        </form>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-        </div>
+        <h2 style="margin-top:24px"><?php esc_html_e('1. Pick your site type', 'pressroot'); ?></h2>
+        <p class="description" style="max-width:640px"><?php esc_html_e('Choose the kind of site you\'re building and apply it — your pages are created (or refreshed) below, where everything else happens: previews, designs, marketing questions, AI writing, and generated media.', 'pressroot'); ?></p>
+        <form method="post" action="<?php echo esc_url($post); ?>" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 6px">
+            <input type="hidden" name="action" value="prt_apply_site_type">
+            <?php wp_nonce_field('prt_apply_site_type'); ?>
+            <label class="screen-reader-text" for="prt-site-type-pick"><?php esc_html_e('Site type', 'pressroot'); ?></label>
+            <select id="prt-site-type-pick" name="site_type" style="min-width:320px">
+                <?php
+                $appliedTypes = array_unique(array_filter(wp_list_pluck(prt_get_site_type_pages(), 'prt_site_type')));
+                foreach ($types as $id => $type) :
+                ?>
+                    <option value="<?php echo esc_attr($id); ?>" <?php selected(in_array($id, $appliedTypes, true)); ?>>
+                        <?php echo esc_html($type['label'] . ' — ' . $type['desc'] . (in_array($id, $appliedTypes, true) ? ' ✓' : '')); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <button class="button button-primary"><?php esc_html_e('Apply site type', 'pressroot'); ?></button>
+            <span class="description"><?php esc_html_e('Re-applying the same type deals every page a fresh design.', 'pressroot'); ?></span>
+        </form>
 
         <hr>
 
-        <h2><?php esc_html_e('2. Your starter pages', 'pressroot'); ?></h2>
+        <h2 id="prt-pages"><?php esc_html_e('2. Your pages & designs', 'pressroot'); ?></h2>
+        <?php $setupSaved = (bool) get_option('prt_setup_saved'); ?>
+        <?php if (! $setupSaved) : ?>
+            <div class="notice notice-info inline" style="max-width:760px"><p>
+                <?php printf(wp_kses_post(__('Page previews unlock after you save <a href="%s">Theme Settings</a> once — so previews always show YOUR settings, never the theme\'s stock branding.', 'pressroot')), esc_url(prt_settings_tab_url('settings'))); ?>
+            </p></div>
+        <?php endif; ?>
         <?php
         $sitePages = prt_get_site_type_pages();
         $byType    = [];
@@ -490,7 +570,7 @@ function prt_pressroot_ai_tab_html()
         <?php if (empty($sitePages)) : ?>
             <p class="description"><?php esc_html_e('Nothing yet — choose a site type above to create your first starter pages.', 'pressroot'); ?></p>
         <?php else : ?>
-            <p class="description"><?php esc_html_e('Don\'t love how a page turned out? Regenerate deals it a random new design — layout AND content are replaced fresh from the current patterns, so nothing from an older theme design ever lingers. "Refresh all" does every page in that site type at once.', 'pressroot'); ?></p>
+            <p class="description"><?php esc_html_e('Every page here is plain Gutenberg blocks — "Edit blocks" opens it in the block editor, your page builder. 🎲 deals a random new design (layout + placeholder content), ✨ has your selected AI write the real copy from the Brand tab answers, and neither ever touches the block markup itself, so nothing can break.', 'pressroot'); ?></p>
             <?php foreach ($byType as $typeId => $pages) : ?>
                 <h3 style="margin:20px 0 6px;font-size:14px">
                     <?php echo esc_html($types[$typeId]['label'] ?? $typeId); ?>
@@ -500,12 +580,25 @@ function prt_pressroot_ai_tab_html()
                         <?php wp_nonce_field('prt_regenerate_site_type'); ?>
                         <button class="button button-small">🎲 <?php esc_html_e('Refresh all — random new designs', 'pressroot'); ?></button>
                     </form>
+                    <?php if (function_exists('App\\prt_ai_features_enabled') && prt_ai_features_enabled()) : ?>
+                        <form method="post" action="<?php echo esc_url($post); ?>" style="display:inline;margin-left:6px">
+                            <input type="hidden" name="action" value="prt_ai_fill_all">
+                            <input type="hidden" name="site_type" value="<?php echo esc_attr($typeId); ?>">
+                            <?php wp_nonce_field('prt_ai_fill_all'); ?>
+                            <button class="button button-small">✨ <?php esc_html_e('AI-write all pages', 'pressroot'); ?></button>
+                        </form>
+                    <?php endif; ?>
                 </h3>
-                <table class="widefat striped" style="max-width:760px;margin-bottom:12px">
+                <?php if (function_exists('App\\prt_type_questions_html')) {
+                    prt_type_questions_html($typeId, $types[$typeId]['label'] ?? $typeId);
+                } ?>
+                <table class="widefat striped" style="max-width:1080px;margin-bottom:12px">
                     <thead>
                         <tr>
-                            <th><?php esc_html_e('Page', 'pressroot'); ?></th>
-                            <th><?php esc_html_e('Variant', 'pressroot'); ?></th>
+                            <th style="width:14%"><?php esc_html_e('Page', 'pressroot'); ?></th>
+                            <th style="width:6%"><?php esc_html_e('Design', 'pressroot'); ?></th>
+                            <th style="width:22%"><?php esc_html_e('Preview', 'pressroot'); ?></th>
+                            <th style="width:20%"><?php esc_html_e('Generated media', 'pressroot'); ?></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -515,12 +608,60 @@ function prt_pressroot_ai_tab_html()
                                 <td><?php echo esc_html(get_the_title($sp)); ?></td>
                                 <td><?php echo esc_html(strtoupper($sp->prt_variant)); ?></td>
                                 <td>
-                                    <form method="post" action="<?php echo esc_url($post); ?>">
+                                    <?php if ($setupSaved) : ?>
+                                        <div style="width:200px;height:120px;overflow:hidden;border-radius:6px;border:1px solid #e2e2e5;background:#fff;position:relative">
+                                            <iframe class="prt-preview-frame"
+                                                src="<?php echo esc_url(add_query_arg('v', (string) time(), get_preview_post_link($sp->ID))); ?>"
+                                                title="<?php echo esc_attr(sprintf(__('%s preview', 'pressroot'), get_the_title($sp))); ?>"
+                                                loading="lazy"
+                                                style="width:1200px;height:720px;transform:scale(0.1667);transform-origin:0 0;border:0;pointer-events:none"></iframe>
+                                        </div>
+                                    <?php else : ?>
+                                        <span class="description">—</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    $media = get_children(['post_parent' => $sp->ID, 'post_type' => 'attachment', 'numberposts' => 6, 'orderby' => 'date', 'order' => 'DESC']);
+                                    if ($media) {
+                                        echo '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">';
+                                        foreach ($media as $att) {
+                                            $isVideo = strpos((string) $att->post_mime_type, 'video/') === 0;
+                                            echo '<a href="' . esc_url(get_edit_post_link($att->ID)) . '" title="' . esc_attr(get_the_title($att)) . '">';
+                                            echo $isVideo
+                                                ? '<span style="display:inline-flex;width:40px;height:40px;border-radius:6px;background:#17151F;color:#fff;align-items:center;justify-content:center">🎬</span>'
+                                                : wp_get_attachment_image($att->ID, [40, 40], true, ['style' => 'border-radius:6px;object-fit:cover;width:40px;height:40px']);
+                                            echo '</a>';
+                                        }
+                                        echo '</div>';
+                                    } else {
+                                        echo '<span class="description" style="display:block;margin-bottom:6px">' . esc_html__('None yet', 'pressroot') . '</span>';
+                                    }
+                                    if (function_exists('App\\prt_ai_features_enabled') && prt_ai_features_enabled()) : ?>
+                                        <form method="post" action="<?php echo esc_url($post); ?>" style="margin:0">
+                                            <input type="hidden" name="action" value="prt_ai_page_image">
+                                            <input type="hidden" name="page_id" value="<?php echo (int) $sp->ID; ?>">
+                                            <?php wp_nonce_field('prt_ai_page_image'); ?>
+                                            <button class="button button-small">🖼 <?php esc_html_e('AI image', 'pressroot'); ?></button>
+                                        </form>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                                    <form method="post" action="<?php echo esc_url($post); ?>" style="margin:0">
                                         <input type="hidden" name="action" value="prt_regenerate_site_type_page">
                                         <input type="hidden" name="page_id" value="<?php echo (int) $sp->ID; ?>">
                                         <?php wp_nonce_field('prt_regenerate_site_type_page'); ?>
-                                        <button class="button"><?php esc_html_e('Regenerate', 'pressroot'); ?></button>
+                                        <button class="button">🎲 <?php esc_html_e('New design', 'pressroot'); ?></button>
                                     </form>
+                                    <?php if (function_exists('App\\prt_ai_features_enabled') && prt_ai_features_enabled()) : ?>
+                                        <form method="post" action="<?php echo esc_url($post); ?>" style="margin:0">
+                                            <input type="hidden" name="action" value="prt_ai_fill_page">
+                                            <input type="hidden" name="page_id" value="<?php echo (int) $sp->ID; ?>">
+                                            <?php wp_nonce_field('prt_ai_fill_page'); ?>
+                                            <button class="button">✨ <?php esc_html_e('Write with AI', 'pressroot'); ?></button>
+                                        </form>
+                                    <?php endif; ?>
+                                    <a class="button" href="<?php echo esc_url(get_edit_post_link($sp->ID)); ?>"><?php esc_html_e('Edit blocks', 'pressroot'); ?></a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -531,6 +672,11 @@ function prt_pressroot_ai_tab_html()
 
         <hr>
 
+        <?php if (! prt_ai_features_enabled()) : ?>
+            <p class="description" style="max-width:640px">
+                <?php esc_html_e('AI features are switched off (Theme Settings → Brand → "Powered by AI — or not"). Everything above keeps working — the design generator is built into the theme and never calls an AI service. Flip the switch back on to write starter copy with AI.', 'pressroot'); ?>
+            </p>
+        <?php else : ?>
         <h2><?php esc_html_e('3. Generate starter hero copy', 'pressroot'); ?></h2>
         <p class="description">
             <?php esc_html_e('Describe your business or site in a sentence and get a draft headline + subheadline you can paste into your Hero pattern.', 'pressroot'); ?>
@@ -568,6 +714,28 @@ function prt_pressroot_ai_tab_html()
                 <?php prt_ai_connectors_fields_html(); ?>
             </div>
         </details>
+
+        <?php endif; ?>
+
+        <script>
+        (function () {
+            // Hidden live updating: whenever this admin tab becomes visible
+            // again (e.g. after saving Brand/Theme Settings in another tab),
+            // silently re-fetch every preview box with a fresh cache-buster.
+            function refresh() {
+                document.querySelectorAll('.prt-preview-frame').forEach(function (f) {
+                    try {
+                        var u = new URL(f.src);
+                        u.searchParams.set('v', Date.now().toString());
+                        f.src = u.toString();
+                    } catch (e) {}
+                });
+            }
+            document.addEventListener('visibilitychange', function () {
+                if (! document.hidden) { refresh(); }
+            });
+        })();
+        </script>
 
         <details id="prt-settings-advanced" style="margin-top:12px;max-width:760px;border:1px solid #dcdcde;border-radius:8px;padding:4px 16px;background:#fff" <?php echo $backupUpdated ? 'open' : ''; ?>>
             <summary style="cursor:pointer;padding:12px 0;font-weight:600"><?php esc_html_e('Advanced: Backup & restore settings', 'pressroot'); ?></summary>
@@ -686,6 +854,20 @@ add_action('admin_post_prt_apply_site_type', function () {
         $created[] = $page['title'];
     }
 
+    // Build the site CHROME from the same answers: nav menu (Home + these
+    // pages), goal-driven header CTA, brand-driven footer.
+    if (function_exists('App\\prt_build_site_chrome')) {
+        prt_build_site_chrome($id, $type);
+    }
+
+    // Setup complete -> refresh branding last, so the owner's color/identity
+    // wins over whatever kit+trend were just dealt.
+    if (function_exists('App\\prt_refresh_branding')) {
+        prt_refresh_branding();
+    }
+    if (function_exists('App\\prt_prime_smart_copy')) {
+        prt_prime_smart_copy(); // smart blocks get fresh auto-copy per build
+    }
     prt_flush_design_caches();
 
     wp_safe_redirect(prt_settings_tab_url('ai', [
@@ -817,11 +999,18 @@ add_action('admin_post_prt_regenerate_site_type', function () {
     }
 
     // A category refresh regenerates the whole THEME, not just the pages:
-    // re-deal the site-wide design kit too (palette, fonts, radii).
+    // re-deal the site-wide design kit too (palette, fonts, radii), and
+    // keep the chrome (nav / header CTA / footer) in sync.
     if (function_exists('App\\prt_apply_random_site_kit')) {
         prt_apply_random_site_kit($id, $types[$id]);
     }
+    if (function_exists('App\\prt_build_site_chrome')) {
+        prt_build_site_chrome($id, $types[$id]);
+    }
 
+    if (function_exists('App\\prt_refresh_branding')) {
+        prt_refresh_branding();
+    }
     prt_flush_design_caches();
 
     wp_safe_redirect(prt_settings_tab_url('ai', [

@@ -49,6 +49,24 @@ function prt_addon_enabled(string $slug): bool
     return (bool) get_theme_mod('prt_addon_' . $slug . '_enabled', $defaults[$slug]);
 }
 
+/**
+ * "Powered by AI — or not." One plain-language switch (Brand tab on
+ * Appearance -> Pressroot, saved as prt_ai_features_on) that turns off every
+ * feature that actually CALLS an AI service: the starter-copy generator, AI
+ * Connectors, the block editor's "Generate with AI" button, and the AI image
+ * tab in the Customizer image finder. The Site Types design generator keeps
+ * working with AI off — its patterns and design kits are built into the
+ * theme and never phone anywhere.
+ *
+ * Distinct from the Pressroot AI ADDON toggle above (which removes the whole
+ * Site Types module): this is the friendly, non-technical "no AI on my site,
+ * please" switch. Both must be on for AI calls to run.
+ */
+function prt_ai_features_enabled(): bool
+{
+    return prt_addon_enabled('pressroot_ai') && (bool) get_theme_mod('prt_ai_features_on', true);
+}
+
 /** Customizer: Theme Options -> Theme Addons. */
 add_action('customize_register', function ($wp) {
     // Shared guarded helper — see prt_ensure_theme_options_panel() in app/customizer.php.

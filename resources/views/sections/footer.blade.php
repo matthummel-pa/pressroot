@@ -95,7 +95,11 @@
       <div class="footer-bottom-copy">
         <p class="footer-copyright">{!! wp_kses_post($f['copyright']) !!}</p>
         @if ($f['credit'])
-          <p class="footer-credit">{{ __('Built with Sage.', 'pressroot') }}</p>
+          <p class="footer-credit">{!! sprintf(
+            /* translators: %s: theme author link */
+            esc_html__('Pressroot theme by %s.', 'pressroot'),
+            '<a href="https://github.com/matthummel-pa" rel="author noopener" target="_blank">matthummel</a>'
+          ) !!}</p>
         @endif
       </div>
 

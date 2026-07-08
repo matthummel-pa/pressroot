@@ -4,6 +4,53 @@ All notable changes to Pressroot are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-07-08
+
+**One brief, whole sites.** Theme Settings becomes the single prompting surface for the entire site, and builds now generate the full shell — navigation, header, and footer — not just content.
+
+### Added
+- **Core AI instructions**: every Theme Settings + Brand answer compiles into one saved "CORE SITE BRIEF" (`prt_core_ai_instructions`) prepended to every AI call; viewer on the settings page shows exactly what the model receives.
+- **Site chrome builder** (`prt_build_site_chrome()`): generated "Pressroot Menu" (Home + starter pages) assigned to the primary location, goal-driven header CTA (Get a quote / Shop now / Book now / Subscribe) targeting the most relevant page, brand-driven footer (description tagline, light/dark ground). Runs on apply, 🎲 refresh-all, and Theme Settings auto-build; hand-made menus are never touched.
+- **Theme Settings tab** as the owner's front door: Identity + full brand questionnaire (industry dropdown), consolidated with site title/tagline/brand color; auto-build on save with a real-step status bar; sticky saving bar.
+- **AI instructions upgrades**: WYSIWYG editor with a live counter and 1,000-word cap, plus uploadable `.md` instruction files (stored server-side, appended to the brief as reference docs, trimmed to prompt-safe length).
+- **AI Models tab**: per-provider model dropdowns (incl. `claude-opus-4-8`), validated on save and read; image + video connector registries; keys masked and never sent to the browser.
+- **Core-blocks-only generation** (default on): remixed C/D page variants built purely from core Gutenberg blocks + new `prt/smart-hero` and `prt/smart-cta` server-rendered theme blocks with auto-generated copy; no Custom HTML blocks.
+- **Edit-screen AI tools**: AI-write / AI-image / new-design actions plus per-role suggested blocks on page and post edit screens.
+- **✨ Generate my brand with AI**: drafts voice, audience, goal, and personality from just the name + one-liner.
+- **Docs website**: full marketing site in Pressroot branding at matthummel-pa.github.io/pressroot (landing, documentation, become-a-tester, collaborate) plus a restaurant build recipe (`docs/BUILD-RECIPE-RESTAURANT.md`).
+- **Attribution**: theme credit ("Pressroot theme by matthummel") in the footer credit line, settings hero byline, and `style.css` copyright header.
+
+### Changed
+- Design settings (kit, colors, fonts, corners, hero copy) are now **generated in the backend** from brand answers; manual controls are hidden until the first build, then live in a collapsed fine-tuning panel.
+- Site-type previews are gated until the first Theme Settings save, always render the owner's design (bare/brand/kit modes), and bust caches on every build.
+- Tab order: AI Models → Theme Settings → Site Types → GitHub → Support; legacy Brand tab merged into Theme Settings.
+
+## [1.5.0] - 2026-07-08
+
+**"Your brand in. Your site out."** Pressroot becomes an AI-assisted design generator wearing the Repofolio brand, with Repofolio itself bundled as a theme addon.
+
+### Added
+- **Repofolio theme addon**: the Repofolio plugin bundled under `app/Repofolio/` — GitHub tab on Appearance → Pressroot, OAuth + PAT fallback, repo grid block, `repofolio_project` case studies. The standalone plugin takes over automatically if activated; option keys are shared. Restored `prt_github_get()` and the `App\Github` facade.
+- **Brand tab**: a 12-question, plain-language brand questionnaire (identity, color, light/dark, personality, audience, industry, voice, goal, imagery, density, trend) that steers all generation; opt-in sync to site title/tagline.
+- **Design generator**: applying/refreshing a Site Type now deals a random pattern variant per page, a random Style Kit from a per-type pool, and a random design trend — brand-filtered, never repeating the current deal; existing pages are refreshed (not skipped) so old designs never linger; branding is re-asserted after every deal.
+- **Remix engine** (`app/site-type-remix.php`): programmatically generated C/D variants for every page of every site type (~50 patterns) from seeded hero/feature/CTA pools.
+- **Three new Site Types**: Affiliate Marketing, Restaurant/Café, Real Estate (hand-built A/B patterns each).
+- **Six new Repofolio-family Style Kits** + a reserved **Core Marketing** kit exclusive to the Marketing type.
+- **Six design trends** as CSS-only layers: Bento spectrum, Glassmorphism, Neo-brutalist, Editorial serif, Swiss minimal, Retro pop.
+- **✨ AI Builder** (`app/ai-builder.php`): per-page / per-type "Write with AI" fills Gutenberg pages with brand-profile copy (text-only replacement — markup is never AI-generated); AI brand-image generation into the Media Library; "Edit blocks" shortcuts.
+- **"Powered by AI — or not"**: one Brand-tab switch (`prt_ai_features_enabled()`) disables every AI-calling feature while the generator keeps working.
+- **Site Type preview upgrades**: cards preview all four designs per page, each rendered in the type's own kit (`prt_preview_kit`), with no-cache headers + cache-busted URLs.
+- `npm run refresh` (ESLint + Pint + Vite build), `npm run lint`, `npm run lint:php`.
+
+### Changed
+- **Full Repofolio rebrand**: token swap to Iris/Ink/Paper + spectrum accents, brand + spectrum gradients, 8px spectrum bar site-wide, spectrum-topped cards, gradient pill buttons (core block buttons included), dark radial homepage hero, dark footer defaults, docs-site chrome for Appearance → Pressroot.
+- **Generic base-theme hero**: every hero string is now a Customizer mod with neutral defaults (tagline: "Your brand in. Your site out."); Brand profile supplies smarter defaults. Personal copy removed.
+- New `screenshot.png` in the Repofolio design; `style.css` description leads with the tagline.
+- AI copy prompt is now site-type + brand aware and takes a fresh angle per run.
+
+### Fixed
+- Pattern previews render the real design system (the preview route now fires `prt_head_end`) and are never served stale (nocache headers, versioned URLs, `filemtime`-versioned admin CSS, critical-CSS flush on every deal/brand save).
+
 ## [1.4.0] - 2026-07-05
 
 **Pressroot AI, Site Types, and a consolidated settings page.** The theme's admin experience moved from four separate Appearance pages to one, and its AI-assisted setup grew from a one-off "generate some copy" tool into the theme's primary way to start a new site.

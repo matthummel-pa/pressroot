@@ -644,6 +644,72 @@ html.prt-dark .prt-theme-toggle .prt-icon-light { display: inline-block; }
     height: 5px;
     background: var(--gradient-spectrum);
   }
+
+  /* ── Design trends (randomized by the Site Types generator) ──────────
+     One body class per trend (prt-trend-*, see prt_design_trends() in
+     app/site-type-remix.php). Pure CSS layers over the same markup, so a
+     refresh can re-skin the whole site instantly. "bento" is the baseline
+     Repofolio look and adds nothing. */
+  .prt-trend-glass .prt-spec-card,
+  .prt-trend-glass .bento-card,
+  .prt-trend-glass .is-style-prt-card {
+    background: rgba(255, 255, 255, .55);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-color: rgba(255, 255, 255, .65);
+    box-shadow: 0 8px 32px rgba(23, 21, 31, .10);
+  }
+  .prt-trend-glass .prt-spec-card::before,
+  .prt-trend-glass .bento-card::before { opacity: .55; }
+
+  .prt-trend-brutalist .prt-spec-card,
+  .prt-trend-brutalist .bento-card,
+  .prt-trend-brutalist .is-style-prt-card {
+    border: 2.5px solid var(--color-ink);
+    border-radius: 8px;
+    box-shadow: 6px 6px 0 var(--color-ink);
+  }
+  .prt-trend-brutalist .prt-spec-card::before,
+  .prt-trend-brutalist .bento-card::before { height: 8px; opacity: 1; }
+  .prt-trend-brutalist .prt-btn-grad,
+  .prt-trend-brutalist .btn,
+  .prt-trend-brutalist .wp-block-button__link {
+    border-radius: 8px;
+    box-shadow: 4px 4px 0 var(--color-ink);
+  }
+
+  .prt-trend-editorial .prt-spec-card,
+  .prt-trend-editorial .bento-card,
+  .prt-trend-editorial .is-style-prt-card { border-radius: 4px; }
+  .prt-trend-editorial .prt-spec-card::before,
+  .prt-trend-editorial .bento-card::before { height: 2px; background: var(--color-ink); }
+  .prt-trend-editorial h1,
+  .prt-trend-editorial h2 { font-family: var(--font-serif); font-weight: 400; letter-spacing: 0; }
+
+  .prt-trend-minimal .prt-spec-card::before,
+  .prt-trend-minimal .bento-card::before,
+  .prt-trend-minimal .is-style-prt-card::before { display: none; }
+  .prt-trend-minimal .prt-spec-card,
+  .prt-trend-minimal .bento-card,
+  .prt-trend-minimal .is-style-prt-card { border-radius: 10px; border-color: #e8e8ee; }
+  .prt-trend-minimal .prt-btn-grad,
+  .prt-trend-minimal .btn,
+  .prt-trend-minimal .wp-block-button__link { background: var(--color-ink); border-radius: 10px; }
+  body.prt-trend-minimal::before { display: none; } /* no spectrum bar in Swiss minimal */
+
+  .prt-trend-retro_pop .prt-spec-card,
+  .prt-trend-retro_pop .bento-card,
+  .prt-trend-retro_pop .is-style-prt-card {
+    border: 2px solid var(--color-ink);
+    border-radius: 16px;
+    box-shadow: 5px 5px 0 var(--color-pink);
+  }
+  .prt-trend-retro_pop .prt-btn-grad,
+  .prt-trend-retro_pop .btn,
+  .prt-trend-retro_pop .wp-block-button__link {
+    border: 2px solid var(--color-ink);
+    box-shadow: 4px 4px 0 var(--color-amber);
+  }
 }
 
 /* ----------------------------------------------------------------------

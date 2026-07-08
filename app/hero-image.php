@@ -42,7 +42,7 @@ add_action('customize_register', function ($wp) {
                         <button type="button" class="prt-if-tab is-active" data-src="openverse"><?php esc_html_e('Openverse', 'pressroot'); ?></button>
                         <button type="button" class="prt-if-tab" data-src="unsplash"><?php esc_html_e('Unsplash', 'pressroot'); ?></button>
                         <button type="button" class="prt-if-tab" data-src="pexels"><?php esc_html_e('Pexels', 'pressroot'); ?></button>
-                        <button type="button" class="prt-if-tab" data-src="ai"><?php esc_html_e('AI', 'pressroot'); ?></button>
+                        <?php if (prt_ai_features_enabled()) : ?><button type="button" class="prt-if-tab" data-src="ai"><?php esc_html_e('AI', 'pressroot'); ?></button><?php endif; ?>
                     </div>
                     <div class="prt-if-searchrow">
                         <input type="text" class="prt-if-q" placeholder="<?php esc_attr_e('Search images…', 'pressroot'); ?>">

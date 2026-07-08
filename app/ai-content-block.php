@@ -25,7 +25,7 @@
 namespace App;
 
 add_action('enqueue_block_editor_assets', function () {
-    if (! prt_addon_enabled('pressroot_ai')) {
+    if (! prt_ai_features_enabled()) {
         return;
     }
     $path = 'resources/js/ai-content-block.js';
@@ -60,7 +60,7 @@ add_action('enqueue_block_editor_assets', function () {
  * plain prose with no markdown/formatting.
  */
 add_action('wp_ajax_prt_ai_generate_block_content', function () {
-    if (! current_user_can('edit_posts') || ! prt_addon_enabled('pressroot_ai') || ! check_ajax_referer('prt_ai_generate_block', 'nonce', false)) {
+    if (! current_user_can('edit_posts') || ! prt_ai_features_enabled() || ! check_ajax_referer('prt_ai_generate_block', 'nonce', false)) {
         wp_send_json_error(['message' => __('Not allowed.', 'pressroot')], 403);
     }
 

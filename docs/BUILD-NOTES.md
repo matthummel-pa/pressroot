@@ -517,6 +517,40 @@ Four related asks in one pass:
 - **Takeaway:** "regenerate" reads as *random and whole-theme* to users —
   variant toggling plus a fixed kit felt broken even though it worked.
 
+## "generic hero + tagline + screenshot" (base-theme marketing pass)
+- Homepage hero fully de-personalized: every string is a theme_mod with a
+  neutral default; tagline "Your brand in. Your site out." (sibling of
+  Repofolio's "Repos in. Portfolio out.") wired into the hero, style.css
+  description, and a regenerated screenshot.png (drawn with the theme's own
+  woff2 fonts converted to ttf).
+- **Takeaway:** the two-tone headline needed to be editable in PIECES
+  (opening/gradient/serif/suffix) — a single text field can't express it.
+
+## "powered by AI or not" + easy mode
+- prt_ai_features_enabled() = addon toggle AND a plain-language Brand-tab
+  switch. It gates ONLY genuine AI calls (copy gen, connectors, editor AI
+  button, AI image tab) — the design generator is local and stays on.
+- Brand tab became the non-technical control panel: 3-step quick start,
+  site title/tagline sync checkbox, and later the full questionnaire.
+- **Takeaway:** "turn off AI" must not take the design tooling with it;
+  separating module toggle from network-call toggle solved it.
+
+## "review the settings page live + trends + AI page builder"
+- Preview iframes were rendering WITHOUT the design system: the standalone
+  preview page never fired prt_head_end, so Customizer palette vars never
+  landed. Fixed + added ?prt_preview_kit= so each site type's card previews
+  all four variants in its OWN kit, with nocache headers + versioned URLs.
+- Design trends: six CSS-only body-class layers (bento/glass/brutalist/
+  editorial/minimal/retro_pop) dealt alongside kits, brand-filtered.
+- AI Builder: per-page/per-type "Write with AI" — extracts text segments,
+  asks the selected connector for a same-count JSON array, swaps text only
+  (markup never AI-touched, honoring the v1.4 reliability decision); AI
+  brand image via Pollinations sideloaded to the Media Library.
+- Core Marketing kit reserved for the Marketing type only; branding
+  re-asserted (prt_refresh_branding) after every complete setup.
+- **Takeaway:** when a preview looks "uncached but wrong", check which
+  head hooks the standalone route actually fires before blaming caching.
+
 ---
 
 ## Recurring bug patterns

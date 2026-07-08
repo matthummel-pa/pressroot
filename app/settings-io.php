@@ -209,6 +209,17 @@ function prt_style_kits()
                 'prt_btn_radius' => '10', 'prt_card_radius' => '18',
             ],
         ],
+        'core_marketing' => [
+            'mode'  => 'light', 'vibes' => ['bold', 'playful'],
+            'label' => __('Core Marketing', 'pressroot'),
+            'desc'  => __('RESERVED: the theme\'s own conversion-focused marketing look — spectrum accents, pink-led CTAs. Only the Marketing/Landing site type deals this kit.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#FF4D9D', 'prt_color_paper' => '#FFF9F5',
+                'prt_color_ink' => '#17151F', 'prt_color_body' => '#4A4660',
+                'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Outfit',
+                'prt_btn_radius' => '999', 'prt_card_radius' => '18',
+            ],
+        ],
         'amber_toast' => [
             'mode'  => 'light', 'vibes' => ['warm'],
             'label' => __('Amber Toast', 'pressroot'),

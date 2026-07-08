@@ -4,8 +4,9 @@
 
 <h1 align="center">Pressroot</h1>
 
-<p align="center"><strong>A premium Sage 11 (Roots) WordPress theme framework.</strong><br>
-Server-rendered, accessible, deliberately light on plugins — with a deep, point-and-click options system.</p>
+<p align="center"><strong>Your brand in. Your site out.</strong><br>
+A premium Sage 11 (Roots) WordPress theme framework with an AI-assisted design generator —<br>
+deep enough for developers, sharp enough for marketers, simple enough to run solo.</p>
 
 <p align="center">Stack: Sage 11 · Blade · Tailwind CSS v4 · Vite · Acorn (Laravel-in-WordPress) · PHP 8.3</p>
 
@@ -17,13 +18,14 @@ Server-rendered, accessible, deliberately light on plugins — with a deep, poin
 
 Pressroot started as a bespoke Sage theme built for the author's own portfolio site. Rather than keep it as a one-off, it's been generalized into a reusable framework other developers can pick up and rebrand — the design system, admin experience, and block library aren't tied to any one site's content.
 
-Part of that generalization is **Site Types** (Appearance → Pressroot → Site Types): rather than a single portfolio layout, the theme ships matching design + starter-page profiles for several common business categories — Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content site, and Marketing/Landing page — so it's a fast starting point whether the next project looks nothing like the original one.
+Part of that generalization is the **design generator** (Appearance → Pressroot): answer a short **Brand** questionnaire, pick one of **eight Site Types** — Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content site, Marketing/Landing page, Affiliate Marketing, Restaurant/Café, Real Estate — and the theme deals a complete site: pages, layouts, a design kit, and a current design trend, re-rollable with one 🎲 click until it fits. Gutenberg is the page builder; AI (switchable off entirely) writes the copy and images from your brand answers. The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio) design language, and Repofolio itself ships inside as a theme addon.
 
 ## Features
 
 ### Design system & theming
 - **Tokens-first design** — colors, type scale, spacing as Tailwind v4 `@theme` variables; re-skin the whole site from one place.
-- **Style Kits** — one-click presets (Editorial, Classic, Warm Sand, Midnight, Mono Slate).
+- **Style Kits** — 13 one-click presets: the six originals plus a Repofolio family (Iris Dark, Pink Pop, Coral Cream, Mint Fresh, Cyan Sky, Amber Toast) and a reserved **Core Marketing** kit only the Marketing site type can deal.
+- **Design trends** — six switchable CSS-only trend layers (Bento spectrum, Glassmorphism, Neo-brutalist, Editorial serif, Swiss minimal, Retro pop), randomized per refresh or locked from the Brand tab.
 - **Colors / Typography** — brand + surfaces, 10 font families, base size, line-heights, letter-spacing, plus advanced per-element weights and responsive base sizes.
 - **Dark mode** — light / dark / auto with no-flash loading and a dedicated dark navbar surface.
 - **`theme.json`** — unlocks spacing, border, shadow, fluid typography, gradient, and duotone controls in the editor.
@@ -43,7 +45,7 @@ Part of that generalization is **Site Types** (Appearance → Pressroot → Site
 
 ### Blocks, content & performance
 - **Blocks** — Social Icons, Icon (Blade), Post Grid, GitHub repo card/grid/stats/releases + 22 general-purpose starter patterns, browsable from a dedicated **Pattern Library** admin page.
-- **Live GitHub project pages** — repo metadata, stars/forks, latest release, README intro (cached); device-flow "Connect with GitHub".
+- **Repofolio built in** — live GitHub repo grid block, project case-study post type, OAuth "Connect with GitHub" (PAT fallback for local dev); ships as a theme addon and yields to the standalone Repofolio plugin when active.
 - **Reading UX** — auto table of contents, reading-progress bar, estimated reading time, and copy buttons on code blocks for single posts.
 - **Plugin-free contact form**, newsletter, cookie notice, code injection.
 - **Performance** — disable bloat, split block CSS, critical CSS, Prism syntax highlighting on code blocks.
@@ -51,16 +53,17 @@ Part of that generalization is **Site Types** (Appearance → Pressroot → Site
 - **SEO** — Open Graph, Twitter, JSON-LD; auto-off under Rank Math/Yoast.
 - **White-label & onboarding** — branded login screen, admin footer credit, and a "Get started" dashboard widget checklist.
 
-### Pressroot AI
-- **Site Types** — pick a business category (Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content site, Marketing/Landing page) to apply its matching Style Kit and create starter pages together, pre-filled with 26 dedicated, hand-built patterns (two swappable variants per page) rather than generic filler.
-- **Regenerate** — swap any starter page (or a whole site type at once) to its other hand-built variant with one click, with a live preview before committing.
-- **Starter hero copy generator** — a one-line business description in, a draft headline + subheadline out.
-- **AI Connectors** — bring your own free API key for Google Gemini, Groq, or OpenRouter, alongside the always-on, keyless Pollinations default — picked per generation from a model dropdown.
-- **AI in the block editor** — a "Generate with AI" toolbar button on paragraph/heading/list blocks for everyday content writing, not just the one-time setup screen.
-- Switchable off entirely as a **Theme Addon** if a site doesn't want the AI surface at all.
+### The design generator (Pressroot AI)
+- **Brand tab** — a plain-language questionnaire (name, one-liner, brand color, light/dark, personality, audience, industry, voice words, goal, imagery style, content density, design trend) that steers everything the generator produces. One checkbox syncs your answers to the site title & tagline.
+- **Site Types ×8** — Agency/Studio, Freelance/Portfolio, SaaS/Startup, Blog/Content, Marketing/Landing, Affiliate Marketing, Restaurant/Café, Real Estate. Picker cards show **live previews of all four designs per page**, rendered in each type's own kit.
+- **🎲 Refresh = a whole new theme** — every apply/refresh deals a random pattern variant per page (2 hand-built + 2 generated remix variants, ~50 generated patterns), a random design kit from the type's pool, and a design trend — filtered by your brand answers, never repeating the current deal, with branding re-asserted last and caches flushed so it paints instantly.
+- **✨ AI Builder** — "Write with AI" per page or per site type: your selected model rewrites every text segment from the brand profile (audience, tone, goal, density). AI supplies **text only** — block markup is never AI-touched, so pages can't break. Plus one-click AI brand-image generation into the Media Library.
+- **Gutenberg is the page builder** — every generated page is plain blocks with an "Edit blocks" shortcut; the AI and the block editor share the same canvas.
+- **AI Connectors** — bring a free key for Google Gemini, Groq, or OpenRouter, alongside the keyless Pollinations default; all calls are proxied server-side.
+- **"Powered by AI — or not"** — one Brand-tab switch turns off every feature that calls an AI service; the design generator keeps working without it. The whole module is also removable as a Theme Addon.
 
 ### Settings, developer tools & support
-- **Appearance → Pressroot** — one consolidated, left-sidebar settings page: **Site Types** (above), **GitHub** (owner, token, cache, OAuth device-flow connect), and **Support** (live status — stats, languages, releases, open issues — for the theme's own repo, plus curated links to its docs).
+- **Appearance → Pressroot** — one consolidated settings page in the Repofolio design language: **Brand**, **Site Types**, **GitHub** (the bundled Repofolio addon: OAuth connect, repo grid block, project case studies — the standalone plugin takes over automatically if activated), and **Support** (live repo status + docs links).
 - **Export / Import / Reset** — back up every theme setting as JSON and restore it on another install.
 - **WP-CLI suite** (`wp pressroot ...`) — settings export/import/reset, Style Kit list/apply, clear compiled views, and a hook registry printer.
 - **Hook Registry** — every custom filter/action the theme exposes, documented in one place for child themes and mu-plugins to extend.
