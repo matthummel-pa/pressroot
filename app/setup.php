@@ -246,33 +246,12 @@ add_action('widgets_init', function () {
  */
 
 /**
- * Register the "projects" custom post type (case studies) + taxonomy,
- * so the theme is self-contained for local development.
+ * NOTE: the "projects" CPT + "project_categories" taxonomy that used to be
+ * registered here (with the whole GitHub subsystem: app/Github.php, the
+ * GitHub settings tab, OAuth connect, the prt/* GitHub blocks, and the
+ * Project Details meta box) moved to the Repofolio plugin as of v1.5.0 —
+ * post type `repofolio_project`, taxonomy `repofolio_project_type`, meta
+ * `_repofolio_*`. Content belongs in a plugin so it survives theme switches;
+ * the theme keeps only the presentation layer (Blade templates for the
+ * plugin's post type, which no-op gracefully when the plugin is inactive).
  */
-add_action('init', function () {
-    register_post_type('projects', [
-        'labels' => [
-            'name' => __('Projects', 'pressroot'),
-            'singular_name' => __('Project', 'pressroot'),
-            'add_new_item' => __('Add New Project', 'pressroot'),
-            'edit_item' => __('Edit Project', 'pressroot'),
-        ],
-        'public' => true,
-        'has_archive' => false,
-        'menu_icon' => 'dashicons-portfolio',
-        'rewrite' => ['slug' => 'projects'],
-        'supports' => ['title', 'editor', 'thumbnail', 'excerpt', 'custom-fields'],
-        'show_in_rest' => true,
-    ]);
-
-    register_taxonomy('project_categories', 'projects', [
-        'labels' => [
-            'name' => __('Project Categories', 'pressroot'),
-            'singular_name' => __('Project Category', 'pressroot'),
-        ],
-        'public' => true,
-        'hierarchical' => true,
-        'show_in_rest' => true,
-        'rewrite' => ['slug' => 'project-category'],
-    ]);
-});

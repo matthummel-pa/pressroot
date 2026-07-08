@@ -80,10 +80,10 @@ function prt_social_color($key)
         'facebook'  => '#1877F2',
         'mastodon'  => '#6364FF',
         'rss'       => '#F26522',
-        'email'     => '#7C5CFF',
+        'email'     => '#6C4CF1',
     ]);
 
-    return $c[$key] ?? '#7C5CFF';
+    return $c[$key] ?? '#6C4CF1';
 }
 
 /** Render a social network's icon SVG by key (looks up name via prt_social_icon_name(), then delegates to prt_icon()). */

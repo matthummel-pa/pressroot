@@ -71,8 +71,8 @@ add_action('init', function () {
         foreach ($btns as $b) {
             $base = 'text-decoration:none; padding:15px 28px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);';
             $row .= ! empty($b['outline'])
-                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #0b0c0e; color:#0b0c0e;">' . esc_html($b['text']) . '</a>'
-                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#0b0c0e; color:#fff;">' . esc_html($b['text']) . '</a>';
+                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #ECE6FB; color:#6C4CF1;">' . esc_html($b['text']) . '</a>'
+                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">' . esc_html($b['text']) . '</a>';
         }
         return "<!-- wp:html -->\n" . $row . '</div>' . "\n<!-- /wp:html -->";
     };
@@ -94,8 +94,8 @@ add_action('init', function () {
     $faq = function (array $items) use ($wrap): string {
         $html = '<div style="max-width:840px; margin:0 auto;">';
         foreach ($items as $it) {
-            $html .= '<details style="background:#fff; border:1.5px solid #ECE4F8; border-radius:18px; padding:22px 24px; margin-bottom:14px;">'
-                . '<summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:18px; color:#1B1830;">' . esc_html($it[0]) . '</summary>'
+            $html .= '<details style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:22px 24px; margin-bottom:14px;">'
+                . '<summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:18px; color:#17151F;">' . esc_html($it[0]) . '</summary>'
                 . '<p style="font-size:15.5px; color:#5A5676; line-height:1.6; margin:14px 0 0;">' . esc_html($it[1]) . '</p>'
                 . '</details>';
         }
@@ -157,7 +157,7 @@ add_action('init', function () {
     $featureCards = function (array $feats): string {
         $out = '';
         foreach ($feats as $f) {
-            $out .= '<div class="prt-lift" style="background:#fff; border:1.5px solid #e3e3e6; border-radius:4px; padding:30px;">'
+            $out .= '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:30px;">'
                 . '<div style="font-size:26px; margin-bottom:14px;">' . $f[0] . '</div>'
                 . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 10px; color:#0b0c0e;">' . esc_html($f[1]) . '</h3>'
                 . '<p style="font-size:14.5px; line-height:1.6; margin:0; color:#4A4660;">' . esc_html($f[2]) . '</p></div>';
@@ -173,9 +173,9 @@ add_action('init', function () {
     $testimonialCards = function (array $quotes): string {
         $out = '';
         foreach ($quotes as $q) {
-            $out .= '<div style="background:#fff; border:1.5px solid #e3e3e6; border-radius:4px; padding:28px;">'
+            $out .= '<div class="prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:28px;">'
                 . '<div style="font-family:var(--font-display); font-size:34px; line-height:1; color:#0b0c0e; margin-bottom:6px;">&#8220;</div>'
-                . '<p style="font-size:15.5px; line-height:1.65; color:#1B1830; margin:0 0 16px;">' . esc_html($q[0]) . '</p>'
+                . '<p style="font-size:15.5px; line-height:1.65; color:#17151F; margin:0 0 16px;">' . esc_html($q[0]) . '</p>'
                 . '<p style="font-family:var(--font-mono); font-size:12.5px; color:#7C75A8; margin:0;">' . esc_html($q[1]) . '</p></div>';
         }
         return "<!-- wp:html -->\n"
@@ -324,7 +324,7 @@ add_action('init', function () {
         ['🎯', 'No pressure, no pitch', 'You\'ll leave knowing exactly whether this is the right fit — even if the answer is no.'],
         ['📩', 'A reply within one business day', 'Real humans read every submission. You won\'t sit in a queue.'],
     ] as $r) {
-        $reasonsA .= '<div class="prt-lift" style="background:#fff; border:1.5px solid #e3e3e6; border-radius:4px; padding:26px; text-align:left;">'
+        $reasonsA .= '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:26px; text-align:left;">'
             . '<div style="font-size:24px; margin-bottom:10px;">' . $r[0] . '</div>'
             . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:17px; margin:0 0 8px; color:#0b0c0e;">' . $r[1] . '</h3>'
             . '<p style="font-size:14px; line-height:1.55; margin:0; color:#5A5676;">' . $r[2] . '</p></div>';
@@ -353,10 +353,10 @@ add_action('init', function () {
         . '<p style="font-size:15.5px; line-height:1.6; opacity:.9; margin:0 0 20px;">Leave your details and we\'ll reach out within one business day to get you set up — no obligation, cancel anytime during the trial.</p>'
         . '<span style="display:inline-block; font-family:var(--font-display); font-weight:700; font-size:13px; background:#fff; color:#0b0c0e; padding:8px 16px; border-radius:999px;">Average reply time: under 10 minutes</span></div>'
         . '<div style="display:flex; flex-direction:column; gap:20px;">'
-        . '<div class="prt-lift" style="background:#fff; border:1.5px solid #e3e3e6; border-radius:4px; padding:26px;">'
+        . '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:26px;">'
         . '<h4 style="font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 8px; color:#0b0c0e;">💬 Talk to a human first</h4>'
         . '<p style="font-size:14px; margin:0; color:#4A4660;">Not ready to commit? Ask questions via chat before you leave any details.</p></div>'
-        . '<div class="prt-lift" style="background:#fff; border:1.5px solid #e3e3e6; border-radius:4px; padding:26px;">'
+        . '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:26px;">'
         . '<h4 style="font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 8px; color:#0b0c0e;">🔒 Your info stays private</h4>'
         . '<p style="font-size:14px; margin:0; color:#4A4660;">We never sell or share your details. Used only to follow up about your account.</p></div>'
         . '</div></div>';

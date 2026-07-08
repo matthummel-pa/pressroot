@@ -54,9 +54,9 @@ function prt_ensure_theme_options_panel($wp): void
 function prt_defaults()
 {
     return apply_filters('matthummel/theme_defaults', [
-        'prt_color_action' => '#7C5CFF',
-        'prt_color_paper'  => '#FFFDF7',
-        'prt_color_ink'    => '#1B1830',
+        'prt_color_action' => '#6C4CF1',
+        'prt_color_paper'  => '#FFF9F5',
+        'prt_color_ink'    => '#17151F',
         'prt_color_body'   => '#4A4660',
         'prt_font_heading' => 'Outfit',
         'prt_font_body'    => 'Outfit',
@@ -337,16 +337,16 @@ add_action('after_setup_theme', function () {
 
     // old default => new default
     $map = [
-        'prt_color_action' => ['#2f6b4e', '#7C5CFF'],
-        'prt_color_paper'  => ['#fbfaf7', '#FFFDF7'],
-        'prt_color_ink'    => ['#17191e', '#1B1830'],
+        'prt_color_action' => ['#2f6b4e', '#6C4CF1'],
+        'prt_color_paper'  => ['#fbfaf7', '#FFF9F5'],
+        'prt_color_ink'    => ['#17191e', '#17151F'],
         'prt_color_body'   => ['#2b2f36', '#4A4660'],
         'prt_font_heading' => ['Geist', 'Outfit'],
         'prt_font_body'    => ['Inter', 'Outfit'],
         'prt_btn_radius'   => ['8', '999'],
         'prt_card_radius'  => ['16', '20'],
         'prt_container'    => [1180, 1240],
-        'prt_popout_grad2' => ['#2f6b4e', '#7C5CFF'],
+        'prt_popout_grad2' => ['#2f6b4e', '#6C4CF1'],
         'prt_cta_text'     => ['Find me on Dev.to', 'Find me on GitHub'],
         'prt_cta_url'      => ['https://dev.to/mattbuildsapps', 'https://github.com/matthummel-pa'],
     ];
@@ -379,9 +379,9 @@ add_action('after_setup_theme', function () {
     if (get_option('prt_palette_force_v1')) {
         return;
     }
-    set_theme_mod('prt_color_action', '#7C5CFF');
-    set_theme_mod('prt_color_paper', '#FFFDF7');
-    set_theme_mod('prt_color_ink', '#1B1830');
+    set_theme_mod('prt_color_action', '#6C4CF1');
+    set_theme_mod('prt_color_paper', '#FFF9F5');
+    set_theme_mod('prt_color_ink', '#17151F');
     set_theme_mod('prt_color_body', '#4A4660');
     set_theme_mod('prt_font_heading', 'Outfit');
     set_theme_mod('prt_font_body', 'Outfit');

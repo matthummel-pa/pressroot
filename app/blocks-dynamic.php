@@ -81,7 +81,7 @@ add_action('init', function () {
         'attributes'      => prt_icon_block_attrs(),
         'render_callback' => __NAMESPACE__ . '\\prt_icon_block_render',
         'supports'        => ['align' => true, 'spacing' => ['margin' => true]],
-        'example'         => ['attributes' => ['name' => 'email', 'size' => 40, 'color' => '#7C5CFF'], 'viewportWidth' => 200],
+        'example'         => ['attributes' => ['name' => 'email', 'size' => 40, 'color' => '#6C4CF1'], 'viewportWidth' => 200],
     ]);
 
     register_block_type('prt/post-grid', [
@@ -188,14 +188,14 @@ function prt_postgrid_render($attrs)
     $css = "#{$uid}{display:grid;grid-template-columns:repeat({$cols},1fr);gap:20px;}"
         . "@media(max-width:900px){#{$uid}{grid-template-columns:repeat(2,1fr);}}"
         . "@media(max-width:560px){#{$uid}{grid-template-columns:1fr;}}"
-        . "#{$uid} .prt-pg-card{display:flex;flex-direction:column;border:1.5px solid var(--color-line,#ECE4F8);border-radius:18px;overflow:hidden;background:var(--color-card,#fff);transition:transform .25s,box-shadow .25s;}"
-        . "#{$uid} .prt-pg-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(27,24,48,.14);}"
+        . "#{$uid} .prt-pg-card{display:flex;flex-direction:column;border:1.5px solid var(--color-line,#ECE6FB);border-radius:18px;overflow:hidden;background:var(--color-card,#fff);transition:transform .25s,box-shadow .25s;}"
+        . "#{$uid} .prt-pg-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(23,21,31,.14);}"
         . "#{$uid} .prt-pg-thumb{aspect-ratio:16/10;object-fit:cover;width:100%;display:block;}"
         . "#{$uid} .prt-pg-body{padding:22px 22px 24px;}"
-        . "#{$uid} .prt-pg-meta{font-family:var(--font-mono,ui-monospace,monospace);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--color-purple,#7C5CFF);margin:0 0 8px;}"
+        . "#{$uid} .prt-pg-meta{font-family:var(--font-mono,ui-monospace,monospace);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--color-purple,#6C4CF1);margin:0 0 8px;}"
         . "#{$uid} .prt-pg-title{font-family:var(--font-display,system-ui,sans-serif);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0 0 8px;line-height:1.25;}"
-        . "#{$uid} .prt-pg-title a{text-decoration:none;color:var(--color-ink,#1B1830);}"
-        . "#{$uid} .prt-pg-title a:hover{color:var(--color-purple,#7C5CFF);}"
+        . "#{$uid} .prt-pg-title a{text-decoration:none;color:var(--color-ink,#17151F);}"
+        . "#{$uid} .prt-pg-title a:hover{color:var(--color-purple,#6C4CF1);}"
         . "#{$uid} .prt-pg-ex{font-size:14.5px;line-height:1.55;color:var(--color-muted,#5A5676);margin:0;}";
 
     $out = '<style>' . $css . '</style><div ' . get_block_wrapper_attributes(['id' => $uid, 'class' => 'prt-pg']) . '>';

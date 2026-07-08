@@ -5,10 +5,10 @@
 @php
   // Bento layout recipe, applied in order to whatever items we render.
   $layout = [
-    ['span' => 'span 4', 'row' => 'span 2', 'bg' => 'linear-gradient(135deg,#7C5CFF,#38BDF8)', 'fg' => '#fff',     'big' => true,  'stripe' => true],
-    ['span' => 'span 2', 'row' => 'span 2', 'bg' => '#FF7A1A', 'fg' => '#1B1830', 'big' => false, 'stripe' => false],
-    ['span' => 'span 3', 'row' => 'span 1', 'bg' => '#C2F23D', 'fg' => '#1B1830', 'big' => false, 'stripe' => false],
-    ['span' => 'span 3', 'row' => 'span 1', 'bg' => '#1B1830', 'fg' => '#fff',     'big' => false, 'stripe' => false],
+    ['span' => 'span 4', 'row' => 'span 2', 'bg' => 'linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%)', 'fg' => '#fff',     'big' => true,  'stripe' => true],
+    ['span' => 'span 2', 'row' => 'span 2', 'bg' => '#FF7A3D', 'fg' => '#17151F', 'big' => false, 'stripe' => false],
+    ['span' => 'span 3', 'row' => 'span 1', 'bg' => '#37E29A', 'fg' => '#17151F', 'big' => false, 'stripe' => false],
+    ['span' => 'span 3', 'row' => 'span 1', 'bg' => '#17151F', 'fg' => '#fff',     'big' => false, 'stripe' => false],
   ];
 
   // Try the CPT first (featured projects, then most recent), capped at 4.
@@ -52,7 +52,7 @@
       <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:var(--color-h2, var(--color-ink));">Selected builds</h2>
       <p style="margin:0; font-size:16px; color:#7C75A8;">Real, open-source code you can read line by line — themes, plugins &amp; apps.</p>
     </div>
-    <a href="{{ $allLink }}" style="text-decoration:none; font-weight:700; color:#7C5CFF; font-size:16px;">View all projects →</a>
+    <a href="{{ $allLink }}" style="text-decoration:none; font-weight:700; color:#6C4CF1; font-size:16px;">View all projects →</a>
   </div>
   <div class="prt-bento" style="display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:200px; gap:18px;">
     @foreach($builds as $i => $b)

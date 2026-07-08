@@ -25,7 +25,7 @@ function prt_ann_defaults()
         'prt_ann_text'    => '',
         'prt_ann_lurl'    => '',
         'prt_ann_ltext'   => '',
-        'prt_ann_bg'      => '#1B1830',
+        'prt_ann_bg'      => '#17151F',
         'prt_ann_color'   => '#ffffff',
         'prt_ann_dismiss' => true,
         'prt_ann_hide_mobile' => false,
@@ -69,7 +69,7 @@ add_action('customize_register', function ($wp) {
     $wp->add_setting('prt_ann_lurl', ['default' => '', 'sanitize_callback' => 'esc_url_raw']);
     $wp->add_control('prt_ann_lurl', ['label' => __('Link URL', 'pressroot'), 'section' => 'prt_ann_section', 'type' => 'url']);
 
-    foreach ([['prt_ann_bg', __('Background', 'pressroot'), '#1B1830'], ['prt_ann_color', __('Text color', 'pressroot'), '#ffffff']] as $col) {
+    foreach ([['prt_ann_bg', __('Background', 'pressroot'), '#17151F'], ['prt_ann_color', __('Text color', 'pressroot'), '#ffffff']] as $col) {
         $wp->add_setting($col[0], ['default' => $col[2], 'sanitize_callback' => 'sanitize_hex_color']);
         $wp->add_control(new \WP_Customize_Color_Control($wp, $col[0], ['label' => $col[1], 'section' => 'prt_ann_section']));
     }
@@ -121,7 +121,7 @@ function prt_ann_render()
         return;
     }
 
-    $bg      = sanitize_hex_color(prt_ann('prt_ann_bg')) ?: '#1B1830';
+    $bg      = sanitize_hex_color(prt_ann('prt_ann_bg')) ?: '#17151F';
     $col     = sanitize_hex_color(prt_ann('prt_ann_color')) ?: '#ffffff';
     $dismiss = (bool) prt_ann('prt_ann_dismiss');
     $hideMob = (bool) prt_ann('prt_ann_hide_mobile');

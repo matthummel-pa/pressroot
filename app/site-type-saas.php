@@ -76,7 +76,7 @@ add_action('init', function () {
             $base = 'text-decoration:none; padding:15px 28px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);';
             $row .= ! empty($b['outline'])
                 ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:transparent; border:1.5px solid #fff; color:#fff;">' . esc_html($b['text']) . '</a>'
-                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#7C5CFF; color:#fff;">' . esc_html($b['text']) . '</a>';
+                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">' . esc_html($b['text']) . '</a>';
         }
         return "<!-- wp:html -->\n" . $row . '</div>' . "\n<!-- /wp:html -->";
     };
@@ -96,8 +96,8 @@ add_action('init', function () {
     $darkHero = function (string $innerHtml, string $pt = 'xl', string $pb = 'lg'): string {
         $blobs = '<!-- wp:html -->'
             . '<div style="position:relative; height:0;">'
-            . '<div style="position:absolute; top:-40px; left:-60px; width:420px; height:420px; background:radial-gradient(circle at 30% 30%,#7C5CFF,#38BDF8); filter:blur(60px); opacity:.28; z-index:0;"></div>'
-            . '<div style="position:absolute; top:-20px; right:-80px; width:340px; height:340px; background:radial-gradient(circle at 60% 40%,#FF5DA2,#7C5CFF); filter:blur(70px); opacity:.22; z-index:0;"></div>'
+            . '<div style="position:absolute; top:-40px; left:-60px; width:420px; height:420px; background:radial-gradient(circle at 30% 30%,#6C4CF1,#22CFEE); filter:blur(60px); opacity:.28; z-index:0;"></div>'
+            . '<div style="position:absolute; top:-20px; right:-80px; width:340px; height:340px; background:radial-gradient(circle at 60% 40%,#FF4D9D,#6C4CF1); filter:blur(70px); opacity:.22; z-index:0;"></div>'
             . '</div>'
             . '<!-- /wp:html -->';
         return '<!-- wp:prt/section {"bgColor":"ink","paddingTop":"' . $pt . '","paddingBottom":"' . $pb . '","containerWidth":"contained","textColor":"light"} -->'
@@ -162,12 +162,12 @@ add_action('init', function () {
      * FEATURES — Variant B: asymmetric bento, punchier one-liners
      * ═══════════════════════════════════════════════════════════════════ */
     $bentoTiles = [
-        ['span' => '2', 'title' => 'Real-time collaboration', 'body' => 'Your team, in sync, always. Every edit lands instantly for everyone in the room.', 'accent' => '#7C5CFF'],
-        ['span' => '1', 'title' => 'One-click integrations', 'body' => 'Slack, HubSpot, Salesforce. Connected in seconds, not sprints.', 'accent' => '#38BDF8'],
-        ['span' => '1', 'title' => 'Enterprise-grade security', 'body' => 'SSO. SCIM. SOC 2 Type II. Ship to security review with confidence.', 'accent' => '#FF7A1A'],
-        ['span' => '2', 'title' => 'Usage analytics dashboard', 'body' => 'Know what\'s working before your customers tell you. Live adoption and engagement data, zero setup.', 'accent' => '#FF5DA2'],
-        ['span' => '1', 'title' => 'Custom workflow builder', 'body' => 'No code. No tickets. Just drag, drop, done.', 'accent' => '#C2F23D'],
-        ['span' => '2', 'title' => 'Global-scale infrastructure', 'body' => '99.99% uptime, multi-region by default. Built to disappear into the background.', 'accent' => '#7C5CFF'],
+        ['span' => '2', 'title' => 'Real-time collaboration', 'body' => 'Your team, in sync, always. Every edit lands instantly for everyone in the room.', 'accent' => '#6C4CF1'],
+        ['span' => '1', 'title' => 'One-click integrations', 'body' => 'Slack, HubSpot, Salesforce. Connected in seconds, not sprints.', 'accent' => '#22CFEE'],
+        ['span' => '1', 'title' => 'Enterprise-grade security', 'body' => 'SSO. SCIM. SOC 2 Type II. Ship to security review with confidence.', 'accent' => '#FF7A3D'],
+        ['span' => '2', 'title' => 'Usage analytics dashboard', 'body' => 'Know what\'s working before your customers tell you. Live adoption and engagement data, zero setup.', 'accent' => '#FF4D9D'],
+        ['span' => '1', 'title' => 'Custom workflow builder', 'body' => 'No code. No tickets. Just drag, drop, done.', 'accent' => '#37E29A'],
+        ['span' => '2', 'title' => 'Global-scale infrastructure', 'body' => '99.99% uptime, multi-region by default. Built to disappear into the background.', 'accent' => '#6C4CF1'],
     ];
     $bentoHtml = '';
     foreach ($bentoTiles as $t) {
@@ -215,20 +215,20 @@ add_action('init', function () {
     ] as $t) {
         [$name, $price, $sub, $desc, $feats, $featured] = $t;
         $cardStyle = $featured
-            ? 'background:linear-gradient(160deg,#7C5CFF,#5B3FE0); color:#fff; box-shadow:0 26px 55px rgba(124,92,255,.38); border:1px solid rgba(255,255,255,.15);'
+            ? 'background:linear-gradient(160deg,#6C4CF1,#5B3FE0); color:#fff; box-shadow:0 26px 55px rgba(124,92,255,.38); border:1px solid rgba(255,255,255,.15);'
             : 'background:#1F1B33; color:#fff; border:1px solid #2E2850;';
         $featList = '';
         foreach ($feats as $f) {
             $featList .= '<span style="display:flex; gap:8px; align-items:flex-start; margin-bottom:10px;"><span style="opacity:.85;">✓</span><span>' . $f . '</span></span>';
         }
         $tiersA .= '<div class="prt-lift" style="' . $cardStyle . ' border-radius:26px; padding:36px; position:relative;">'
-            . ($featured ? '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#C2F23D; color:#1B1830; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800; font-family:var(--font-display);">MOST POPULAR</span>' : '')
+            . ($featured ? '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#37E29A; color:#17151F; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800; font-family:var(--font-display);">MOST POPULAR</span>' : '')
             . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:22px; margin:0 0 6px;">' . $name . '</h3>'
             . '<p style="font-size:14.5px; opacity:.8; margin:0 0 22px;">' . $desc . '</p>'
             . '<div style="font-family:var(--font-display); font-weight:900; font-size:46px; letter-spacing:-.03em;">' . $price . '</div>'
             . '<div style="font-size:13px; opacity:.75; margin-bottom:24px;">' . $sub . '</div>'
             . '<div style="font-size:14.5px; line-height:1.4; margin-bottom:24px;">' . $featList . '</div>'
-            . '<div><a href="/contact/" class="prt-lift" style="display:block; text-align:center; text-decoration:none; padding:14px 20px; border-radius:999px; font-weight:700; font-size:15px; font-family:var(--font-display); ' . ($featured ? 'background:#fff; color:#1B1830;' : 'background:transparent; border:1.5px solid #fff; color:#fff;') . '">' . ($name === 'Enterprise' ? 'Talk to sales' : 'Get started') . '</a></div>'
+            . '<div><a href="/contact/" class="prt-lift" style="display:block; text-align:center; text-decoration:none; padding:14px 20px; border-radius:999px; font-weight:700; font-size:15px; font-family:var(--font-display); ' . ($featured ? 'background:#fff; color:#17151F;' : 'background:transparent; border:1.5px solid #fff; color:#fff;') . '">' . ($name === 'Enterprise' ? 'Talk to sales' : 'Get started') . '</a></div>'
             . '</div>';
     }
     $pricingA  = $darkHero(
@@ -258,9 +258,9 @@ add_action('init', function () {
      * PRICING — Variant B: horizontal comparison-style tiers, punchier copy
      * ═══════════════════════════════════════════════════════════════════ */
     $tiersB = [
-        ['Starter', 'Free', 'Kick the tires.', ['3 seats', 'Core features', 'Community support'], false, '#38BDF8'],
-        ['Growth', '$49', 'Built to scale with you.', ['Unlimited seats', 'Every integration', 'Analytics + workflow builder', 'Priority support'], true, '#7C5CFF'],
-        ['Scale', "Let's talk", 'For teams who need it locked down.', ['SSO/SCIM + custom SLA', 'Dedicated infra & support', 'Security review, handled'], false, '#FF7A1A'],
+        ['Starter', 'Free', 'Kick the tires.', ['3 seats', 'Core features', 'Community support'], false, '#22CFEE'],
+        ['Growth', '$49', 'Built to scale with you.', ['Unlimited seats', 'Every integration', 'Analytics + workflow builder', 'Priority support'], true, '#6C4CF1'],
+        ['Scale', "Let's talk", 'For teams who need it locked down.', ['SSO/SCIM + custom SLA', 'Dedicated infra & support', 'Security review, handled'], false, '#FF7A3D'],
     ];
     $tiersBHtml = '';
     foreach ($tiersB as $t) {
@@ -315,7 +315,7 @@ add_action('init', function () {
         . '</div>'
         . '<label style="font-size:13px; color:#B9B4D9; display:block; margin-bottom:16px;">Team size<select style="display:block; width:100%; margin-top:6px; padding:12px 14px; border-radius:10px; border:1px solid #2E2850; background:#14111F; color:#fff;"><option>1–10</option><option>11–50</option><option>51–200</option><option>200+</option></select></label>'
         . '<label style="font-size:13px; color:#B9B4D9; display:block; margin-bottom:20px;">What are you hoping to solve?<textarea rows="4" placeholder="Tell us a bit about your use case…" style="display:block; width:100%; margin-top:6px; padding:12px 14px; border-radius:10px; border:1px solid #2E2850; background:#14111F; color:#fff; resize:vertical;"></textarea></label>'
-        . '<button type="submit" class="prt-lift" style="width:100%; padding:15px 20px; border-radius:999px; border:none; font-weight:700; font-size:16px; font-family:var(--font-display); background:#7C5CFF; color:#fff; cursor:pointer;">Request a demo →</button>'
+        . '<button type="submit" class="prt-lift" style="width:100%; padding:15px 20px; border-radius:999px; border:none; font-weight:700; font-size:16px; font-family:var(--font-display); background:#6C4CF1; color:#fff; cursor:pointer;">Request a demo →</button>'
         . '</form></div>'
         . "\n<!-- /wp:html -->";
     $trustLogosA = "<!-- wp:html -->\n"
@@ -351,7 +351,7 @@ add_action('init', function () {
         ['You need a migration from another tool', 'We\'ll scope a white-glove import so nothing gets lost switching over.'],
     ] as $r) {
         $reasonsB .= '<div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:22px;">'
-            . '<span style="flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:#7C5CFF; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:800; font-size:14px;">✓</span>'
+            . '<span style="flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:#6C4CF1; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:800; font-size:14px;">✓</span>'
             . '<div><div style="font-family:var(--font-display); font-weight:700; font-size:16.5px; color:#fff; margin-bottom:4px;">' . $r[0] . '</div>'
             . '<div style="font-size:14.5px; color:#B9B4D9; line-height:1.5;">' . $r[1] . '</div></div></div>';
     }
@@ -360,7 +360,7 @@ add_action('init', function () {
         . '<div style="font-family:var(--font-mono); font-size:12px; color:#7C75A8; letter-spacing:.05em; text-transform:uppercase; margin-bottom:14px;">// 20-minute call, zero pressure</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:24px; color:#fff; margin:0 0 10px;">Pick a time that works.</h3>'
         . '<p style="font-size:14.5px; color:#B9B4D9; margin:0 0 24px; line-height:1.55;">You\'ll talk to a real person on the product team — not a script. Bring your questions.</p>'
-        . '<a href="/contact/" class="prt-lift" style="display:inline-block; text-decoration:none; padding:16px 30px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display); background:#7C5CFF; color:#fff;">Book a demo →</a>'
+        . '<a href="/contact/" class="prt-lift" style="display:inline-block; text-decoration:none; padding:16px 30px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display); background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">Book a demo →</a>'
         . '<div style="margin-top:18px; font-size:13px; color:#5A5676;">or email <span style="color:#B9B4D9;">sales@example.com</span></div>'
         . '</div>' . "\n<!-- /wp:html -->";
 

@@ -142,6 +142,36 @@ function prt_site_types()
                 ['role' => 'contact', 'slug' => 'contact', 'title' => __('Contact', 'pressroot'), 'pattern_a' => 'prt-site/marketing-contact-a', 'pattern_b' => 'prt-site/marketing-contact-b'],
             ],
         ],
+        'affiliate' => [
+            'label' => __('Affiliate Marketing', 'pressroot'),
+            'desc'  => __('Review-and-recommend site: Home, Top Picks, Disclosure — trust-first.', 'pressroot'),
+            'kit'   => 'paper_space',
+            'pages' => [
+                ['role' => 'home',       'slug' => 'home',       'title' => __('Home', 'pressroot'),       'pattern_a' => 'prt-site/affiliate-home-a',       'pattern_b' => 'prt-site/affiliate-home-b'],
+                ['role' => 'reviews',    'slug' => 'top-picks',  'title' => __('Top Picks', 'pressroot'),  'pattern_a' => 'prt-site/affiliate-reviews-a',    'pattern_b' => 'prt-site/affiliate-reviews-b'],
+                ['role' => 'disclosure', 'slug' => 'disclosure', 'title' => __('Disclosure', 'pressroot'), 'pattern_a' => 'prt-site/affiliate-disclosure-a', 'pattern_b' => 'prt-site/affiliate-disclosure-b'],
+            ],
+        ],
+        'restaurant' => [
+            'label' => __('Restaurant / Café', 'pressroot'),
+            'desc'  => __('Food-first site: Home, Menu, Reservations — warm and appetizing.', 'pressroot'),
+            'kit'   => 'warm_sand',
+            'pages' => [
+                ['role' => 'home',         'slug' => 'home',         'title' => __('Home', 'pressroot'),         'pattern_a' => 'prt-site/restaurant-home-a',         'pattern_b' => 'prt-site/restaurant-home-b'],
+                ['role' => 'menu',         'slug' => 'menu',         'title' => __('Menu', 'pressroot'),         'pattern_a' => 'prt-site/restaurant-menu-a',         'pattern_b' => 'prt-site/restaurant-menu-b'],
+                ['role' => 'reservations', 'slug' => 'reservations', 'title' => __('Reservations', 'pressroot'), 'pattern_a' => 'prt-site/restaurant-reservations-a', 'pattern_b' => 'prt-site/restaurant-reservations-b'],
+            ],
+        ],
+        'realty' => [
+            'label' => __('Real Estate', 'pressroot'),
+            'desc'  => __('Property site: Home, Listings, Agents — clean and confidence-building.', 'pressroot'),
+            'kit'   => 'editorial',
+            'pages' => [
+                ['role' => 'home',     'slug' => 'home',     'title' => __('Home', 'pressroot'),     'pattern_a' => 'prt-site/realty-home-a',     'pattern_b' => 'prt-site/realty-home-b'],
+                ['role' => 'listings', 'slug' => 'listings', 'title' => __('Listings', 'pressroot'), 'pattern_a' => 'prt-site/realty-listings-a', 'pattern_b' => 'prt-site/realty-listings-b'],
+                ['role' => 'agents',   'slug' => 'agents',   'title' => __('Agents', 'pressroot'),   'pattern_a' => 'prt-site/realty-agents-a',   'pattern_b' => 'prt-site/realty-agents-b'],
+            ],
+        ],
     ]);
 }
 
@@ -268,6 +298,52 @@ function prt_get_site_type_pages(): array
     return $posts;
 }
 
+/**
+ * The variants a site-type page definition offers, keyed by variant id.
+ * Central so apply/regenerate agree on what exists if a type ever grows a
+ * third variant.
+ */
+function prt_site_type_page_variants(array $def): array
+{
+    $variants = [];
+    foreach (['a', 'b', 'c', 'd'] as $v) {
+        if (! empty($def['pattern_' . $v])) {
+            $variants[$v] = $def['pattern_' . $v];
+        }
+    }
+    return $variants;
+}
+
+/**
+ * Pick a random variant for a page — different from $current when more than
+ * one exists, so "Refresh design" always visibly changes the page.
+ */
+function prt_pick_random_variant(array $def, string $current = ''): string
+{
+    $variants = array_keys(prt_site_type_page_variants($def));
+    if (! $variants) {
+        return 'a';
+    }
+    $pool = array_values(array_diff($variants, [$current]));
+    if (! $pool) {
+        $pool = $variants;
+    }
+    return $pool[array_rand($pool)];
+}
+
+/**
+ * A design just changed under the reader's feet: stale inlined critical CSS
+ * would keep painting the OLD design above the fold until someone remembered
+ * to regenerate it. Clear it (and the defer flag that depends on it) so the
+ * fresh stylesheet applies immediately — the CSS "regenerates" instantly
+ * because the design system is CSS-variable driven; no build step needed.
+ */
+function prt_flush_design_caches(): void
+{
+    set_theme_mod('prt_critical_css', '');
+    set_theme_mod('prt_defer_main_css', false);
+}
+
 function prt_pressroot_ai_tab_html()
 {
     if (! current_user_can('edit_theme_options') || ! prt_addon_enabled('pressroot_ai')) {
@@ -276,7 +352,7 @@ function prt_pressroot_ai_tab_html()
     $post    = admin_url('admin-post.php');
     $result  = isset($_GET['prt_site_type_result']) ? sanitize_key($_GET['prt_site_type_result']) : '';
     $created = isset($_GET['prt_created']) ? sanitize_text_field(wp_unslash($_GET['prt_created'])) : '';
-    $skipped = isset($_GET['prt_skipped']) ? sanitize_text_field(wp_unslash($_GET['prt_skipped'])) : '';
+    $refreshedList = isset($_GET['prt_refreshed']) ? sanitize_text_field(wp_unslash($_GET['prt_refreshed'])) : '';
     $removed = isset($_GET['prt_removed']) ? sanitize_text_field(wp_unslash($_GET['prt_removed'])) : '';
     $regenerated = isset($_GET['prt_regenerated']) ? sanitize_text_field(wp_unslash($_GET['prt_regenerated'])) : '';
     $bulkRegenerated = isset($_GET['prt_bulk_regenerated']) ? sanitize_key($_GET['prt_bulk_regenerated']) : '';
@@ -302,13 +378,13 @@ function prt_pressroot_ai_tab_html()
                             esc_html($created)
                         );
                     } else {
-                        esc_html_e('Design applied. All starter pages already existed, so nothing new was created.', 'pressroot');
+                        esc_html_e('Design applied.', 'pressroot');
                     }
-                    if ($skipped !== '') {
+                    if ($refreshedList !== '') {
                         echo ' ' . esc_html(sprintf(
-                            /* translators: %s: comma-separated list of skipped page titles */
-                            __('Already existed (left untouched): %s.', 'pressroot'),
-                            $skipped
+                            /* translators: %s: comma-separated list of refreshed page titles */
+                            __('Refreshed with a brand-new design + content: %s.', 'pressroot'),
+                            $refreshedList
                         ));
                     }
                     if ($removed !== '') {
@@ -327,7 +403,7 @@ function prt_pressroot_ai_tab_html()
                     <?php
                     printf(
                         /* translators: %s: page title */
-                        esc_html__('"%s" was regenerated with the other variant.', 'pressroot'),
+                        esc_html__('"%s" was refreshed with a new design and content.', 'pressroot'),
                         esc_html($regenerated)
                     );
                     ?>
@@ -339,7 +415,7 @@ function prt_pressroot_ai_tab_html()
                     <?php
                     printf(
                         /* translators: %s: site type label */
-                        esc_html__('All "%s" starter pages were regenerated with their other variant.', 'pressroot'),
+                        esc_html__('All "%s" starter pages were refreshed with random new designs and content.', 'pressroot'),
                         esc_html($types[$bulkRegenerated]['label'])
                     );
                     ?>
@@ -354,10 +430,12 @@ function prt_pressroot_ai_tab_html()
         <h2 style="margin-top:24px"><?php esc_html_e('1. Choose a site type', 'pressroot'); ?></h2>
         <p class="description"><?php esc_html_e('Each preview is a live, scaled-down render of that type\'s first starter page — the actual pattern you\'ll get, not a mockup.', 'pressroot'); ?></p>
         <div style="display:flex;flex-wrap:wrap;gap:14px;margin:16px 0 32px">
-            <?php foreach ($types as $id => $type) :
+            <?php
+            $appliedTypes = array_unique(array_filter(wp_list_pluck(prt_get_site_type_pages(), 'prt_site_type')));
+            foreach ($types as $id => $type) :
                 $firstPage = $type['pages'][0] ?? null;
             ?>
-                <form method="post" action="<?php echo esc_url($post); ?>" style="width:260px;border:1px solid #dcdcde;border-radius:10px;padding:16px;background:#fff">
+                <div style="width:260px;border:1px solid #dcdcde;border-radius:10px;padding:16px;background:#fff">
                     <?php if ($firstPage) : ?>
                         <div style="width:100%;height:150px;overflow:hidden;border-radius:8px;border:1px solid #e2e2e5;background:#f6f6f7;margin-bottom:12px;position:relative">
                             <iframe
@@ -379,11 +457,23 @@ function prt_pressroot_ai_tab_html()
                         );
                         ?>
                     </p>
-                    <input type="hidden" name="action" value="prt_apply_site_type">
-                    <input type="hidden" name="site_type" value="<?php echo esc_attr($id); ?>">
-                    <?php wp_nonce_field('prt_apply_site_type'); ?>
-                    <button class="button button-primary" style="width:100%"><?php esc_html_e('Use this', 'pressroot'); ?></button>
-                </form>
+                    <form method="post" action="<?php echo esc_url($post); ?>" style="margin:0">
+                        <input type="hidden" name="action" value="prt_apply_site_type">
+                        <input type="hidden" name="site_type" value="<?php echo esc_attr($id); ?>">
+                        <?php wp_nonce_field('prt_apply_site_type'); ?>
+                        <button class="button button-primary" style="width:100%">
+                            <?php in_array($id, $appliedTypes, true) ? esc_html_e('Regenerate this design', 'pressroot') : esc_html_e('Use this', 'pressroot'); ?>
+                        </button>
+                    </form>
+                    <?php if (in_array($id, $appliedTypes, true)) : ?>
+                        <form method="post" action="<?php echo esc_url($post); ?>" style="margin:8px 0 0">
+                            <input type="hidden" name="action" value="prt_regenerate_site_type">
+                            <input type="hidden" name="site_type" value="<?php echo esc_attr($id); ?>">
+                            <?php wp_nonce_field('prt_regenerate_site_type'); ?>
+                            <button class="button" style="width:100%">🎲 <?php esc_html_e('Refresh — random new design', 'pressroot'); ?></button>
+                        </form>
+                    <?php endif; ?>
+                </div>
             <?php endforeach; ?>
         </div>
 
@@ -400,7 +490,7 @@ function prt_pressroot_ai_tab_html()
         <?php if (empty($sitePages)) : ?>
             <p class="description"><?php esc_html_e('Nothing yet — choose a site type above to create your first starter pages.', 'pressroot'); ?></p>
         <?php else : ?>
-            <p class="description"><?php esc_html_e('Don\'t love how a page turned out? Regenerate swaps it for the other hand-built variant. "Regenerate all" does the same for every page in that site type at once — safe to click, only that group\'s content changes.', 'pressroot'); ?></p>
+            <p class="description"><?php esc_html_e('Don\'t love how a page turned out? Regenerate deals it a random new design — layout AND content are replaced fresh from the current patterns, so nothing from an older theme design ever lingers. "Refresh all" does every page in that site type at once.', 'pressroot'); ?></p>
             <?php foreach ($byType as $typeId => $pages) : ?>
                 <h3 style="margin:20px 0 6px;font-size:14px">
                     <?php echo esc_html($types[$typeId]['label'] ?? $typeId); ?>
@@ -408,7 +498,7 @@ function prt_pressroot_ai_tab_html()
                         <input type="hidden" name="action" value="prt_regenerate_site_type">
                         <input type="hidden" name="site_type" value="<?php echo esc_attr($typeId); ?>">
                         <?php wp_nonce_field('prt_regenerate_site_type'); ?>
-                        <button class="button button-small"><?php esc_html_e('Regenerate all', 'pressroot'); ?></button>
+                        <button class="button button-small">🎲 <?php esc_html_e('Refresh all — random new designs', 'pressroot'); ?></button>
                     </form>
                 </h3>
                 <table class="widefat striped" style="max-width:760px;margin-bottom:12px">
@@ -448,7 +538,7 @@ function prt_pressroot_ai_tab_html()
         </p>
         <div id="prt-ai-copy" style="max-width:640px;margin-top:14px">
             <label for="prt-ai-copy-input" class="screen-reader-text"><?php esc_html_e('Describe your business', 'pressroot'); ?></label>
-            <textarea id="prt-ai-copy-input" rows="2" style="width:100%" placeholder="<?php echo esc_attr__('e.g. a two-person branding studio for indie game developers', 'pressroot'); ?>"></textarea>
+            <textarea id="prt-ai-copy-input" rows="2" style="width:100%" placeholder="<?php echo esc_attr__('e.g. a two-person branding studio for indie game developers', 'pressroot'); ?>"><?php echo function_exists('App\\prt_brand_profile') ? esc_textarea(prt_brand_profile()['desc']) : ''; ?></textarea>
             <p>
                 <label for="prt-ai-copy-model" style="font-size:12px;color:#646970;display:block;margin-bottom:4px"><?php esc_html_e('AI model', 'pressroot'); ?></label>
                 <select id="prt-ai-copy-model">
@@ -536,13 +626,27 @@ add_action('admin_post_prt_apply_site_type', function () {
     }
 
     $type = $types[$id];
-    prt_apply_style_kit($type['kit']);
+    // Deal a random design kit from this type's pool (brand-profile aware)
+    // so the SITE-WIDE design regenerates too — falls back to the type's
+    // classic kit if the remix engine is unavailable.
+    if (function_exists('App\\prt_apply_random_site_kit')) {
+        prt_apply_random_site_kit($id, $type);
+    } else {
+        prt_apply_style_kit($type['kit']);
+    }
 
-    $created = [];
-    $skipped = [];
+    $created   = [];
+    $refreshed = [];
     $registry = class_exists('WP_Block_Patterns_Registry') ? \WP_Block_Patterns_Registry::get_instance() : null;
 
     foreach ($type['pages'] as $page) {
+        // A random variant per page on every apply, so re-choosing the SAME
+        // site type still produces a genuinely new overall design each time.
+        $variant  = prt_pick_random_variant($page);
+        $variants = prt_site_type_page_variants($page);
+        $pattern  = $registry ? $registry->get_registered($variants[$variant] ?? $page['pattern_a']) : null;
+        $content  = $pattern['content'] ?? '';
+
         $existing = get_posts([
             'post_type'      => 'page',
             'name'           => $page['slug'],
@@ -552,12 +656,18 @@ add_action('admin_post_prt_apply_site_type', function () {
         ]);
 
         if (! empty($existing)) {
-            $skipped[] = $page['title'];
+            // The page already exists (from an earlier apply of this or an
+            // older build of the theme): REFRESH it — overwrite its content
+            // with the current pattern markup so old baked-in design never
+            // lingers — instead of skipping it like this tool used to.
+            $pageId = (int) $existing[0];
+            wp_update_post(['ID' => $pageId, 'post_content' => $content]);
+            update_post_meta($pageId, '_prt_site_type', $id);
+            update_post_meta($pageId, '_prt_page_role', $page['role']);
+            update_post_meta($pageId, '_prt_pattern_variant', $variant);
+            $refreshed[] = $page['title'];
             continue;
         }
-
-        $pattern = $registry ? $registry->get_registered($page['pattern_a']) : null;
-        $content = $pattern['content'] ?? '';
 
         $newId = wp_insert_post([
             'post_type'    => 'page',
@@ -570,16 +680,18 @@ add_action('admin_post_prt_apply_site_type', function () {
         if ($newId && ! is_wp_error($newId)) {
             update_post_meta($newId, '_prt_site_type', $id);
             update_post_meta($newId, '_prt_page_role', $page['role']);
-            update_post_meta($newId, '_prt_pattern_variant', 'a');
+            update_post_meta($newId, '_prt_pattern_variant', $variant);
         }
 
         $created[] = $page['title'];
     }
 
+    prt_flush_design_caches();
+
     wp_safe_redirect(prt_settings_tab_url('ai', [
         'prt_site_type_result'  => $id,
         'prt_created'           => rawurlencode(implode(', ', $created)),
-        'prt_skipped'           => rawurlencode(implode(', ', $skipped)),
+        'prt_refreshed'         => rawurlencode(implode(', ', $refreshed)),
         'prt_removed'           => rawurlencode(implode(', ', $removed)),
     ]));
     exit;
@@ -626,18 +738,21 @@ add_action('admin_post_prt_regenerate_site_type_page', function () {
         exit;
     }
 
-    $nextVariant = $variant === 'a' ? 'b' : 'a';
-    $patternSlug = $nextVariant === 'a' ? $def['pattern_a'] : $def['pattern_b'];
+    $nextVariant = prt_pick_random_variant($def, $variant);
+    $patternSlug = prt_site_type_page_variants($def)[$nextVariant] ?? $def['pattern_a'];
 
     $registry = class_exists('WP_Block_Patterns_Registry') ? \WP_Block_Patterns_Registry::get_instance() : null;
     $pattern  = $registry ? $registry->get_registered($patternSlug) : null;
 
     if ($pattern && isset($pattern['content'])) {
+        // Overwrites BOTH design and content with the fresh pattern markup —
+        // a full refresh, not just a re-skin.
         wp_update_post([
             'ID'           => $pageId,
             'post_content' => $pattern['content'],
         ]);
         update_post_meta($pageId, '_prt_pattern_variant', $nextVariant);
+        prt_flush_design_caches();
     }
 
     wp_safe_redirect(prt_settings_tab_url('ai', [
@@ -685,8 +800,11 @@ add_action('admin_post_prt_regenerate_site_type', function () {
             continue;
         }
 
-        $nextVariant = $sp->prt_variant === 'a' ? 'b' : 'a';
-        $patternSlug = $nextVariant === 'a' ? $def['pattern_a'] : $def['pattern_b'];
+        // Random pick (never the page's current variant) so each "Refresh
+        // design" click deals a genuinely different layout per page —
+        // designs AND content are replaced with the fresh pattern markup.
+        $nextVariant = prt_pick_random_variant($def, (string) $sp->prt_variant);
+        $patternSlug = prt_site_type_page_variants($def)[$nextVariant] ?? $def['pattern_a'];
         $pattern     = $registry ? $registry->get_registered($patternSlug) : null;
 
         if ($pattern && isset($pattern['content'])) {
@@ -697,6 +815,14 @@ add_action('admin_post_prt_regenerate_site_type', function () {
             update_post_meta($sp->ID, '_prt_pattern_variant', $nextVariant);
         }
     }
+
+    // A category refresh regenerates the whole THEME, not just the pages:
+    // re-deal the site-wide design kit too (palette, fonts, radii).
+    if (function_exists('App\\prt_apply_random_site_kit')) {
+        prt_apply_random_site_kit($id, $types[$id]);
+    }
+
+    prt_flush_design_caches();
 
     wp_safe_redirect(prt_settings_tab_url('ai', [
         'prt_bulk_regenerated' => $id,

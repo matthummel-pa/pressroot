@@ -42,9 +42,11 @@ function prt_footer()
     ]);
 
     return [
-        // Style
-        'bg'          => prt_palette_value(get_theme_mod('prt_footer_bg', 'paper'), get_theme_mod('prt_footer_bg_custom', '')),
-        'text'        => prt_palette_value(get_theme_mod('prt_footer_textc', 'body'), get_theme_mod('prt_footer_text_custom', '')),
+        // Style. Defaults flipped to the Repofolio docs-site footer (dark
+        // Ink ground, light text — matthummel-pa.github.io/repofolio); the
+        // Customizer still overrides both.
+        'bg'          => prt_palette_value(get_theme_mod('prt_footer_bg', 'ink'), get_theme_mod('prt_footer_bg_custom', '')),
+        'text'        => prt_palette_value(get_theme_mod('prt_footer_textc', 'paper'), get_theme_mod('prt_footer_text_custom', '')),
         'border'      => (bool) get_theme_mod('prt_footer_border', true),
         'divider'     => (bool) get_theme_mod('prt_footer_divider', true),
 

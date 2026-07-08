@@ -23,20 +23,8 @@ add_filter('excerpt_more', function () {
 });
 
 /**
- * [prt_github owner="" repo="" show="desc,stats,intro"] — live cached GitHub repo data.
- *
- * Lets any post/page embed a repo card without hand-writing markup. Delegates
- * to \App\Github::render() (app/Github.php) which owns the actual GitHub API
- * call + caching; this shortcode is just the content-editor-facing surface.
- * Silently renders nothing if owner/repo are missing, rather than erroring,
- * since a malformed shortcode shouldn't break the rest of the page.
+ * NOTE: the [prt_github] shortcode that lived here (live cached repo data via
+ * app/Github.php) was removed with the rest of the GitHub subsystem — use the
+ * Repofolio plugin's repofolio/repo-profile or repofolio/repo-grid blocks
+ * instead. See the note in app/setup.php.
  */
-add_shortcode('prt_github', function ($atts) {
-    $a = shortcode_atts(['owner' => '', 'repo' => '', 'show' => 'stats,intro'], $atts);
-
-    if (! $a['owner'] || ! $a['repo']) {
-        return '';
-    }
-
-    return \App\Github::render($a['owner'], $a['repo'], array_map('trim', explode(',', $a['show'])));
-});

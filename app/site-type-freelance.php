@@ -61,8 +61,8 @@ add_action('init', function () {
         foreach ($btns as $b) {
             $base = 'text-decoration:none; padding:15px 28px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);';
             $row .= ! empty($b['outline'])
-                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #1B1830; color:#1B1830;">' . esc_html($b['text']) . '</a>'
-                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#1B1830; color:#fff;">' . esc_html($b['text']) . '</a>';
+                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #ECE6FB; color:#6C4CF1;">' . esc_html($b['text']) . '</a>'
+                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">' . esc_html($b['text']) . '</a>';
         }
         return "<!-- wp:html -->\n" . $row . '</div>' . "\n<!-- /wp:html -->";
     };
@@ -169,14 +169,14 @@ add_action('init', function () {
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:26px; margin:0 0 12px; color:#fff;">The short version</h3>'
         . '<p style="font-size:16px; line-height:1.6; color:rgba(255,255,255,.86); margin:0;">[Your Name] is an independent [your role/discipline] who helps clients turn a vague idea into something real — fast, clear communication and work you can actually use, not just admire.</p>'
         . '</div><!-- /wp:column -->'
-        . '<!-- wp:column {"width":"22.5%","className":"bento-card"} --><div class="wp-block-column bento-card" style="flex-basis:22.5%; border-radius:24px; padding:28px; background:#fff; border:1.5px solid #ECE4F8;">'
+        . '<!-- wp:column {"width":"22.5%","className":"bento-card"} --><div class="wp-block-column bento-card" style="flex-basis:22.5%; border-radius:24px; padding:28px; background:#fff; border:1.5px solid #ECE6FB;">'
         . '<div class="prt-serif" style="font-size:34px; margin-bottom:8px;">🎯</div>'
-        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px; color:#1B1830;">Focused</h3>'
+        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px; color:#17151F;">Focused</h3>'
         . '<p style="font-size:14.5px; line-height:1.5; color:#5A5676; margin:0;">A small client roster by design — enough to give each project my full attention.</p>'
         . '</div><!-- /wp:column -->'
-        . '<!-- wp:column {"width":"22.5%","className":"bento-card bento-card--tint"} --><div class="wp-block-column bento-card bento-card--tint" style="flex-basis:22.5%; border-radius:24px; padding:28px; background:#EFE9FF;">'
+        . '<!-- wp:column {"width":"22.5%","className":"bento-card bento-card--tint"} --><div class="wp-block-column bento-card bento-card--tint" style="flex-basis:22.5%; border-radius:24px; padding:28px; background:#EEE8FE;">'
         . '<div style="font-size:34px; margin-bottom:8px;">⚡</div>'
-        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px; color:#1B1830;">Direct</h3>'
+        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px; color:#17151F;">Direct</h3>'
         . '<p style="font-size:14.5px; line-height:1.5; color:#4A4660; margin:0;">No layers between you and the work — just straightforward answers and steady progress.</p>'
         . '</div><!-- /wp:column -->'
         . '</div><!-- /wp:columns -->';
@@ -263,17 +263,17 @@ add_action('init', function () {
 
     $resumeBHighlight = '<!-- wp:columns {"isStackedOnMobile":true} -->'
         . '<div class="wp-block-columns">'
-        . '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%; background:#1B1830; border-radius:22px; padding:30px; color:#fff;">'
+        . '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%; background:#17151F; border-radius:22px; padding:30px; color:#fff;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.75; margin-bottom:10px;">HEADLINE PROJECT</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:20px; margin:0 0 8px;">[Project or client name]</h3>'
         . '<p style="font-size:14.5px; line-height:1.55; margin:0; opacity:.9;">One sentence on the biggest, most impressive thing you&#8217;ve shipped — make it concrete and specific.</p>'
         . '</div><!-- /wp:column -->'
-        . '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%; background:#FF7A1A; border-radius:22px; padding:30px; color:#1B1830;">'
+        . '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%; background:#FF7A3D; border-radius:22px; padding:30px; color:#17151F;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.75; margin-bottom:10px;">SPECIALTY</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:20px; margin:0 0 8px;">[Your niche]</h3>'
         . '<p style="font-size:14.5px; line-height:1.55; margin:0; opacity:.9;">The specific problem or client type you solve better than most — the thing you want to be known for.</p>'
         . '</div><!-- /wp:column -->'
-        . '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%; background:#38BDF8; border-radius:22px; padding:30px; color:#06283a;">'
+        . '<!-- wp:column {"width":"33.33%"} --><div class="wp-block-column" style="flex-basis:33.33%; background:#22CFEE; border-radius:22px; padding:30px; color:#06283a;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.75; margin-bottom:10px;">RIGHT NOW</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:20px; margin:0 0 8px;">Open for work</h3>'
         . '<p style="font-size:14.5px; line-height:1.55; margin:0; opacity:.9;">Currently booking [X] new projects for [month/quarter] — get in touch to check availability.</p>'
@@ -326,8 +326,8 @@ add_action('init', function () {
         ['Project Four', 'A brief one-line description of what this project was and its impact.', '[Tool/skill], [Tool/skill]'],
     ] as $proj) {
         [$title, $desc, $tags] = $proj;
-        $moreGrid .= '<div class="prt-lift" style="background:#fff; border:1.5px solid #ECE4F8; border-radius:20px; padding:26px;">'
-            . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#1B1830;">' . esc_html($title) . '</h3>'
+        $moreGrid .= '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:20px; padding:26px;">'
+            . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#17151F;">' . esc_html($title) . '</h3>'
             . '<p style="font-size:14.5px; line-height:1.55; color:#5A5676; margin:0 0 14px;">' . esc_html($desc) . '</p>'
             . '<p style="font-family:var(--font-mono); font-size:12px; color:#7C75A8; margin:0;">' . esc_html($tags) . '</p>'
             . '</div>';
@@ -366,13 +366,13 @@ add_action('init', function () {
 
     $bento = '<!-- wp:columns {"isStackedOnMobile":true} -->'
         . '<div class="wp-block-columns">'
-        . '<!-- wp:column {"width":"60%"} --><div class="wp-block-column prt-lift" style="flex-basis:60%; background:#1B1830; border-radius:24px; padding:34px; color:#fff;">'
+        . '<!-- wp:column {"width":"60%"} --><div class="wp-block-column prt-lift" style="flex-basis:60%; background:#17151F; border-radius:24px; padding:34px; color:#fff;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.7; margin-bottom:12px;">PROJECT ONE — FEATURED</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:26px; margin:0 0 10px;">Project One</h3>'
         . '<p style="font-size:15.5px; line-height:1.6; margin:0 0 16px; opacity:.9;">A brief one-line description of what this project was and its impact — replace with your own case study summary, ideally with a concrete result.</p>'
         . '<p style="font-family:var(--font-mono); font-size:12.5px; opacity:.75; margin:0;">[Tool/skill] · [Tool/skill] · [Tool/skill]</p>'
         . '</div><!-- /wp:column -->'
-        . '<!-- wp:column {"width":"40%"} --><div class="wp-block-column prt-lift" style="flex-basis:40%; background:#C2F23D; border-radius:24px; padding:30px; color:#1B1830;">'
+        . '<!-- wp:column {"width":"40%"} --><div class="wp-block-column prt-lift" style="flex-basis:40%; background:#37E29A; border-radius:24px; padding:30px; color:#17151F;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.75; margin-bottom:12px;">PROJECT TWO</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:22px; margin:0 0 10px;">Project Two</h3>'
         . '<p style="font-size:14.5px; line-height:1.6; margin:0; opacity:.85;">A brief one-line description of what this project was and its impact.</p>'
@@ -380,12 +380,12 @@ add_action('init', function () {
         . '</div><!-- /wp:columns -->';
     $bento .= '<!-- wp:columns {"isStackedOnMobile":true} -->'
         . '<div class="wp-block-columns" style="margin-top:20px;">'
-        . '<!-- wp:column {"width":"40%"} --><div class="wp-block-column prt-lift" style="flex-basis:40%; background:#38BDF8; border-radius:24px; padding:30px; color:#06283a;">'
+        . '<!-- wp:column {"width":"40%"} --><div class="wp-block-column prt-lift" style="flex-basis:40%; background:#22CFEE; border-radius:24px; padding:30px; color:#06283a;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.75; margin-bottom:12px;">PROJECT THREE</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:22px; margin:0 0 10px;">Project Three</h3>'
         . '<p style="font-size:14.5px; line-height:1.6; margin:0; opacity:.85;">A brief one-line description of what this project was and its impact.</p>'
         . '</div><!-- /wp:column -->'
-        . '<!-- wp:column {"width":"60%"} --><div class="wp-block-column prt-lift" style="flex-basis:60%; background:#fff; border:1.5px solid #ECE4F8; border-radius:24px; padding:34px; color:#1B1830;">'
+        . '<!-- wp:column {"width":"60%"} --><div class="wp-block-column prt-lift" style="flex-basis:60%; background:#fff; border:1.5px solid #ECE6FB; border-radius:24px; padding:34px; color:#17151F;">'
         . '<div style="font-family:var(--font-mono); font-size:12px; color:#7C75A8; margin-bottom:12px;">PROJECT FOUR</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:26px; margin:0 0 10px;">Project Four</h3>'
         . '<p style="font-size:15.5px; line-height:1.6; margin:0 0 16px; color:#5A5676;">A brief one-line description of what this project was and its impact — replace with your own case study summary.</p>'

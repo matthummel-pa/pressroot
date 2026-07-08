@@ -7,12 +7,12 @@
   /** Static, non-SSR skeleton for the Patterns-inserter preview — see the
    * matching comment in prt-skills-grid-editor.js for why this exists. */
   function skeleton(a) {
-    var bg = a.variant === 'green' ? '#e8f5e9' : (a.variant === 'light' ? '#faf7f2' : '#1B1830');
-    var fg = a.variant === 'dark' ? '#fff' : '#1B1830';
+    var bg = a.variant === 'green' ? '#e8f5e9' : (a.variant === 'light' ? '#faf7f2' : '#17151F');
+    var fg = a.variant === 'dark' ? '#fff' : '#17151F';
     return el('div', { style: { background: bg, color: fg, borderRadius: 12, padding: 28, textAlign: 'center' } },
       el('strong', { style: { display: 'block', fontSize: 22, marginBottom: 8 } }, a.heading || ''),
       el('p', { style: { margin: '0 0 14px', fontSize: 14, opacity: 0.85 } }, a.body || ''),
-      el('span', { style: { display: 'inline-block', padding: '10px 22px', borderRadius: 999, background: fg === '#fff' ? '#fff' : '#1B1830', color: fg === '#fff' ? '#1B1830' : '#fff', fontSize: 13, fontWeight: 700 } }, a.btnText || '')
+      el('span', { style: { display: 'inline-block', padding: '10px 22px', borderRadius: 999, background: fg === '#fff' ? '#fff' : '#17151F', color: fg === '#fff' ? '#17151F' : '#fff', fontSize: 13, fontWeight: 700 } }, a.btnText || '')
     );
   }
 

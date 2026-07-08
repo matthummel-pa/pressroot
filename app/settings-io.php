@@ -89,16 +89,18 @@ function prt_style_kits()
 {
     return apply_filters('matthummel/style_kits', [
         'paper_space' => [
+            'mode'  => 'light', 'vibes' => ['bold', 'playful'],
             'label' => __('Paper + Space', 'pressroot'),
             'desc'  => __('Bold paper + purple/orange/lime with Outfit. The theme default.', 'pressroot'),
             'mods'  => [
-                'prt_color_action' => '#7C5CFF', 'prt_color_paper' => '#FFFDF7',
-                'prt_color_ink' => '#1B1830', 'prt_color_body' => '#4A4660',
+                'prt_color_action' => '#6C4CF1', 'prt_color_paper' => '#FFF9F5',
+                'prt_color_ink' => '#17151F', 'prt_color_body' => '#4A4660',
                 'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Outfit',
                 'prt_btn_radius' => '999', 'prt_card_radius' => '20',
             ],
         ],
         'editorial' => [
+            'mode'  => 'light', 'vibes' => ['minimal'],
             'label' => __('Editorial (green)', 'pressroot'),
             'desc'  => __('Clean paper + green — the previous theme default.', 'pressroot'),
             'mods'  => [
@@ -109,6 +111,7 @@ function prt_style_kits()
             ],
         ],
         'sage_classic' => [
+            'mode'  => 'light', 'vibes' => ['warm', 'minimal'],
             'label' => __('Sage Classic', 'pressroot'),
             'desc'  => __('Khaki + serif — matches matthummel.com.', 'pressroot'),
             'mods'  => [
@@ -119,6 +122,7 @@ function prt_style_kits()
             ],
         ],
         'warm_sand' => [
+            'mode'  => 'light', 'vibes' => ['warm'],
             'label' => __('Warm Sand', 'pressroot'),
             'desc'  => __('Terracotta + warm neutrals.', 'pressroot'),
             'mods'  => [
@@ -129,6 +133,7 @@ function prt_style_kits()
             ],
         ],
         'midnight' => [
+            'mode'  => 'dark', 'vibes' => ['minimal', 'bold'],
             'label' => __('Midnight', 'pressroot'),
             'desc'  => __('Dark canvas, soft blue accent.', 'pressroot'),
             'mods'  => [
@@ -139,6 +144,7 @@ function prt_style_kits()
             ],
         ],
         'mono_slate' => [
+            'mode'  => 'light', 'vibes' => ['minimal', 'bold'],
             'label' => __('Mono Slate', 'pressroot'),
             'desc'  => __('Sharp, near-black, minimal.', 'pressroot'),
             'mods'  => [
@@ -146,6 +152,72 @@ function prt_style_kits()
                 'prt_color_ink' => '#0b0c0e', 'prt_color_body' => '#3a3d44',
                 'prt_font_heading' => 'Inter Tight', 'prt_font_body' => 'Inter',
                 'prt_btn_radius' => '4', 'prt_card_radius' => '8',
+            ],
+        ],
+        'iris_dark' => [
+            'mode'  => 'dark', 'vibes' => ['bold', 'playful'],
+            'label' => __('Iris Dark', 'pressroot'),
+            'desc'  => __('Repofolio hero colors as a full dark theme — deep space violet, light text.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#9B5CF6', 'prt_color_paper' => '#15122a',
+                'prt_color_ink' => '#F5F2FF', 'prt_color_body' => '#CFCBE6',
+                'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Outfit',
+                'prt_btn_radius' => '999', 'prt_card_radius' => '18',
+            ],
+        ],
+        'pink_pop' => [
+            'mode'  => 'light', 'vibes' => ['playful', 'bold'],
+            'label' => __('Pink Pop', 'pressroot'),
+            'desc'  => __('Repofolio pink up front — energetic, bright, unmissable.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#FF4D9D', 'prt_color_paper' => '#FFF7FA',
+                'prt_color_ink' => '#1F1520', 'prt_color_body' => '#4E4152',
+                'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Outfit',
+                'prt_btn_radius' => '999', 'prt_card_radius' => '24',
+            ],
+        ],
+        'coral_cream' => [
+            'mode'  => 'light', 'vibes' => ['warm', 'playful'],
+            'label' => __('Coral Cream', 'pressroot'),
+            'desc'  => __('Repofolio coral on soft cream — friendly and appetizing.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#FF7A3D', 'prt_color_paper' => '#FFF6F0',
+                'prt_color_ink' => '#241C18', 'prt_color_body' => '#4A4038',
+                'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Inter',
+                'prt_btn_radius' => '999', 'prt_card_radius' => '22',
+            ],
+        ],
+        'mint_fresh' => [
+            'mode'  => 'light', 'vibes' => ['minimal', 'playful'],
+            'label' => __('Mint Fresh', 'pressroot'),
+            'desc'  => __('Repofolio lime, deepened for contrast — clean and current.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#17B57A', 'prt_color_paper' => '#F4FCF8',
+                'prt_color_ink' => '#12201A', 'prt_color_body' => '#3E4F47',
+                'prt_font_heading' => 'Space Grotesk', 'prt_font_body' => 'Inter',
+                'prt_btn_radius' => '12', 'prt_card_radius' => '16',
+            ],
+        ],
+        'cyan_sky' => [
+            'mode'  => 'light', 'vibes' => ['minimal', 'bold'],
+            'label' => __('Cyan Sky', 'pressroot'),
+            'desc'  => __('Repofolio cyan, deepened for buttons — crisp and technical.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#0FA8C9', 'prt_color_paper' => '#F3FBFD',
+                'prt_color_ink' => '#102026', 'prt_color_body' => '#3C4C52',
+                'prt_font_heading' => 'Outfit', 'prt_font_body' => 'Inter',
+                'prt_btn_radius' => '10', 'prt_card_radius' => '18',
+            ],
+        ],
+        'amber_toast' => [
+            'mode'  => 'light', 'vibes' => ['warm'],
+            'label' => __('Amber Toast', 'pressroot'),
+            'desc'  => __('Repofolio amber, toasted for contrast — cozy editorial warmth.', 'pressroot'),
+            'mods'  => [
+                'prt_color_action' => '#D98E00', 'prt_color_paper' => '#FFFBF2',
+                'prt_color_ink' => '#201A10', 'prt_color_body' => '#4E4636',
+                'prt_font_heading' => 'Fraunces', 'prt_font_body' => 'Inter',
+                'prt_btn_radius' => '8', 'prt_card_radius' => '16',
             ],
         ],
     ]);

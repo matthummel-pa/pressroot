@@ -468,6 +468,55 @@ Four related asks in one pass:
   (all of `app/*.php`, not an assumed subset) before it hardens into
   permanent documentation.
 
+## "install repofolio" -> "package repofolio into pressroot as a theme addon"
+- Repofolio (the standalone GitHub-portfolio plugin this theme's old GitHub
+  subsystem was extracted into) came back INTO the theme as a Theme Addon:
+  classes under `app/Repofolio/includes/` (namespace, option keys, and block
+  name unchanged), booted by `app/repofolio-addon.php` behind
+  `prt_addon_enabled('repofolio')` with a `REPOFOLIO_THEME_MODE` constant for
+  the three theme-mode differences (settings tab, asset URLs, no plugin-only
+  wiring). Standalone plugin still wins if activated.
+- Restored the two dangling references the extraction left behind:
+  `prt_github_get()` and the `App\Github` facade (Support tab, repo seeder)
+  now sit on top of `Repofolio\GitHub_Client`, degrading to empty results
+  when the addon is off.
+- **Takeaway:** when a subsystem moves out, grep ALL of app/ for stragglers
+  the same day — two files kept calling functions that no longer existed.
+
+## "update theme colors/design to match repofolio branding"
+- Full token swap to the Repofolio palette (docs/BRAND.md in the repofolio
+  repo): Iris `#6C4CF1`, Ink `#17151F`, Paper `#FFF9F5`, Pink/Coral/Amber/
+  Lime/Cyan spectrum. Token SLUGS kept (`--color-green` is still the brand
+  slug) so ~35 files updated by value only.
+- Added the two brand gradients as tokens + theme.json presets, the 8px
+  spectrum "language bar" on every page, spectrum-topped cards site-wide,
+  and gradient pill buttons across core block buttons, `.btn`, and every
+  inline pattern/view button. Appearance -> Pressroot got the docs-site
+  chrome (dark radial hero, gradient headline, pill nav) via a static
+  `resources/css/admin-settings.css` — no build step.
+- **Takeaway:** the earlier "colors only" pass looked unfinished because
+  patterns/views carry inline styles — a rebrand here isn't done until the
+  pattern PHP and blade partials are swept too.
+
+## "regenerate whole new themes per category" (Site Types -> design generator)
+- Apply now REFRESHES existing pages (overwrites content + meta) instead of
+  skipping them — old baked-in designs can't linger. Every apply/refresh
+  deals a random pattern variant per page and re-deals a random STYLE KIT
+  from a per-type pool (6 new Repofolio-family kits joined the original 6),
+  then clears stale critical CSS so the new design paints immediately.
+- `app/site-type-remix.php` generates variants C + D for every page of all
+  eight site types (~50 patterns) from seeded hero/feature/CTA section
+  pools; a filter appends the `pattern_c`/`pattern_d` slugs so no site-type
+  file needed editing. Three new categories shipped hand-built A/B patterns:
+  Affiliate Marketing, Restaurant/Café, Real Estate.
+- New Brand tab (questionnaire: name, one-liner, color, light/dark, vibe)
+  steers the generator — kit pools filter by mode/vibe, brand color
+  overrides each dealt kit's accent, and the AI hero-copy prompt reads the
+  profile + active site type and demands a fresh angle per run.
+- `npm run refresh` = ESLint + Pint + Vite build in one shot.
+- **Takeaway:** "regenerate" reads as *random and whole-theme* to users —
+  variant toggling plus a fixed kit felt broken even though it worked.
+
 ---
 
 ## Recurring bug patterns

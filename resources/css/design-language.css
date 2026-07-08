@@ -580,3 +580,38 @@
   .proj-secondary  { border: 1px solid ButtonText; }
 }
 </style>
+
+/* ----------------------------------------------------------------------
+   Repofolio design-language pass (matthummel-pa.github.io/repofolio):
+   every white card gets the docs-site treatment — 1.5px lavender hairline,
+   18px radius, 5px spectrum bar across the top — and buttons go gradient.
+   Appended last so it wins the cascade over the older rules above.
+---------------------------------------------------------------------- */
+.bento-card,
+.blog-featured-card,
+.proj-featured,
+.proj-secondary {
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid #ece6fb;
+  border-radius: 18px;
+}
+.bento-card::before,
+.blog-featured-card::before,
+.proj-featured::before,
+.proj-secondary::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--gradient-spectrum, linear-gradient(90deg,#6C4CF1 0%,#FF4D9D 28%,#FF7A3D 52%,#FFC53D 72%,#37E29A 88%,#22CFEE 100%));
+}
+.bento-card--dark { border-color: #2a2438; }
+
+.resume-dl-btn {
+  background: var(--gradient-brand, linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%));
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+}
+.resume-dl-btn:hover { background: var(--gradient-brand, linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%)); color: #fff; opacity: .92; }

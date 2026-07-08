@@ -1,9 +1,14 @@
 {{--
-  Single project landing page.
-  Uses the "featured repo" profile (Github::renderRepo) as the template: it pulls
-  the repo's description, tags, stats, languages, version notes, changelog and
-  README straight onto the page, with a clean title header + repo link on top.
-  Manual (non-GitHub) projects fall back to their own content.
+  Single project landing page (Repofolio plugin's repofolio_project post type;
+  this file replaced single-projects.blade.php when the theme's own projects
+  CPT + GitHub engine moved into the plugin).
+
+  Uses the plugin's "featured repo" profile (repofolio_repo_profile()) as the
+  template: it pulls the repo's description, tags, stats, languages, version
+  notes and README straight onto the page, with a clean title header + repo
+  link on top. Manual (non-GitHub) projects fall back to their own content.
+  This template can only be reached when the plugin's CPT exists, but the
+  template tags are still guarded so a stale permalink never fatals.
 --}}
 @extends('layouts.app')
 
@@ -11,22 +16,22 @@
 @php
   if (have_posts()) { the_post(); }
   $pid     = get_the_ID();
-  $owner   = get_post_meta($pid, '_prt_gh_owner', true) ?: apply_filters('matthummel/github_owner', 'matthummel-pa');
-  $repo    = get_post_meta($pid, '_prt_gh_repo', true) ?: get_post_field('post_name');
-  $demoUrl = get_post_meta($pid, '_prt_demo_url', true);
-  $tech    = get_post_meta($pid, '_prt_tech_stack', true);
+  $hasRepofolio = function_exists('Repofolio\\repofolio_repo_profile');
+  $owner   = get_post_meta($pid, '_repofolio_gh_owner', true) ?: apply_filters('matthummel/github_owner', 'matthummel-pa');
+  $repo    = get_post_meta($pid, '_repofolio_gh_repo', true) ?: get_post_field('post_name');
+  $demoUrl = get_post_meta($pid, '_repofolio_url', true);
+  $tech    = get_post_meta($pid, '_repofolio_stack', true);
   $pills   = $tech ? array_map('trim', explode(',', $tech)) : [];
-  $terms   = get_the_terms($pid, 'project_categories');
+  $terms   = get_the_terms($pid, 'repofolio_project_type');
   $cat     = ($terms && ! is_wp_error($terms)) ? $terms[0]->name : 'Project';
-  $ghData  = \App\Github::fetch($owner, $repo);
-  $isRepo  = ! empty($ghData['url']);
-  $ghLink  = $isRepo ? $ghData['url'] : 'https://github.com/' . $owner . '/' . $repo;
+  $repoProfile = $hasRepofolio ? \Repofolio\repofolio_repo_profile($owner, $repo) : '';
+  $isRepo  = $repoProfile !== '';
+  $ghLink  = 'https://github.com/' . $owner . '/' . $repo;
   $title   = get_the_title();
-  $desc    = ! empty($ghData['desc']) ? $ghData['desc'] : get_the_excerpt();
+  $desc    = get_the_excerpt();
   $bodyHtml    = trim(get_the_content()) ? apply_filters('the_content', get_the_content()) : '';
-  $repoProfile = $isRepo ? \App\Github::renderRepo($owner, $repo) : '';
   $related = [];
-  foreach (get_posts(['post_type' => 'projects', 'posts_per_page' => 3, 'post__not_in' => [$pid]]) as $rp) {
+  foreach (get_posts(['post_type' => 'repofolio_project', 'posts_per_page' => 3, 'post__not_in' => [$pid]]) as $rp) {
       $related[] = ['title' => get_the_title($rp), 'url' => get_permalink($rp), 'excerpt' => wp_trim_words(get_the_excerpt($rp), 16)];
   }
 @endphp
@@ -47,9 +52,9 @@
   @endunless
   <div style="display:flex; gap:14px; flex-wrap:wrap;">
     @if ($demoUrl)
-      <a href="{{ esc_url($demoUrl) }}" target="_blank" rel="noopener" class="prt-lift" style="text-decoration:none; background:#7C5CFF; color:#fff; padding:14px 26px; border-radius:999px; font-weight:700; font-family:var(--font-display);">Live site &#8599;</a>
+      <a href="{{ esc_url($demoUrl) }}" target="_blank" rel="noopener" class="prt-lift" style="text-decoration:none; background:#6C4CF1; color:#fff; padding:14px 26px; border-radius:999px; font-weight:700; font-family:var(--font-display);">Live site &#8599;</a>
     @endif
-    <a href="{{ esc_url($ghLink) }}" target="_blank" rel="noopener" class="prt-lift" style="text-decoration:none; background:#1B1830; color:#fff; padding:14px 26px; border-radius:999px; font-weight:700; font-family:var(--font-display);">View repository on GitHub &#8599;</a>
+    <a href="{{ esc_url($ghLink) }}" target="_blank" rel="noopener" class="prt-lift prt-btn-grad" style="padding:14px 26px; font-family:var(--font-display);">View repository on GitHub &#8599;</a>
   </div>
 </section>
 
@@ -67,7 +72,7 @@
   <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(28px,3vw,34px); letter-spacing:-.02em; margin:0 0 24px; color:var(--color-h2, var(--color-ink));">More projects</h2>
   <div class="prt-grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
     @foreach ($related as $r)
-      <a href="{{ $r['url'] }}" class="prt-lift" style="text-decoration:none; color:inherit; background:#fff; border:1.5px solid #ECE4F8; border-radius:20px; padding:24px; display:block;">
+      <a href="{{ $r['url'] }}" class="prt-lift" style="text-decoration:none; color:inherit; background:#fff; border:1.5px solid #ECE6FB; border-radius:20px; padding:24px; display:block;">
         <h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:var(--color-h3, var(--color-ink));">{!! $r['title'] !!}</h3>
         <p style="font-size:14.5px; color:#5A5676; line-height:1.5; margin:0;">{{ $r['excerpt'] }}</p>
       </a>

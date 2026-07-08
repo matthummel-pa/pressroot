@@ -1,5 +1,11 @@
 {{--
   Template Name: Projects
+
+  Everything GitHub/projects-shaped on this page comes from the Repofolio
+  plugin (post type repofolio_project, taxonomy repofolio_project_type,
+  _repofolio_* meta, and the \Repofolio\... template tags). When the plugin
+  is inactive the live-GitHub strip and the project grid simply don't render
+  — the page falls back to hero + CTA instead of fataling.
 --}}
 
 @extends('layouts.app')
@@ -11,14 +17,23 @@
   $pageUrl     = get_permalink();
   $showGithub  = ($catSlug === '' || $catSlug === 'github-projects');
   $showManual  = ($catSlug !== 'github-projects');
-  $ghUser      = \App\Github::fetchUser('matthummel-pa');
-  $langColors  = [
-    'PHP'        => '#4F5D95', 'JavaScript' => '#f1e05a', 'TypeScript' => '#3178c6',
-    'CSS'        => '#563d7c', 'HTML'       => '#e34c26', 'Python'     => '#3572A5',
-    'Go'         => '#00ADD8', 'Rust'       => '#dea584', 'Shell'      => '#89e051',
-    'Java'       => '#b07219', 'Ruby'       => '#701516', 'Blade'      => '#f7523f',
-  ];
-  $manualCats  = get_terms(['taxonomy' => 'project_categories', 'hide_empty' => true]);
+  $hasRepofolio = function_exists('Repofolio\\repofolio_get_user');
+
+  // Owner shown in the hero strip + repo grid: the plugin's configured source
+  // login, else the connected account, else this theme's own default.
+  $ghOwner = '';
+  if ($hasRepofolio) {
+      $ghOwner = (string) (\Repofolio\Settings::get()['source_login'] ?? '');
+      if ($ghOwner === '' && \Repofolio\OAuth::is_connected()) {
+          $ghOwner = (string) (\Repofolio\OAuth::viewer()['login'] ?? '');
+      }
+  }
+  $ghOwner = $ghOwner ?: 'matthummel-pa';
+  $ghUser  = $hasRepofolio ? \Repofolio\repofolio_get_user($ghOwner) : null;
+
+  $manualCats  = taxonomy_exists('repofolio_project_type')
+      ? get_terms(['taxonomy' => 'repofolio_project_type', 'hide_empty' => true])
+      : [];
   $manualCats  = ($manualCats && !is_wp_error($manualCats)) ? $manualCats : [];
 @endphp
 
@@ -35,11 +50,11 @@
     @if (!empty($ghUser))
     <div class="gh-live-strip">
       <span class="gh-live-stat">
-        <strong>{{ $ghUser['public_repos'] }}</strong> public repos
+        <strong>{{ (int) ($ghUser['public_repos'] ?? 0) }}</strong> public repos
       </span>
-      <a href="https://github.com/matthummel-pa" class="gh-live-link" target="_blank" rel="noopener">
+      <a href="https://github.com/{{ $ghOwner }}" class="gh-live-link" target="_blank" rel="noopener">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        matthummel-pa
+        {{ $ghOwner }}
       </a>
     </div>
     @endif
@@ -49,11 +64,13 @@
 {{-- ── CATEGORY FILTER ─────────────────────────────────────────────────── --}}
 <nav class="projects-filter container" aria-label="{{ __('Filter projects', 'pressroot') }}">
   <a class="filter-pill{{ $catSlug === '' ? ' is-active' : '' }}" href="{{ $pageUrl }}">All</a>
+  @if ($hasRepofolio)
   <a class="filter-pill{{ $catSlug === 'github-projects' ? ' is-active' : '' }}"
      href="{{ add_query_arg('cat', 'github-projects', $pageUrl) }}">
     <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:text-bottom;margin-right:4px" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
     GitHub
   </a>
+  @endif
   @foreach ($manualCats as $mhCat)
     @if ($mhCat->slug !== 'github-projects')
       <a class="filter-pill{{ $catSlug === $mhCat->slug ? ' is-active' : '' }}"
@@ -63,9 +80,17 @@
 </nav>
 
 {{-- ── LIVE GITHUB REPOS ───────────────────────────────────────────────── --}}
-@if ($showGithub)
+@if ($showGithub && $hasRepofolio)
 @php
-  $ghRepos = \App\Github::fetchRepos('matthummel-pa', 12, 'updated');
+  // Raw GitHub API repo arrays from the plugin client (name, description,
+  // language, stargazers_count, forks_count, html_url, fork…), forks excluded.
+  $ghRepos = \Repofolio\repofolio_get_repos([
+      'source'   => 'user',
+      'login'    => $ghOwner,
+      'per_page' => 24,
+      'sort'     => 'updated',
+  ]);
+  $ghRepos = array_slice(array_values(array_filter($ghRepos, fn ($r) => empty($r['fork']))), 0, 12);
 @endphp
 @if (!empty($ghRepos))
 <section class="projects-github">
@@ -75,40 +100,43 @@
         <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         Live from GitHub
       </h2>
-      <a href="https://github.com/matthummel-pa?tab=repositories" class="section-view-all"
+      <a href="https://github.com/{{ $ghOwner }}?tab=repositories" class="section-view-all"
          target="_blank" rel="noopener">View all repos →</a>
     </div>
 
     <div class="github-repos-grid">
       @foreach ($ghRepos as $r)
       @php
-        $rLangColor = isset($langColors[$r['lang']]) ? $langColors[$r['lang']] : '#8b949e';
+        $rLang      = (string) ($r['language'] ?? '');
+        $rLangColor = $rLang !== '' ? \Repofolio\repofolio_lang_color($rLang) : '#8b949e';
+        $rStars     = (int) ($r['stargazers_count'] ?? 0);
+        $rForks     = (int) ($r['forks_count'] ?? 0);
       @endphp
-      <a href="{{ $r['url'] }}" class="github-repo-card" target="_blank" rel="noopener" data-anim="fade-up">
+      <a href="{{ $r['html_url'] ?? '#' }}" class="github-repo-card" target="_blank" rel="noopener" data-anim="fade-up">
         <div class="github-repo-card-header">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 010-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8z" fill="currentColor"/></svg>
-          <span class="github-repo-name">{{ $r['name'] }}</span>
+          <span class="github-repo-name">{{ $r['name'] ?? '' }}</span>
         </div>
-        @if (!empty($r['desc']))
-          <p class="github-repo-desc">{{ wp_trim_words($r['desc'], 16) }}</p>
+        @if (!empty($r['description']))
+          <p class="github-repo-desc">{{ wp_trim_words($r['description'], 16) }}</p>
         @endif
         <div class="github-repo-meta">
-          @if (!empty($r['lang']))
+          @if ($rLang !== '')
             <span class="repo-lang">
               <span class="repo-lang-dot" style="background:{{ $rLangColor }}"></span>
-              {{ $r['lang'] }}
+              {{ $rLang }}
             </span>
           @endif
-          @if ($r['stars'])
+          @if ($rStars)
             <span class="repo-stars">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
-              {{ number_format($r['stars']) }}
+              {{ number_format($rStars) }}
             </span>
           @endif
-          @if ($r['forks'])
+          @if ($rForks)
             <span class="repo-forks">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-              {{ number_format($r['forks']) }}
+              {{ number_format($rForks) }}
             </span>
           @endif
         </div>
@@ -121,13 +149,13 @@
 @endif
 
 {{-- ── MANUAL CPT PROJECTS ─────────────────────────────────────────────── --}}
-@if ($showManual)
+@if ($showManual && post_type_exists('repofolio_project'))
 @php
   $mhTaxQuery = ($catSlug && $catSlug !== 'github-projects')
-    ? [['taxonomy' => 'project_categories', 'field' => 'slug', 'terms' => $catSlug]]
+    ? [['taxonomy' => 'repofolio_project_type', 'field' => 'slug', 'terms' => $catSlug]]
     : [];
   $mhProjects = new \WP_Query([
-    'post_type'      => 'projects',
+    'post_type'      => 'repofolio_project',
     'posts_per_page' => 12,
     'tax_query'      => $mhTaxQuery,
   ]);
@@ -151,11 +179,11 @@
       @while ($mhProjects->have_posts())
       @php $mhProjects->the_post(); @endphp
       @php
-        $isFeatured = (bool) get_post_meta(get_the_ID(), '_prt_featured', true);
-        $techStack  = get_post_meta(get_the_ID(), '_prt_tech_stack', true);
+        $isFeatured = (bool) get_post_meta(get_the_ID(), '_repofolio_featured', true);
+        $techStack  = get_post_meta(get_the_ID(), '_repofolio_stack', true);
         $techPills  = $techStack ? array_map('trim', explode(',', $techStack)) : [];
-        $eyebrow    = get_post_meta(get_the_ID(), '_prt_eyebrow', true);
-        $projTerms  = get_the_terms(get_the_ID(), 'project_categories');
+        $eyebrow    = get_post_meta(get_the_ID(), '_repofolio_eyebrow', true);
+        $projTerms  = get_the_terms(get_the_ID(), 'repofolio_project_type');
         $projLabel  = ($projTerms && !is_wp_error($projTerms)) ? $projTerms[0]->name : ($eyebrow ?: '');
       @endphp
       <article class="project-card{{ $isFeatured ? ' project-card--featured' : '' }}" data-anim="fade-up">

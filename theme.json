@@ -19,34 +19,37 @@
       "background": true,
       "text": true,
       "palette": [
-        { "slug": "paper", "color": "#FFFDF7", "name": "Paper" },
+        { "slug": "paper", "color": "#FFF9F5", "name": "Paper" },
         { "slug": "surface", "color": "#FFFFFF", "name": "Surface" },
-        { "slug": "cream", "color": "#F6F1FF", "name": "Cream" },
-        { "slug": "ink", "color": "#1B1830", "name": "Ink" },
+        { "slug": "cream", "color": "#F3EEFE", "name": "Cream" },
+        { "slug": "ink", "color": "#17151F", "name": "Ink" },
         { "slug": "body", "color": "#4A4660", "name": "Body" },
         { "slug": "muted", "color": "#5A5676", "name": "Muted" },
         { "slug": "faint", "color": "#7C75A8", "name": "Faint" },
-        { "slug": "green", "color": "#7C5CFF", "name": "Brand (Purple)" },
-        { "slug": "green-ink", "color": "#6A4AE0", "name": "Brand hover" },
-        { "slug": "green-tint", "color": "#EFE9FF", "name": "Brand tint" },
-        { "slug": "purple", "color": "#7C5CFF", "name": "Purple" },
-        { "slug": "orange", "color": "#FF7A1A", "name": "Orange" },
-        { "slug": "lime", "color": "#C2F23D", "name": "Lime" },
-        { "slug": "sky", "color": "#38BDF8", "name": "Sky" },
-        { "slug": "pink", "color": "#FF5DA2", "name": "Pink" },
-        { "slug": "line", "color": "#ECE4F8", "name": "Line" }
+        { "slug": "green", "color": "#6C4CF1", "name": "Brand (Iris)" },
+        { "slug": "green-ink", "color": "#5A3ED1", "name": "Brand hover" },
+        { "slug": "green-tint", "color": "#EEE8FE", "name": "Brand tint" },
+        { "slug": "purple", "color": "#6C4CF1", "name": "Iris" },
+        { "slug": "violet", "color": "#9B5CF6", "name": "Violet" },
+        { "slug": "orange", "color": "#FF7A3D", "name": "Coral" },
+        { "slug": "amber", "color": "#FFC53D", "name": "Amber" },
+        { "slug": "lime", "color": "#37E29A", "name": "Lime" },
+        { "slug": "sky", "color": "#22CFEE", "name": "Cyan" },
+        { "slug": "pink", "color": "#FF4D9D", "name": "Pink" },
+        { "slug": "line", "color": "#ECE6FB", "name": "Line" }
       ],
       "gradients": [
-        { "slug": "green", "name": "Brand", "gradient": "linear-gradient(135deg,#7C5CFF,#38BDF8)" },
-        { "slug": "purple-sky", "name": "Purple to Sky", "gradient": "linear-gradient(135deg,#7C5CFF,#38BDF8)" },
-        { "slug": "orange-pink", "name": "Orange to Pink", "gradient": "linear-gradient(135deg,#FF7A1A,#FF5DA2)" },
-        { "slug": "headline", "name": "Headline Accent", "gradient": "linear-gradient(100deg,#FF7A1A,#7C5CFF,#38BDF8)" },
-        { "slug": "ink", "name": "Ink", "gradient": "linear-gradient(135deg,#1B1830,#2b2f36)" },
-        { "slug": "paper-fade", "name": "Paper fade", "gradient": "linear-gradient(180deg,#FFFDF7,#F6F1FF)" }
+        { "slug": "green", "name": "Brand", "gradient": "linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%)" },
+        { "slug": "purple-sky", "name": "Purple to Sky", "gradient": "linear-gradient(135deg,#6C4CF1,#22CFEE)" },
+        { "slug": "orange-pink", "name": "Orange to Pink", "gradient": "linear-gradient(135deg,#FF7A3D,#FF4D9D)" },
+        { "slug": "headline", "name": "Headline Accent", "gradient": "linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%)" },
+        { "slug": "spectrum", "name": "Repo Spectrum Bar", "gradient": "linear-gradient(90deg,#6C4CF1 0%,#FF4D9D 28%,#FF7A3D 52%,#FFC53D 72%,#37E29A 88%,#22CFEE 100%)" },
+        { "slug": "ink", "name": "Ink", "gradient": "linear-gradient(135deg,#17151F,#2b2f36)" },
+        { "slug": "paper-fade", "name": "Paper fade", "gradient": "linear-gradient(180deg,#FFF9F5,#F3EEFE)" }
       ],
       "duotone": [
-        { "slug": "green-ink", "name": "Purple / Ink", "colors": ["#1B1830", "#7C5CFF"] },
-        { "slug": "paper-green", "name": "Purple / Paper", "colors": ["#7C5CFF", "#FFFDF7"] }
+        { "slug": "green-ink", "name": "Purple / Ink", "colors": ["#17151F", "#6C4CF1"] },
+        { "slug": "paper-green", "name": "Purple / Paper", "colors": ["#6C4CF1", "#FFF9F5"] }
       ]
     },
     "typography": {

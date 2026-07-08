@@ -9,14 +9,14 @@
 @endphp
 <section class="prt-wrap" style="padding-top:80px; padding-bottom:10px;">
   <div style="margin-bottom:36px;">
-    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:var(--color-h2, var(--color-ink));">Why work <span style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:#7C5CFF;">with me</span></h2>
+    <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(34px,4vw,46px); letter-spacing:-.025em; margin:0 0 8px; color:var(--color-h2, var(--color-ink));">Why work <span style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:#6C4CF1;">with me</span></h2>
     <p style="margin:0; font-size:17px; color:#7C75A8; max-width:40em;">No giant agency, no account managers — just a senior developer who's been shipping for 15+ years and cares about the details.</p>
   </div>
   <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;">
     @foreach($points as $p)
-      <div style="background:#fff; border:1.5px solid #ECE4F8; border-radius:24px; padding:28px;">
+      <div class="prt-spec-card" style="background:#fff; border:1.5px solid #ece6fb; border-radius:18px; padding:28px;">
         @if($p['big'])
-          <div style="font-family:var(--font-display); font-weight:900; font-size:42px; letter-spacing:-.03em; color:#7C5CFF; line-height:1;">{{ $p['big'] }}</div>
+          <div style="font-family:var(--font-display); font-weight:900; font-size:42px; letter-spacing:-.03em; color:#6C4CF1; line-height:1;">{{ $p['big'] }}</div>
         @else
           <div style="font-size:38px;">{{ $p['emoji'] }}</div>
         @endif

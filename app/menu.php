@@ -64,8 +64,8 @@ function prt_social_links()
 function prt_popout()
 {
     $type = get_theme_mod('prt_popout_bgtype', 'solid');
-    $c1   = get_theme_mod('prt_popout_bg', '#1B1830');
-    $c2   = get_theme_mod('prt_popout_grad2', '#7C5CFF');
+    $c1   = get_theme_mod('prt_popout_bg', '#17151F');
+    $c2   = get_theme_mod('prt_popout_grad2', '#6C4CF1');
     $ang  = absint(get_theme_mod('prt_popout_angle', 160));
     $bg   = $type === 'gradient' ? "linear-gradient({$ang}deg, {$c1}, {$c2})" : $c1;
 
@@ -147,7 +147,7 @@ add_action('customize_register', function ($wp) {
         $bgtype = $control->manager->get_setting('prt_popout_bgtype');
         return $bgtype && $bgtype->value() === 'gradient';
     };
-    foreach ([['prt_popout_bg', __('Background / gradient start', 'pressroot'), '#1B1830'], ['prt_popout_grad2', __('Gradient end', 'pressroot'), '#7C5CFF'], ['prt_popout_text', __('Text / icon color', 'pressroot'), '#ffffff']] as $col) {
+    foreach ([['prt_popout_bg', __('Background / gradient start', 'pressroot'), '#17151F'], ['prt_popout_grad2', __('Gradient end', 'pressroot'), '#6C4CF1'], ['prt_popout_text', __('Text / icon color', 'pressroot'), '#ffffff']] as $col) {
         $wp->add_setting($col[0], ['default' => $col[2], 'sanitize_callback' => 'sanitize_hex_color']);
         $args = ['label' => $col[1], 'section' => 'prt_popout_section'];
         if ($col[0] === 'prt_popout_grad2') {

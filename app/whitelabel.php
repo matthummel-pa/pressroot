@@ -24,7 +24,7 @@ add_action('customize_register', function ($wp) {
     $wp->add_setting('prt_wl_login', ['default' => '', 'sanitize_callback' => 'esc_url_raw']);
     $wp->add_control(new \WP_Customize_Image_Control($wp, 'prt_wl_login', ['label' => __('Login logo', 'pressroot'), 'section' => 'prt_wl_section']));
 
-    $wp->add_setting('prt_wl_login_bg', ['default' => '#FFFDF7', 'sanitize_callback' => 'sanitize_hex_color']);
+    $wp->add_setting('prt_wl_login_bg', ['default' => '#FFF9F5', 'sanitize_callback' => 'sanitize_hex_color']);
     $wp->add_control(new \WP_Customize_Color_Control($wp, 'prt_wl_login_bg', ['label' => __('Login background', 'pressroot'), 'section' => 'prt_wl_section']));
 
     $wp->add_setting('prt_wl_footer', ['default' => '', 'sanitize_callback' => 'sanitize_text_field']);
@@ -47,8 +47,8 @@ add_action('login_enqueue_scripts', function () {
     if (! $logo && get_theme_mod('prt_seo_logo', '')) {
         $logo = get_theme_mod('prt_seo_logo', '');
     }
-    $bg    = sanitize_hex_color(get_theme_mod('prt_wl_login_bg', '#FFFDF7')) ?: '#FFFDF7';
-    $green = sanitize_hex_color(get_theme_mod('prt_color_action', '#7C5CFF')) ?: '#7C5CFF';
+    $bg    = sanitize_hex_color(get_theme_mod('prt_wl_login_bg', '#FFF9F5')) ?: '#FFF9F5';
+    $green = sanitize_hex_color(get_theme_mod('prt_color_action', '#6C4CF1')) ?: '#6C4CF1';
 
     echo '<style>';
     echo 'body.login{background:' . esc_attr($bg) . ';}';

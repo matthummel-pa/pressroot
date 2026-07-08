@@ -66,8 +66,8 @@ add_action('init', function () {
         foreach ($btns as $b) {
             $base = 'text-decoration:none; padding:15px 28px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);';
             $row .= ! empty($b['outline'])
-                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #1B1830; color:#1B1830;">' . esc_html($b['text']) . '</a>'
-                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#1B1830; color:#fff;">' . esc_html($b['text']) . '</a>';
+                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #ECE6FB; color:#6C4CF1;">' . esc_html($b['text']) . '</a>'
+                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">' . esc_html($b['text']) . '</a>';
         }
         return "<!-- wp:html -->\n" . $row . '</div>' . "\n<!-- /wp:html -->";
     };
@@ -89,8 +89,8 @@ add_action('init', function () {
     $faq = function (array $items) use ($wrap): string {
         $html = '<div style="max-width:840px; margin:0 auto;">';
         foreach ($items as $it) {
-            $html .= '<details style="background:#fff; border:1.5px solid #ECE4F8; border-radius:18px; padding:22px 24px; margin-bottom:14px;">'
-                . '<summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:18px; color:#1B1830;">' . esc_html($it[0]) . '</summary>'
+            $html .= '<details style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:22px 24px; margin-bottom:14px;">'
+                . '<summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:18px; color:#17151F;">' . esc_html($it[0]) . '</summary>'
                 . '<p style="font-size:15.5px; color:#5A5676; line-height:1.6; margin:14px 0 0;">' . esc_html($it[1]) . '</p>'
                 . '</details>';
         }
@@ -107,11 +107,11 @@ add_action('init', function () {
     // Gradient-blob accent, lifted from home-patterns.php's hero pattern —
     // reused here (as a wp:html section wrapper) to give the agency pages the
     // same soft, animated color-wash backdrop as the homepage hero.
-    $blobSection = function (string $innerHtml, string $bg = '#FFFDF7'): string {
+    $blobSection = function (string $innerHtml, string $bg = '#FFF9F5'): string {
         return "<!-- wp:html -->\n"
             . '<section style="position:relative; overflow:hidden; padding:64px 32px 24px; background:' . $bg . ';">'
-            . '<div style="position:absolute; top:-60px; left:-40px; width:340px; height:340px; background:radial-gradient(circle at 30% 30%,#7C5CFF,#38BDF8); filter:blur(10px); opacity:.28; animation:prt-drift 16s ease-in-out infinite;"></div>'
-            . '<div style="position:absolute; bottom:-80px; right:60px; width:300px; height:300px; background:radial-gradient(circle at 60% 40%,#FF7A1A,#FF5DA2); filter:blur(14px); opacity:.24; animation:prt-drift 20s ease-in-out infinite reverse;"></div>'
+            . '<div style="position:absolute; top:-60px; left:-40px; width:340px; height:340px; background:radial-gradient(circle at 30% 30%,#6C4CF1,#22CFEE); filter:blur(10px); opacity:.28; animation:prt-drift 16s ease-in-out infinite;"></div>'
+            . '<div style="position:absolute; bottom:-80px; right:60px; width:300px; height:300px; background:radial-gradient(circle at 60% 40%,#FF7A3D,#FF4D9D); filter:blur(14px); opacity:.24; animation:prt-drift 20s ease-in-out infinite reverse;"></div>'
             . '<div class="prt-wrap" style="position:relative; padding-left:0; padding-right:0; max-width:1240px; margin:0 auto;">'
             . $innerHtml
             . '</div></section>'
@@ -131,10 +131,10 @@ add_action('init', function () {
     ]);
     $svcProcessA = '';
     foreach ([
-        ['01', '#7C5CFF', '#fff', 'Discovery & Audit', 'We assess your current site, brand, and funnel to find the highest-leverage opportunities before writing a single line of a proposal.'],
-        ['02', '#FF7A1A', '#1B1830', 'Strategy & Scope', 'A written plan with milestones, deliverables, and a fixed or retainer price — signed off before work begins.'],
-        ['03', '#38BDF8', '#06283a', 'Design & Build', 'Weekly progress reviews with your stakeholders so there are no surprises at delivery.'],
-        ['04', '#C2F23D', '#1B1830', 'Launch & Grow', 'A structured handoff plus an optional growth retainer to keep improving results after go-live.'],
+        ['01', '#6C4CF1', '#fff', 'Discovery & Audit', 'We assess your current site, brand, and funnel to find the highest-leverage opportunities before writing a single line of a proposal.'],
+        ['02', '#FF7A3D', '#17151F', 'Strategy & Scope', 'A written plan with milestones, deliverables, and a fixed or retainer price — signed off before work begins.'],
+        ['03', '#22CFEE', '#06283a', 'Design & Build', 'Weekly progress reviews with your stakeholders so there are no surprises at delivery.'],
+        ['04', '#37E29A', '#17151F', 'Launch & Grow', 'A structured handoff plus an optional growth retainer to keep improving results after go-live.'],
     ] as $s) {
         $svcProcessA .= '<div class="prt-lift" style="background:' . $s[1] . '; color:' . $s[2] . '; border-radius:22px; padding:28px;">'
             . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.8; margin-bottom:14px;">PHASE ' . $s[0] . '</div>'
@@ -164,25 +164,25 @@ add_action('init', function () {
      * SERVICES — Variant B: asymmetric bento layout, punchier tone.
      * ═══════════════════════════════════════════════════════════════════ */
     $bentoServices = '<div style="display:grid; grid-template-columns:1.5fr 1fr; grid-template-rows:auto auto; gap:20px; margin-top:8px;">'
-        . '<div class="prt-lift" style="grid-row:span 2; background:#1B1830; color:#fff; border-radius:26px; padding:36px; display:flex; flex-direction:column; justify-content:space-between;">'
-        . '<div><div style="font-family:var(--font-mono); font-size:12px; color:#C2F23D; margin-bottom:14px;">FLAGSHIP SERVICE</div>'
+        . '<div class="prt-lift" style="grid-row:span 2; background:#17151F; color:#fff; border-radius:26px; padding:36px; display:flex; flex-direction:column; justify-content:space-between;">'
+        . '<div><div style="font-family:var(--font-mono); font-size:12px; color:#37E29A; margin-bottom:14px;">FLAGSHIP SERVICE</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:clamp(24px,3vw,30px); margin:0 0 14px; line-height:1.1;">Web Design &amp; Development</h3>'
         . '<p style="font-size:16px; line-height:1.6; opacity:.9; margin:0;">Custom sites and web apps designed and engineered in-house — no templates, no outsourced dev. From first wireframe to a fast, accessible, easy-to-edit build.</p></div>'
-        . '<div style="margin-top:24px; font-family:var(--font-display); font-weight:700; font-size:14px; color:#38BDF8;">→ Most requested service</div></div>'
-        . '<div class="prt-lift" style="background:#EFE9FF; border-radius:26px; padding:28px;">'
-        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#1B1830;">Brand &amp; Digital Strategy</h3>'
+        . '<div style="margin-top:24px; font-family:var(--font-display); font-weight:700; font-size:14px; color:#22CFEE;">→ Most requested service</div></div>'
+        . '<div class="prt-lift" style="background:#EEE8FE; border-radius:26px; padding:28px;">'
+        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#17151F;">Brand &amp; Digital Strategy</h3>'
         . '<p style="font-size:14.5px; line-height:1.55; margin:0; color:#4A4660;">Identity systems and positioning that make every future marketing dollar work harder.</p></div>'
-        . '<div class="prt-lift" style="background:#fff; border:1.5px solid #ECE4F8; border-radius:26px; padding:28px;">'
-        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#1B1830;">Marketing, Growth &amp; SEO</h3>'
+        . '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:26px; padding:28px;">'
+        . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:19px; margin:0 0 8px; color:#17151F;">Marketing, Growth &amp; SEO</h3>'
         . '<p style="font-size:14.5px; line-height:1.55; margin:0; color:#4A4660;">Technical SEO and growth programs that compound — built to outlast any single campaign.</p></div>'
-        . '<div class="prt-lift" style="grid-column:span 2; background:#FF7A1A; color:#1B1830; border-radius:26px; padding:28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">'
+        . '<div class="prt-lift" style="grid-column:span 2; background:#FF7A3D; color:#17151F; border-radius:26px; padding:28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">'
         . '<div><h3 style="font-family:var(--font-display); font-weight:800; font-size:20px; margin:0 0 6px;">Ongoing Support &amp; Maintenance</h3>'
         . '<p style="font-size:14.5px; margin:0; opacity:.85;">Security, uptime, and performance — handled, so you never think about it.</p></div>'
-        . '<span style="font-family:var(--font-display); font-weight:800; font-size:13px; background:#1B1830; color:#fff; padding:10px 18px; border-radius:999px; white-space:nowrap;">Included on every retainer</span></div>'
+        . '<span style="font-family:var(--font-display); font-weight:800; font-size:13px; background:#17151F; color:#fff; padding:10px 18px; border-radius:999px; white-space:nowrap;">Included on every retainer</span></div>'
         . '</div>';
     $servicesB  = $blobSection(
         $eyebrow('Services')
-        . '<h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,5vw,60px); line-height:1.05; margin:0 0 20px; color:#1B1830;">Everything your brand needs online. Nothing it doesn&#8217;t.</h1>'
+        . '<h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,5vw,60px); line-height:1.05; margin:0 0 20px; color:#17151F;">Everything your brand needs online. Nothing it doesn&#8217;t.</h1>'
         . '<p style="font-family:var(--font-display); font-size:clamp(17px,2vw,22px); line-height:1.5; max-width:38em; color:#4A4660; margin:0 0 30px;">We&#8217;re a small studio that punches way above its size — design, dev, strategy, and growth under one roof, so nothing gets lost between vendors.</p>'
         . $buttons([['text' => "Let's scope it", 'url' => '/contact/'], ['text' => 'See pricing', 'url' => '/pricing/', 'outline' => true]])
     );
@@ -205,14 +205,14 @@ add_action('init', function () {
     ] as $t) {
         [$name, $price, $sub, $desc, $feats, $featured] = $t;
         $cardStyle = $featured
-            ? 'background:#7C5CFF; color:#fff; box-shadow:0 24px 50px rgba(124,92,255,.32);'
-            : 'background:#fff; color:#1B1830; border:1.5px solid #ECE4F8;';
+            ? 'background:#6C4CF1; color:#fff; box-shadow:0 24px 50px rgba(124,92,255,.32);'
+            : 'background:#fff; color:#17151F; border:1.5px solid #ECE6FB;';
         $featList = '';
         foreach ($feats as $f) {
             $featList .= '<span style="display:block; margin-bottom:10px;">✓ ' . $f . '</span>';
         }
         $tiersA .= '<div class="prt-lift" style="' . $cardStyle . ' border-radius:26px; padding:36px; position:relative;">'
-            . ($featured ? '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#C2F23D; color:#1B1830; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800;">MOST POPULAR</span>' : '')
+            . ($featured ? '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#37E29A; color:#17151F; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800;">MOST POPULAR</span>' : '')
             . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:22px; margin:0 0 6px;">' . $name . '</h3>'
             . '<p style="font-size:14.5px; opacity:.8; margin:0 0 18px;">' . $desc . '</p>'
             . '<div style="font-family:var(--font-display); font-weight:900; font-size:42px; letter-spacing:-.03em;">' . $price . '</div>'
@@ -241,29 +241,29 @@ add_action('init', function () {
      * PRICING — Variant B: asymmetric bento comparison, punchier tone.
      * ═══════════════════════════════════════════════════════════════════ */
     $bentoPricing = '<div style="display:grid; grid-template-columns:1fr 1.3fr 1fr; gap:20px; margin-top:8px; align-items:stretch;">'
-        . '<div class="prt-lift" style="background:#fff; border:1.5px solid #ECE4F8; border-radius:26px; padding:32px; display:flex; flex-direction:column;">'
+        . '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:26px; padding:32px; display:flex; flex-direction:column;">'
         . '<span style="font-family:var(--font-mono); font-size:12px; color:#7C75A8; margin-bottom:10px;">FOR A ONE-OFF</span>'
-        . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:22px; margin:0 0 10px; color:#1B1830;">Project</h3>'
-        . '<div style="font-family:var(--font-display); font-weight:900; font-size:38px; color:#1B1830; letter-spacing:-.03em;">from $6.5k</div>'
+        . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:22px; margin:0 0 10px; color:#17151F;">Project</h3>'
+        . '<div style="font-family:var(--font-display); font-weight:900; font-size:38px; color:#17151F; letter-spacing:-.03em;">from $6.5k</div>'
         . '<p style="font-size:14px; color:#5A5676; margin:10px 0 20px; flex-grow:1;">One clear deliverable — a new site, a rebuild, a campaign microsite — priced and scoped up front.</p>'
         . '<span style="font-size:13px; color:#4A4660;">✓ Fixed scope &amp; timeline<br>✓ 30-day support window</span></div>'
-        . '<div class="prt-lift" style="background:#1B1830; color:#fff; border-radius:26px; padding:36px; display:flex; flex-direction:column; position:relative; box-shadow:0 24px 50px rgba(27,24,48,.28);">'
-        . '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#C2F23D; color:#1B1830; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800;">MOST POPULAR</span>'
-        . '<span style="font-family:var(--font-mono); font-size:12px; color:#38BDF8; margin-bottom:10px;">FOR A GROWING BRAND</span>'
+        . '<div class="prt-lift" style="background:#17151F; color:#fff; border-radius:26px; padding:36px; display:flex; flex-direction:column; position:relative; box-shadow:0 24px 50px rgba(23,21,31,.28);">'
+        . '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#37E29A; color:#17151F; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800;">MOST POPULAR</span>'
+        . '<span style="font-family:var(--font-mono); font-size:12px; color:#22CFEE; margin-bottom:10px;">FOR A GROWING BRAND</span>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:24px; margin:0 0 10px;">Growth Retainer</h3>'
         . '<div style="font-family:var(--font-display); font-weight:900; font-size:44px; letter-spacing:-.03em;">$4.2k<span style="font-size:16px; opacity:.7;">/mo</span></div>'
         . '<p style="font-size:15px; opacity:.9; margin:12px 0 20px; flex-grow:1;">A standing design + dev + growth team, on call — for brands that need to keep shipping, not just launch once.</p>'
         . '<span style="font-size:14px;">✓ Dedicated project lead<br>✓ Monthly sprints + reporting<br>✓ Priority turnaround</span></div>'
-        . '<div class="prt-lift" style="background:#EFE9FF; border-radius:26px; padding:32px; display:flex; flex-direction:column;">'
-        . '<span style="font-family:var(--font-mono); font-size:12px; color:#6A4AE0; margin-bottom:10px;">FOR THE LONG HAUL</span>'
-        . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:22px; margin:0 0 10px; color:#1B1830;">Partner</h3>'
-        . '<div style="font-family:var(--font-display); font-weight:900; font-size:32px; color:#1B1830; letter-spacing:-.03em;">Custom</div>'
+        . '<div class="prt-lift" style="background:#EEE8FE; border-radius:26px; padding:32px; display:flex; flex-direction:column;">'
+        . '<span style="font-family:var(--font-mono); font-size:12px; color:#5A3ED1; margin-bottom:10px;">FOR THE LONG HAUL</span>'
+        . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:22px; margin:0 0 10px; color:#17151F;">Partner</h3>'
+        . '<div style="font-family:var(--font-display); font-weight:900; font-size:32px; color:#17151F; letter-spacing:-.03em;">Custom</div>'
         . '<p style="font-size:14px; color:#4A4660; margin:10px 0 20px; flex-grow:1;">An embedded, cross-functional pod that runs your digital roadmap alongside your team, quarter over quarter.</p>'
         . '<span style="font-size:13px; color:#4A4660;">✓ Dedicated Slack channel<br>✓ Quarterly roadmap review</span></div>'
         . '</div>';
     $pricingB  = $blobSection(
         $eyebrow('Pricing')
-        . '<h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,5vw,60px); line-height:1.05; margin:0 0 20px; color:#1B1830;">Pick your speed. We&#8217;ll match it.</h1>'
+        . '<h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,5vw,60px); line-height:1.05; margin:0 0 20px; color:#17151F;">Pick your speed. We&#8217;ll match it.</h1>'
         . '<p style="font-family:var(--font-display); font-size:clamp(17px,2vw,22px); line-height:1.5; max-width:36em; color:#4A4660; margin:0 0 30px;">One-and-done project, an always-on growth team, or a full embedded partnership — three ways to work with us, zero hourly-rate math.</p>'
         . $buttons([['text' => 'Talk pricing', 'url' => '/contact/']])
     );
@@ -289,9 +289,9 @@ add_action('init', function () {
         ['📋', "We'll send a written scope", 'A clear proposal with deliverables, timeline, and price — usually within 2 business days.'],
         ['🤝', 'We kick off together', 'A kickoff call to align your team and ours, then we get to work.'],
     ] as $c) {
-        $intakeCardsA .= '<div class="prt-lift" style="background:#fff; border:1.5px solid #ECE4F8; border-radius:22px; padding:28px; text-align:left;">'
+        $intakeCardsA .= '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:22px; padding:28px; text-align:left;">'
             . '<div style="font-size:28px; margin-bottom:12px;">' . $c[0] . '</div>'
-            . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px; color:#1B1830;">' . $c[1] . '</h3>'
+            . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:18px; margin:0 0 8px; color:#17151F;">' . $c[1] . '</h3>'
             . '<p style="font-size:14.5px; line-height:1.55; margin:0; color:#5A5676;">' . $c[2] . '</p></div>';
     }
     $contactA  = $hero('Start a project', 'Tell us about your project.',
@@ -309,22 +309,22 @@ add_action('init', function () {
      * CONTACT — Variant B: bento split layout, punchier tone.
      * ═══════════════════════════════════════════════════════════════════ */
     $bentoContact = '<div style="display:grid; grid-template-columns:1.2fr 1fr; gap:20px; margin-top:8px; align-items:start;">'
-        . '<div class="prt-lift" style="background:#1B1830; color:#fff; border-radius:26px; padding:40px;">'
-        . '<div style="font-family:var(--font-mono); font-size:12px; color:#C2F23D; margin-bottom:16px;">PROJECT INTAKE</div>'
+        . '<div class="prt-lift" style="background:#17151F; color:#fff; border-radius:26px; padding:40px;">'
+        . '<div style="font-family:var(--font-mono); font-size:12px; color:#37E29A; margin-bottom:16px;">PROJECT INTAKE</div>'
         . '<h3 style="font-family:var(--font-display); font-weight:800; font-size:26px; margin:0 0 14px;">Give us the messy version.</h3>'
         . '<p style="font-size:16px; line-height:1.6; opacity:.9; margin:0 0 20px;">Half-formed idea, a Figma file, a competitor you admire — send whatever you\'ve got. We turn rough briefs into scoped plans for a living.</p>'
-        . '<span style="display:inline-block; font-family:var(--font-display); font-weight:700; font-size:14px; background:#38BDF8; color:#06283a; padding:8px 16px; border-radius:999px;">Usually replies within 1 business day</span></div>'
+        . '<span style="display:inline-block; font-family:var(--font-display); font-weight:700; font-size:14px; background:#22CFEE; color:#06283a; padding:8px 16px; border-radius:999px;">Usually replies within 1 business day</span></div>'
         . '<div style="display:flex; flex-direction:column; gap:20px;">'
-        . '<div class="prt-lift" style="background:#EFE9FF; border-radius:22px; padding:26px;">'
-        . '<h4 style="font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 8px; color:#1B1830;">📅 Book time directly</h4>'
+        . '<div class="prt-lift" style="background:#EEE8FE; border-radius:22px; padding:26px;">'
+        . '<h4 style="font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 8px; color:#17151F;">📅 Book time directly</h4>'
         . '<p style="font-size:14px; margin:0; color:#4A4660;">Skip the back-and-forth — grab a slot on our calendar for a 20-minute intro call.</p></div>'
-        . '<div class="prt-lift" style="background:#fff; border:1.5px solid #ECE4F8; border-radius:22px; padding:26px;">'
-        . '<h4 style="font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 8px; color:#1B1830;">💼 Working with vendors already?</h4>'
+        . '<div class="prt-lift prt-spec-card" style="background:#fff; border:1.5px solid #ECE6FB; border-radius:22px; padding:26px;">'
+        . '<h4 style="font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 8px; color:#17151F;">💼 Working with vendors already?</h4>'
         . '<p style="font-size:14px; margin:0; color:#4A4660;">We regularly plug into an existing team as the design/dev arm — just say so in your message.</p></div>'
         . '</div></div>';
     $contactB  = $blobSection(
         $eyebrow('Contact')
-        . '<h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,5vw,60px); line-height:1.05; margin:0 0 20px; color:#1B1830;">Let&#8217;s build the thing you keep putting off.</h1>'
+        . '<h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(38px,5vw,60px); line-height:1.05; margin:0 0 20px; color:#17151F;">Let&#8217;s build the thing you keep putting off.</h1>'
         . '<p style="font-family:var(--font-display); font-size:clamp(17px,2vw,22px); line-height:1.5; max-width:36em; color:#4A4660; margin:0 0 30px;">Tell us what you&#8217;re trying to build and why now — we&#8217;ll come back with a real plan, not a form-letter reply.</p>'
     );
     $contactB .= $wrap($bentoContact, '20px', '30px');

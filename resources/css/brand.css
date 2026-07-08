@@ -47,9 +47,10 @@
 /* --- Helper classes the partials reference --- */
 .prt-wrap { max-width:var(--prt-content-width, 1240px); margin:0 auto; padding-left:32px; padding-right:32px; }
 .prt-lift { transition:transform .25s, box-shadow .25s; }
-.prt-lift:hover { transform:translateY(-6px); box-shadow:0 18px 40px rgba(27,24,48,0.14); }
+.prt-lift:hover { transform:translateY(-6px); box-shadow:0 18px 40px rgba(23,21,31,0.14); }
 .prt-gradient-text {
-  background:linear-gradient(100deg,#FF7A1A,#7C5CFF,#38BDF8);
+  /* Repofolio primary gradient (iris -> pink -> coral, docs/BRAND.md) */
+  background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%);
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent; color:transparent;
 }

@@ -59,8 +59,8 @@ add_action('init', function () {
         foreach ($btns as $b) {
             $base = 'text-decoration:none; padding:15px 28px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);';
             $row .= ! empty($b['outline'])
-                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #1B1830; color:#1B1830;">' . esc_html($b['text']) . '</a>'
-                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#1B1830; color:#fff;">' . esc_html($b['text']) . '</a>';
+                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #ECE6FB; color:#6C4CF1;">' . esc_html($b['text']) . '</a>'
+                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">' . esc_html($b['text']) . '</a>';
         }
         return "<!-- wp:html -->\n" . $row . '</div>' . "\n<!-- /wp:html -->";
     };
@@ -77,7 +77,7 @@ add_action('init', function () {
      */
     $topicsA = '<div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px;">';
     foreach (['Design', 'Technology', 'Slow living', 'Craft & making'] as $topic) {
-        $topicsA .= '<span style="display:inline-block; background:#F6F1FF; color:#1B1830; border:1.5px solid #ECE4F8; border-radius:999px; padding:8px 18px; font-family:var(--font-display); font-size:14px; font-weight:600;">' . esc_html($topic) . '</span>';
+        $topicsA .= '<span style="display:inline-block; background:#F3EEFE; color:#17151F; border:1.5px solid #ECE6FB; border-radius:999px; padding:8px 18px; font-family:var(--font-display); font-size:14px; font-weight:600;">' . esc_html($topic) . '</span>';
     }
     $topicsA .= '</div>';
 
@@ -116,7 +116,7 @@ add_action('init', function () {
         . '<!-- wp:quote {"className":"is-style-default"} --><blockquote class="wp-block-quote is-style-default"><!-- wp:paragraph {"style":{"typography":{"fontFamily":"var(--font-serif)","fontSize":"26px","lineHeight":"1.4"}},"fontStyle":"italic"} --><p style="font-family:var(--font-serif);font-size:26px;line-height:1.4;font-style:italic">&#8220;I write about design, technology, and slow living &#8212; not to have all the answers, but to think more clearly in public.&#8221;</p><!-- /wp:paragraph --></blockquote><!-- /wp:quote -->'
         . "</div>\n<!-- /wp:column -->"
         . "<!-- wp:column {\"width\":\"42%\"} -->\n<div class=\"wp-block-column\" style=\"flex-basis:42%\">"
-        . '<div style="background:#FFFDF7; border:1.5px solid #ECE4F8; border-radius:24px; padding:34px;">'
+        . '<div style="background:#FFF9F5; border:1.5px solid #ECE6FB; border-radius:24px; padding:34px;">'
         . $h(3, 'What you&#8217;ll find here', 'large')
         . $findHereB
         . '</div>'
@@ -181,8 +181,8 @@ add_action('init', function () {
         . $p("If you're new: start with whatever post title catches your eye. There's no required reading order here.", 'medium', 'muted')
         . "</div>\n<!-- /wp:column -->"
         . "<!-- wp:column {\"width\":\"45%\"} -->\n<div class=\"wp-block-column\" style=\"flex-basis:45%\">"
-        . '<div style="background:#F6F1FF; border-radius:24px; padding:34px;">'
-        . '<div style="width:100%; aspect-ratio:1/1; border-radius:18px; background:#FFFDF7; border:1.5px dashed #ECE4F8; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:14px; color:#7C75A8; margin-bottom:22px;">[Your photo here]</div>'
+        . '<div style="background:#F3EEFE; border-radius:24px; padding:34px;">'
+        . '<div style="width:100%; aspect-ratio:1/1; border-radius:18px; background:#FFF9F5; border:1.5px dashed #ECE6FB; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:14px; color:#7C75A8; margin-bottom:22px;">[Your photo here]</div>'
         . $h(3, 'The short version', 'large')
         . $factsB
         . '</div>'

@@ -9,32 +9,42 @@
 @source "../**/*.js";
 
 /* ----------------------------------------------------------------------
-   Design tokens — Paper + Space system (purple / orange / lime)
-   Token NAMES kept stable; values updated so all components inherit.
+   Design tokens — Repofolio brand system (docs/BRAND.md in the repofolio
+   repo: "a bright, developer-friendly identity built around the colorful
+   language bar"). Token NAMES kept stable; values remapped to the
+   Repofolio palette so all components inherit:
+     Iris #6C4CF1 (brand) · Pink #FF4D9D · Coral #FF7A3D · Amber #FFC53D ·
+     Lime #37E29A · Cyan #22CFEE · Ink #17151F · Slate #5A5676 · Paper #FFF9F5
    Outfit (display + body) · Instrument Serif (accent) · JetBrains Mono.
 ---------------------------------------------------------------------- */
 @theme {
-  --color-khaki:      #FFFDF7; /* page background (Paper) */
-  --color-paper:      #FFFDF7; /* fixed warm-white — for text ON dark heroes */
-  --color-cream:      #F6F1FF; /* subtle alt surface */
+  --color-khaki:      #FFF9F5; /* page background (Repofolio Paper) */
+  --color-paper:      #FFF9F5; /* fixed warm-white — for text ON dark heroes */
+  --color-cream:      #F3EEFE; /* subtle alt surface (iris-tinted) */
   --color-card:       #FFFFFF; /* card surface */
-  --color-green:      #7C5CFF; /* brand / buttons / links (kept slug; now purple) */
-  --color-green-ink:  #6A4AE0; /* hover */
-  --color-green-tint: #EFE9FF; /* soft fill */
-  --color-ink:        #1B1830; /* headings / darkest text */
+  --color-green:      #6C4CF1; /* brand / buttons / links (kept slug; Repofolio Iris) */
+  --color-green-ink:  #5A3ED1; /* hover (darkened iris) */
+  --color-green-tint: #EEE8FE; /* soft fill */
+  --color-ink:        #17151F; /* headings / darkest text (Repofolio Ink) */
   --color-body:       #4A4660; /* body text */
-  --color-muted:      #5A5676; /* eyebrows / labels / meta */
+  --color-muted:      #5A5676; /* eyebrows / labels / meta (Repofolio Slate) */
   --color-faint:      #7C75A8; /* faint meta / placeholders */
-  --color-heading:    #1B1830; /* display headings */
-  --color-line:       #ECE4F8; /* hairlines / card borders */
-  --color-border:     #ECE4F8;
+  --color-heading:    #17151F; /* display headings */
+  --color-line:       #ECE6FB; /* hairlines / card borders */
+  --color-border:     #ECE6FB;
 
-  /* Accent palette */
-  --color-purple:     #7C5CFF;
-  --color-orange:     #FF7A1A;
-  --color-lime:       #C2F23D;
-  --color-sky:        #38BDF8;
-  --color-pink:       #FF5DA2;
+  /* Accent palette — the Repofolio "language bar" spectrum */
+  --color-purple:     #6C4CF1; /* Iris */
+  --color-violet:     #9B5CF6; /* Violet (primary tint) */
+  --color-orange:     #FF7A3D; /* Coral */
+  --color-amber:      #FFC53D; /* Amber (highlights / stars) */
+  --color-lime:       #37E29A; /* Lime (success / "live") */
+  --color-sky:        #22CFEE; /* Cyan */
+  --color-pink:       #FF4D9D; /* Pink */
+
+  /* Brand gradients (Repofolio docs/BRAND.md) */
+  --gradient-brand:    linear-gradient(135deg, #6C4CF1 0%, #FF4D9D 55%, #FF7A3D 100%);
+  --gradient-spectrum: linear-gradient(90deg, #6C4CF1 0%, #FF4D9D 28%, #FF7A3D 52%, #FFC53D 72%, #37E29A 88%, #22CFEE 100%);
 
   --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-body:    "Outfit", ui-sans-serif, system-ui, sans-serif;
@@ -56,6 +66,14 @@
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+  /* Repofolio docs-site signature: the 8px spectrum "language bar" across
+     the very top of every page (matthummel-pa.github.io/repofolio). */
+  body:not(.wp-admin)::before {
+    content: "";
+    display: block;
+    height: 8px;
+    background: var(--gradient-spectrum);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
@@ -99,20 +117,21 @@
    Components
 ---------------------------------------------------------------------- */
 @layer components {
-  /* Buttons (green #2f6b4e, white text, radius 8px) */
+  /* Buttons — Repofolio docs-site language: gradient primary pill,
+     hairline-lavender ghost secondary. */
   .btn {
     display: inline-flex; align-items: center; gap: .5em;
-    background: var(--color-green); color: #fff;
-    border: 1px solid var(--color-green); border-radius: var(--radius-btn);
+    background: var(--gradient-brand); color: #fff;
+    border: none; border-radius: var(--radius-btn);
     padding: 12px 22px; font: 600 15px/1 var(--font-body);
-    text-decoration: none; transition: background .15s ease, transform .15s ease;
+    text-decoration: none; transition: opacity .15s ease, transform .15s ease;
   }
-  .btn:hover { background: var(--color-green-ink); color: #fff; transform: translateY(-1px); }
+  .btn:hover { background: var(--gradient-brand); opacity: .92; color: #fff; transform: translateY(-1px); }
   .btn-outline {
-    background: var(--color-card); color: var(--color-ink);
-    border: 1px solid var(--color-line);
+    background: var(--color-card); color: var(--color-green);
+    border: 1.5px solid var(--color-line);
   }
-  .btn-outline:hover { background: var(--color-cream); color: var(--color-ink); }
+  .btn-outline:hover { background: #efeafd; color: var(--color-green); border-color: var(--color-green); opacity: 1; }
   .btn-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
 
   /* Display headings (ink, sentence case, centered, bold Space Grotesk) */
@@ -544,13 +563,87 @@ html.prt-dark .prt-theme-toggle .prt-icon-light { display: inline-block; }
 @layer components {
   .prt-callout { background: var(--color-green-tint); border-left: 3px solid var(--color-green); border-radius: 0 10px 10px 0; padding: 16px 20px; }
   .prt-callout p { margin: 0; }
-  .prt-cta-band { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 16px; padding: 40px 28px; }
+  .prt-cta-band { background: var(--color-card); border: 1.5px solid #ece6fb; border-radius: 18px; padding: 40px 28px; position: relative; overflow: hidden; }
+  .prt-cta-band::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: var(--gradient-spectrum); }
   .prt-cta-band h2 { font-family: var(--font-display); color: var(--color-ink); margin: 0 0 .4em; }
   .prt-stat-strip h3 { font-family: var(--font-display); font-weight: 700; font-size: 34px; color: var(--color-ink); margin: 0; letter-spacing: -0.02em; }
   .prt-stat-strip p { color: var(--color-muted); font-size: 14px; margin: 4px 0 0; }
   .prt-faq .wp-block-details { border-bottom: 1px solid var(--color-line); padding: 12px 0; }
   .prt-faq summary { font-family: var(--font-display); font-weight: 600; cursor: pointer; color: var(--color-ink); }
-  .is-style-prt-card { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 14px; padding: 24px; }
+  .is-style-prt-card { background: var(--color-card); border: 1.5px solid #ece6fb; border-radius: 18px; padding: 24px; position: relative; overflow: hidden; }
+  /* Docs-site card language: 5px spectrum bar across the top of cards. */
+  .is-style-prt-card::before,
+  .bento-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: var(--gradient-spectrum);
+  }
+  .bento-card { position: relative; overflow: hidden; border-radius: 18px; border-width: 1.5px; border-color: #ece6fb; }
+  /* Gradient primary / ghost buttons (docs .btn-primary / .btn-ghost) */
+  .prt-btn-grad {
+    display: inline-block;
+    background: var(--gradient-brand);
+    color: #fff;
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .prt-btn-grad:hover { color: #fff; opacity: .92; }
+  .prt-btn-ghost-dark {
+    display: inline-block;
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .prt-btn-ghost-dark:hover { color: #fff; background: rgba(255, 255, 255, .15); }
+  /* Light-ground ghost button (docs card/button language): white pill,
+     hairline lavender border, iris text. */
+  .prt-btn-ghost {
+    display: inline-block;
+    background: #fff;
+    color: var(--color-green);
+    border: 1.5px solid #ece6fb;
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .prt-btn-ghost:hover { color: var(--color-green); border-color: var(--color-green); background: #efeafd; }
+
+  /* Core block buttons everywhere (patterns, seeded pages, editor content):
+     Repofolio gradient primary pill; outline style becomes the light ghost. */
+  .wp-block-button__link,
+  .wp-element-button {
+    background: var(--gradient-brand);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+  .wp-block-button__link:hover,
+  .wp-element-button:hover { color: #fff; opacity: .92; }
+  .is-style-outline .wp-block-button__link,
+  .is-style-outline.wp-block-button .wp-block-button__link {
+    background: #fff;
+    color: var(--color-green);
+    border: 1.5px solid #ece6fb;
+  }
+  .is-style-outline .wp-block-button__link:hover { border-color: var(--color-green); opacity: 1; background: #efeafd; }
+
+  /* Spectrum-top card utility for inline-styled cards in Blade partials —
+     add the class, keep the inline layout styles. */
+  .prt-spec-card { position: relative; overflow: hidden; }
+  .prt-spec-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: var(--gradient-spectrum);
+  }
 }
 
 /* ----------------------------------------------------------------------

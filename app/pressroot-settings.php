@@ -10,8 +10,15 @@
  * instead of scattering settings across the WordPress admin menu:
  *
  *   - Site Types — app/ai-assistant.php     (prt_pressroot_ai_tab_html())
- *   - GitHub     — app/github-settings.php  (prt_github_tab_html())
  *   - Support    — app/support-settings.php (prt_support_tab_html())
+ *
+ * The GitHub tab briefly moved out to the standalone Repofolio plugin
+ * (Settings -> Repofolio) along with the rest of the GitHub subsystem — see
+ * the note in app/setup.php. Repofolio has since been packaged back INTO the
+ * theme as a Theme Addon (app/repofolio-addon.php, classes under
+ * app/Repofolio/), so the GitHub tab is back here:
+ *
+ *   - GitHub     — app/repofolio-addon.php  (prt_repofolio_tab_html())
  *
  * Navigation is a left sidebar with the active section's content on the
  * right (prt_settings_render() below) rather than the top nav-tab-wrapper
@@ -81,6 +88,15 @@ function prt_settings_tab_url(string $tab, array $extra = []): string
 function prt_settings_tabs(): array
 {
     return [
+        'brand' => [
+            'label'    => __('Brand', 'pressroot'),
+            'render'   => __NAMESPACE__ . '\\prt_brand_tab_html',
+            // The questionnaire that steers the Site Types design generator
+            // (app/site-type-remix.php): light/dark + vibe filter which
+            // design kits get dealt, brand color overrides each kit's
+            // accent, and the AI copywriter reads the whole profile.
+            'visible'  => function_exists('App\\prt_brand_tab_html'),
+        ],
         'ai' => [
             'label'    => __('Site Types', 'pressroot'),
             'render'   => __NAMESPACE__ . '\\prt_pressroot_ai_tab_html',
@@ -88,8 +104,15 @@ function prt_settings_tabs(): array
         ],
         'github' => [
             'label'    => __('GitHub', 'pressroot'),
-            'render'   => __NAMESPACE__ . '\\prt_github_tab_html',
-            'visible'  => current_user_can('manage_options'),
+            'render'   => __NAMESPACE__ . '\\prt_repofolio_tab_html',
+            // The GitHub tab is back (it moved out with the Repofolio plugin,
+            // see the old note at the top of this file) — Repofolio now ships
+            // inside the theme as an addon (app/repofolio-addon.php), and its
+            // settings render here. Hidden when the addon is off AND the
+            // standalone plugin isn't picking up the slack; visible in plugin
+            // mode so the tab can point people at the plugin's settings page.
+            'visible'  => function_exists('App\\prt_repofolio_tab_html')
+                && (prt_addon_enabled('repofolio') || defined('REPOFOLIO_VERSION')),
         ],
         'support' => [
             'label'    => __('Support', 'pressroot'),
@@ -115,40 +138,91 @@ add_action('admin_menu', function () {
 });
 
 /**
- * Branded page header shown above every tab: a small Pressroot mark (no
- * image asset needed — a styled initial in the theme's own default brand
- * color, #7C5CFF from the "Paper + Space" Style Kit, see prt_style_kits() in
- * app/settings-io.php) plus name/tagline, and an editable Docs/Support links
- * row (prt_docs_url / prt_support_url theme_mods) so the owner can point
- * both at wherever their real documentation and support channel live —
- * intentionally not hardcoded to a guess for a fork — but the theme's OWN
- * defaults point at its real GitHub repo (the same one docs/index.md and
- * docs/ARCHITECTURE.md already reference for "Report an issue"), since that
- * much is genuinely known and correct out of the box.
+ * Page chrome stylesheet — a straight port of the Repofolio docs site's
+ * design system (https://matthummel-pa.github.io/repofolio/, docs/index.html
+ * in the repofolio repo): spectrum top bar, dark radial hero with gradient
+ * headline + mono eyebrow, pill buttons, spectrum-topped cards. Static CSS
+ * served from the theme (no build step), scoped under .prt-rf.
+ */
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'appearance_page_' . PRT_SETTINGS_SLUG) {
+        return;
+    }
+    wp_enqueue_style(
+        'prt-settings-admin',
+        get_theme_file_uri('resources/css/admin-settings.css'),
+        [],
+        (string) wp_get_theme()->get('Version')
+    );
+});
+
+/**
+ * The Repofolio "repo card" mark, inline (docs site .brand .mark SVG):
+ * a white card with the spectrum language bar. No image asset needed.
+ */
+function prt_settings_mark_svg(): string
+{
+    return '<svg width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+        . '<defs><linearGradient id="prt-rf-s" x1="0" y1="0" x2="1" y2="0">'
+        . '<stop offset="0" stop-color="#6C4CF1"/><stop offset=".28" stop-color="#FF4D9D"/><stop offset=".52" stop-color="#FF7A3D"/>'
+        . '<stop offset=".72" stop-color="#FFC53D"/><stop offset=".88" stop-color="#37E29A"/><stop offset="1" stop-color="#22CFEE"/>'
+        . '</linearGradient></defs>'
+        . '<rect x="60" y="150" width="392" height="212" rx="34" fill="#fff"/>'
+        . '<rect x="96" y="196" width="320" height="22" rx="11" fill="url(#prt-rf-s)"/>'
+        . '<rect x="96" y="244" width="240" height="16" rx="8" fill="#CFC9E6"/>'
+        . '<rect x="96" y="278" width="180" height="16" rx="8" fill="#E4E0F1"/>'
+        . '<circle cx="396" cy="300" r="16" fill="#FFC53D"/>'
+        . '</svg>';
+}
+
+/**
+ * Branded hero shown above every tab — the docs site's header, adapted:
+ * brand row (mark + name + doc links), mono eyebrow, gradient display
+ * headline, lead line, pill CTAs (Docs/Support, editable via the same
+ * prt_docs_url / prt_support_url theme_mods as before) and feature pills.
  */
 function prt_settings_header(): void
 {
     $docsUrl    = get_theme_mod('prt_docs_url', 'https://github.com/matthummel-pa/pressroot#readme');
     $supportUrl = get_theme_mod('prt_support_url', 'https://github.com/matthummel-pa/pressroot/issues');
     ?>
-    <div style="display:flex;align-items:center;gap:14px;margin:18px 0 6px">
-        <span style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:#7C5CFF;color:#fff;font-family:Georgia,serif;font-weight:700;font-size:20px;flex-shrink:0">P</span>
-        <div>
-            <h1 style="margin:0;font-size:22px"><?php esc_html_e('Pressroot', 'pressroot'); ?></h1>
-            <p style="margin:2px 0 0;color:#646970;font-size:13px"><?php esc_html_e('Site types, AI, and integrations — all in one place.', 'pressroot'); ?></p>
+    <div class="prt-rf-hero">
+        <div class="prt-rf-brandrow">
+            <div class="prt-rf-brand">
+                <span class="prt-rf-mark"><?php echo prt_settings_mark_svg(); // phpcs:ignore -- static inline SVG. ?></span>
+                <?php esc_html_e('Pressroot', 'pressroot'); ?>
+            </div>
+            <div class="prt-rf-navlinks">
+                <?php if ($docsUrl !== '') : ?>
+                    <a href="<?php echo esc_url($docsUrl); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Docs', 'pressroot'); ?></a>
+                <?php endif; ?>
+                <?php if ($supportUrl !== '') : ?>
+                    <a href="<?php echo esc_url($supportUrl); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Support', 'pressroot'); ?></a>
+                <?php endif; ?>
+                <a href="https://github.com/matthummel-pa/pressroot" target="_blank" rel="noopener noreferrer"><?php esc_html_e('GitHub', 'pressroot'); ?></a>
+            </div>
         </div>
-    </div>
 
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 20px;font-size:13px">
-        <?php if ($docsUrl !== '') : ?>
-            <a href="<?php echo esc_url($docsUrl); ?>" target="_blank" rel="noopener noreferrer">📘 <?php esc_html_e('Documentation', 'pressroot'); ?></a>
-        <?php endif; ?>
-        <?php if ($supportUrl !== '') : ?>
-            <a href="<?php echo esc_url($supportUrl); ?>" target="_blank" rel="noopener noreferrer">💬 <?php esc_html_e('Support', 'pressroot'); ?></a>
-        <?php endif; ?>
-        <details style="display:inline-block">
-            <summary style="cursor:pointer;color:#646970"><?php esc_html_e('Edit links', 'pressroot'); ?></summary>
-            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="prt-rf-eyebrow"><?php esc_html_e('WordPress theme', 'pressroot'); ?></div>
+        <h1 class="prt-rf-title"><?php esc_html_e('Pressroot', 'pressroot'); ?></h1>
+        <p class="prt-rf-lead"><?php esc_html_e('Site types, AI, and integrations — all in one place.', 'pressroot'); ?></p>
+
+        <div class="prt-rf-cta">
+            <?php if ($docsUrl !== '') : ?>
+                <a class="prt-rf-btn prt-rf-btn-primary" href="<?php echo esc_url($docsUrl); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Documentation', 'pressroot'); ?></a>
+            <?php endif; ?>
+            <?php if ($supportUrl !== '') : ?>
+                <a class="prt-rf-btn prt-rf-btn-ghost" href="<?php echo esc_url($supportUrl); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Get support', 'pressroot'); ?></a>
+            <?php endif; ?>
+        </div>
+
+        <div class="prt-rf-pills">
+            <span class="prt-rf-pill"><?php esc_html_e('Site types', 'pressroot'); ?></span><span class="prt-rf-pill"><?php esc_html_e('Pressroot AI', 'pressroot'); ?></span><span class="prt-rf-pill"><?php esc_html_e('GitHub portfolio', 'pressroot'); ?></span><span class="prt-rf-pill"><?php esc_html_e('Block patterns', 'pressroot'); ?></span>
+        </div>
+
+        <details>
+            <summary><?php esc_html_e('Edit links', 'pressroot'); ?></summary>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="prt_save_meta_links">
                 <?php wp_nonce_field('prt_save_meta_links'); ?>
                 <label class="screen-reader-text" for="prt_docs_url"><?php esc_html_e('Documentation URL', 'pressroot'); ?></label>
@@ -202,12 +276,12 @@ function prt_settings_render(): void
         }
     }
     ?>
-    <div class="wrap">
+    <div class="wrap prt-rf">
         <?php prt_settings_header(); ?>
 
-        <div style="display:flex;gap:28px;align-items:flex-start;margin-top:8px">
-            <nav aria-label="<?php esc_attr_e('Pressroot settings sections', 'pressroot'); ?>" style="width:190px;flex-shrink:0">
-                <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px">
+        <div class="prt-rf-layout">
+            <nav class="prt-rf-nav" aria-label="<?php esc_attr_e('Pressroot settings sections', 'pressroot'); ?>">
+                <ul>
                     <?php foreach ($tabs as $id => $tab) :
                         if (empty($tab['visible'])) {
                             continue;
@@ -215,8 +289,7 @@ function prt_settings_render(): void
                         $isActive = $id === $active;
                     ?>
                         <li>
-                            <a href="<?php echo esc_url(prt_settings_tab_url($id)); ?>"
-                               style="display:block;padding:9px 12px;border-radius:6px;text-decoration:none;font-size:14px;<?php echo $isActive ? 'background:#7C5CFF;color:#fff;font-weight:600' : 'color:#1d2327'; ?>">
+                            <a href="<?php echo esc_url(prt_settings_tab_url($id)); ?>"<?php echo $isActive ? ' class="is-active" aria-current="page"' : ''; ?>>
                                 <?php echo esc_html($tab['label']); ?>
                             </a>
                         </li>
@@ -224,7 +297,7 @@ function prt_settings_render(): void
                 </ul>
             </nav>
 
-            <div style="flex:1;min-width:0;border-left:1px solid #dcdcde;padding-left:28px">
+            <div class="prt-rf-content">
                 <?php
                 if (isset($tabs[$active]) && is_callable($tabs[$active]['render'])) {
                     call_user_func($tabs[$active]['render']);

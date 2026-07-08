@@ -16,7 +16,7 @@
         return el('div', { key: i, style: { border: '1px solid #e2e2e5', borderRadius: 10, overflow: 'hidden', background: '#fff' } },
           a.showImage ? el('div', { style: { height: 100, background: '#f0f0f2' } }) : null,
           el('div', { style: { padding: 14 } },
-            a.showCategory ? el('span', { style: { fontSize: 11, color: '#7C5CFF', fontWeight: 700, display: 'block', marginBottom: 4 } }, 'Category') : null,
+            a.showCategory ? el('span', { style: { fontSize: 11, color: '#6C4CF1', fontWeight: 700, display: 'block', marginBottom: 4 } }, 'Category') : null,
             el('strong', { style: { display: 'block', fontSize: 14, marginBottom: 4 } }, 'Post title'),
             a.showExcerpt ? el('span', { style: { fontSize: 12, color: '#646970' } }, 'Excerpt preview text goes here…') : null,
             a.showDate ? el('span', { style: { display: 'block', fontSize: 11, color: '#8c8f94', marginTop: 6 } }, 'Jan 1, 2026') : null

@@ -212,9 +212,39 @@ add_action('admin_post_prt_save_ai_connectors', function () {
  * Pollinations included, gets identical instructions regardless of which
  * model generates the response.
  */
-function prt_ai_build_hero_prompt(string $description): string
+function prt_ai_build_hero_prompt(string $description, string $siteType = ''): string
 {
+    // Anchor the copy to the applied Site Type category so generated copy
+    // matches the design that was just generated for it, and demand a fresh
+    // angle each run so "Regenerate" produces genuinely new copy — pairing
+    // with the Site Types tool that deals a random new design on every
+    // refresh (see app/ai-assistant.php).
+    $typeLine = '';
+    if ($siteType !== '' && function_exists('App\\prt_site_types')) {
+        $types = prt_site_types();
+        if (isset($types[$siteType]['label'])) {
+            $typeLine = 'This is a "' . $types[$siteType]['label'] . '" website — write in the voice that category expects. ';
+        }
+    }
+    // Fold in the Brand tab's questionnaire answers (app/site-type-remix.php)
+    // so generated copy is anchored to the actual business, not just the
+    // one-line description typed into the generator.
+    $brandLine = '';
+    if (function_exists('App\\prt_brand_profile')) {
+        $brand = prt_brand_profile();
+        if ($brand['name'] !== '') {
+            $brandLine .= 'The business is called "' . $brand['name'] . '". ';
+        }
+        $vibes = ['bold' => 'bold and confident', 'minimal' => 'minimal and sharp', 'warm' => 'warm and inviting', 'playful' => 'playful and bright'];
+        if (isset($vibes[$brand['vibe']])) {
+            $brandLine .= 'Brand personality: ' . $vibes[$brand['vibe']] . '. ';
+        }
+    }
     return 'Write website hero copy for this business: "' . $description . '". '
+        . $typeLine
+        . $brandLine
+        . 'Voice: confident, concise, a little playful — lead with the outcome, no jargon, never overpromise. '
+        . 'Take a completely fresh angle every time you are asked; do not repeat phrasings from earlier runs (variation seed: ' . wp_rand(1000, 9999) . '). '
         . "Respond in exactly this format with no extra commentary:\n"
         . "HEADLINE: <a punchy headline, under 10 words>\n"
         . 'SUBHEAD: <one supporting sentence, under 25 words>';
@@ -320,7 +350,20 @@ add_action('wp_ajax_prt_ai_generate_copy', function () {
         wp_send_json_error(['message' => __('Describe your business first.', 'pressroot')]);
     }
 
-    $prompt = prt_ai_build_hero_prompt($description);
+    // Which site type is live right now? Detected from the starter pages the
+    // Site Types tool tagged, so the prompt stays category-aware without the
+    // browser needing to send anything extra.
+    $activeType = '';
+    if (function_exists('App\\prt_get_site_type_pages')) {
+        foreach (prt_get_site_type_pages() as $sp) {
+            if (! empty($sp->prt_site_type)) {
+                $activeType = (string) $sp->prt_site_type;
+                break;
+            }
+        }
+    }
+
+    $prompt = prt_ai_build_hero_prompt($description, $activeType);
     $result = prt_ai_generate_text($model, $prompt);
 
     if (! $result['ok']) {

@@ -29,6 +29,12 @@ function prt_addon_defaults(): array
 {
     return apply_filters('matthummel/addon_defaults', [
         'pressroot_ai' => true,
+        // Repofolio — the GitHub portfolio subsystem (repo grid block, OAuth
+        // connect, repofolio_project CPT), packaged back into the theme from
+        // the standalone plugin. See app/repofolio-addon.php. Defaults on so
+        // sites that relied on the plugin's features keep them when the
+        // plugin is deactivated in favor of the addon.
+        'repofolio'    => true,
     ]);
 }
 
@@ -61,6 +67,17 @@ add_action('customize_register', function ($wp) {
     $wp->add_control('prt_addon_pressroot_ai_enabled', [
         'label'       => __('Enable Pressroot AI', 'pressroot'),
         'description' => __('The Pressroot AI setup screen, AI Connectors settings, and the block editor\'s "Generate with AI" button.', 'pressroot'),
+        'section'     => 'prt_addons_section',
+        'type'        => 'checkbox',
+    ]);
+
+    $wp->add_setting('prt_addon_repofolio_enabled', [
+        'default'           => prt_addon_defaults()['repofolio'],
+        'sanitize_callback' => 'wp_validate_boolean',
+    ]);
+    $wp->add_control('prt_addon_repofolio_enabled', [
+        'label'       => __('Enable Repofolio (GitHub portfolio)', 'pressroot'),
+        'description' => __('The GitHub repo grid block, "Connect with GitHub" OAuth, project case-study post type, and the GitHub tab on Appearance → Pressroot. Ignored while the standalone Repofolio plugin is active — the plugin takes over. Changes apply after publishing (the addon loads at boot).', 'pressroot'),
         'section'     => 'prt_addons_section',
         'type'        => 'checkbox',
     ]);

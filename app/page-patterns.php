@@ -58,8 +58,8 @@ add_action('init', function () {
         foreach ($btns as $b) {
             $base = 'text-decoration:none; padding:15px 28px; border-radius:999px; font-weight:700; font-size:16px; font-family:var(--font-display);';
             $row .= ! empty($b['outline'])
-                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #1B1830; color:#1B1830;">' . esc_html($b['text']) . '</a>'
-                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#1B1830; color:#fff;">' . esc_html($b['text']) . '</a>';
+                ? '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:#fff; border:1.5px solid #ECE6FB; color:#6C4CF1;">' . esc_html($b['text']) . '</a>'
+                : '<a href="' . esc_url($b['url']) . '" class="prt-lift" style="' . $base . ' background:linear-gradient(135deg,#6C4CF1 0%,#FF4D9D 55%,#FF7A3D 100%); color:#fff;">' . esc_html($b['text']) . '</a>';
         }
         return "<!-- wp:html -->\n" . $row . '</div>' . "\n<!-- /wp:html -->";
     };
@@ -83,8 +83,8 @@ add_action('init', function () {
     $faq = function (array $items) use ($wrap): string {
         $html = '<div style="max-width:840px; margin:0 auto;">';
         foreach ($items as $it) {
-            $html .= '<details style="background:#fff; border:1.5px solid #ECE4F8; border-radius:18px; padding:22px 24px; margin-bottom:14px;">'
-                . '<summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:18px; color:#1B1830;">' . esc_html($it[0]) . '</summary>'
+            $html .= '<details style="background:#fff; border:1.5px solid #ECE6FB; border-radius:18px; padding:22px 24px; margin-bottom:14px;">'
+                . '<summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:18px; color:#17151F;">' . esc_html($it[0]) . '</summary>'
                 . '<p style="font-size:15.5px; color:#5A5676; line-height:1.6; margin:14px 0 0;">' . esc_html($it[1]) . '</p>'
                 . '</details>';
         }
@@ -109,10 +109,10 @@ add_action('init', function () {
     ]);
     $svcProcess = '';
     foreach ([
-        ['01', '#7C5CFF', '#fff', 'Discover', 'A quick call to understand your goals, audience, and constraints.'],
-        ['02', '#FF7A1A', '#1B1830', 'Plan', 'A clear scope, timeline, and fixed price — no surprises.'],
-        ['03', '#38BDF8', '#06283a', 'Build', 'Weekly demos so you see progress and steer as we go.'],
-        ['04', '#C2F23D', '#1B1830', 'Launch', "Smooth handoff, docs, and support so you're never stuck."],
+        ['01', '#6C4CF1', '#fff', 'Discover', 'A quick call to understand your goals, audience, and constraints.'],
+        ['02', '#FF7A3D', '#17151F', 'Plan', 'A clear scope, timeline, and fixed price — no surprises.'],
+        ['03', '#22CFEE', '#06283a', 'Build', 'Weekly demos so you see progress and steer as we go.'],
+        ['04', '#37E29A', '#17151F', 'Launch', "Smooth handoff, docs, and support so you're never stuck."],
     ] as $s) {
         $svcProcess .= '<div style="background:' . $s[1] . '; color:' . $s[2] . '; border-radius:22px; padding:28px;">'
             . '<div style="font-family:var(--font-mono); font-size:12px; opacity:.8; margin-bottom:14px;">STEP ' . $s[0] . '</div>'
@@ -136,14 +136,14 @@ add_action('init', function () {
     ] as $t) {
         [$name, $price, $sub, $desc, $feats, $featured] = $t;
         $cardStyle = $featured
-            ? 'background:#7C5CFF; color:#fff; box-shadow:0 24px 50px rgba(124,92,255,.32);'
-            : 'background:#fff; color:#1B1830; border:1.5px solid #ECE4F8;';
+            ? 'background:#6C4CF1; color:#fff; box-shadow:0 24px 50px rgba(124,92,255,.32);'
+            : 'background:#fff; color:#17151F; border:1.5px solid #ECE6FB;';
         $featList = '';
         foreach ($feats as $f) {
             $featList .= '<span style="display:block; margin-bottom:10px;">✓ ' . $f . '</span>';
         }
         $tiers .= '<div style="' . $cardStyle . ' border-radius:26px; padding:36px; position:relative;">'
-            . ($featured ? '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#C2F23D; color:#1B1830; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800;">MOST POPULAR</span>' : '')
+            . ($featured ? '<span style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:#37E29A; color:#17151F; padding:6px 16px; border-radius:999px; font-size:12px; font-weight:800;">MOST POPULAR</span>' : '')
             . '<h3 style="font-family:var(--font-display); font-weight:700; font-size:22px; margin:0 0 6px;">' . $name . '</h3>'
             . '<p style="font-size:14.5px; opacity:.8; margin:0 0 18px;">' . $desc . '</p>'
             . '<div style="font-family:var(--font-display); font-weight:900; font-size:46px; letter-spacing:-.03em;">' . $price . '</div>'

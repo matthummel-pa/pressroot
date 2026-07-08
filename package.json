@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "vite",
     "lint:js": "eslint resources/js",
+    "lint:php": "vendor/bin/pint --test app",
+    "lint": "npm run lint:js && npm run lint:php",
+    "refresh": "npm run lint && npm run build",
     "wp": "wp-playground-cli server --php=8.3 --port=8881 --workers=4 --login --blueprint=.playground/blueprint.json --mount=.:/wordpress/wp-content/themes/pressroot --mount-before-install=.playground/database:/wordpress/wp-content/database --mount=.playground/uploads:/wordpress/wp-content/uploads --mount=.playground/mu-plugins:/wordpress/wp-content/mu-plugins",
     "build": "vite build",
     "translate": "npm run translate:pot && npm run translate:update",
