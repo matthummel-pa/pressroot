@@ -42,10 +42,15 @@ class Block {
 			true
 		);
 
-		// Expose the feature list + defaults to the editor UI.
+		// Expose the feature list + defaults to the editor UI. Strip the
+		// credential fields first — the editor only needs the display
+		// defaults, and localized data is printed into page source, so the
+		// (encrypted) client secret / manual token must never ride along.
+		$defaults = Settings::get();
+		unset( $defaults['client_id'], $defaults['client_secret'], $defaults['manual_token'] );
 		wp_localize_script( 'repofolio-block-editor', 'REPOFOLIO_BLOCK', array(
 			'features' => repofolio_features(),
-			'defaults' => Settings::get(),
+			'defaults' => $defaults,
 		) );
 
 		register_block_type( self::NAME, array(
