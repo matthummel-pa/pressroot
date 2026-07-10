@@ -124,7 +124,7 @@
       "presets": [
         { "slug": "soft", "name": "Soft", "shadow": "0 6px 20px rgba(23,25,30,.08)" },
         { "slug": "lift", "name": "Lift", "shadow": "0 12px 30px rgba(23,25,30,.12)" },
-        { "slug": "ring", "name": "Ring", "shadow": "0 0 0 1px #e6e2d9" }
+        { "slug": "ring", "name": "Ring", "shadow": "0 0 0 1px #ECE6FB" }
       ]
     },
     "dimensions": { "minHeight": true, "aspectRatio": true },

@@ -55,9 +55,9 @@ add_action('login_enqueue_scripts', function () {
     if ($logo) {
         echo '.login h1 a{background-image:url(' . esc_url($logo) . ');background-size:contain;background-position:center;width:auto;max-width:280px;height:72px;}';
     }
-    echo '.login #backtoblog a,.login #nav a{color:#5c636c;}';
+    echo '.login #backtoblog a,.login #nav a{color:#5A5676;}';
     echo '.wp-core-ui .button-primary{background:' . esc_attr($green) . ';border-color:' . esc_attr($green) . ';}';
-    echo '.login form{border-radius:14px;border:1px solid #e6e2d9;}';
+    echo '.login form{border-radius:14px;border:1px solid #ECE6FB;}';
     echo '.login input[type=text]:focus,.login input[type=password]:focus{border-color:' . esc_attr($green) . ';box-shadow:0 0 0 1px ' . esc_attr($green) . ';}';
     echo '</style>';
 });

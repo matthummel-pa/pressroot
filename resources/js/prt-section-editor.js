@@ -50,12 +50,12 @@
 
   /* ── CSS-var map for editor live preview ─────────────────────────── */
   var BG_VAR = {
-    paper: 'var(--color-paper,#fbfaf7)',
-    cream: 'var(--color-cream,#f0ede6)',
+    paper: 'var(--color-paper,#FFF9F5)',
+    cream: 'var(--color-cream,#F3EEFE)',
     card:  '#ffffff',
-    tint:  'var(--color-green-tint,#eef6f1)',
-    green: 'var(--color-green,#2f6b4e)',
-    ink:   'var(--color-ink,#17191e)',
+    tint:  'var(--color-green-tint,#EEE8FE)',
+    green: 'var(--color-green,#6C4CF1)',
+    ink:   'var(--color-ink,#17151F)',
   };
 
   /* ── Block definition ────────────────────────────────────────────── */
@@ -98,8 +98,8 @@
         wrapStyle.backgroundSize     = 'cover';
         wrapStyle.backgroundPosition = 'center';
       }
-      if (a.textColor === 'light') wrapStyle.color = 'var(--color-paper,#fbfaf7)';
-      if (a.textColor === 'dark')  wrapStyle.color = 'var(--color-ink,#17191e)';
+      if (a.textColor === 'light') wrapStyle.color = 'var(--color-paper,#FFF9F5)';
+      if (a.textColor === 'dark')  wrapStyle.color = 'var(--color-ink,#17151F)';
 
       var pt = a.paddingTop  !== 'none' ? ({ none: 0, sm: 24, md: 48, lg: 72, xl: 96 }[a.paddingTop]  || 48) + 'px' : '0';
       var pb = a.paddingBottom !== 'none' ? ({ none: 0, sm: 24, md: 48, lg: 72, xl: 96 }[a.paddingBottom] || 48) + 'px' : '0';

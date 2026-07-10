@@ -38,12 +38,12 @@
 .prt-section--width-full      .prt-section-inner { padding-inline: clamp(16px, 4vw, 32px); }
 
 /* Background colours */
-.prt-section--bg-paper { background-color: var(--color-paper, #fbfaf7); }
-.prt-section--bg-cream { background-color: var(--color-cream, #f0ede6); }
+.prt-section--bg-paper { background-color: var(--color-paper, #FFF9F5); }
+.prt-section--bg-cream { background-color: var(--color-cream, #F3EEFE); }
 .prt-section--bg-card  { background-color: var(--color-card, #ffffff); }
-.prt-section--bg-tint  { background-color: var(--color-green-tint, #eef6f1); }
-.prt-section--bg-green { background-color: var(--color-green, #2f6b4e); }
-.prt-section--bg-ink   { background-color: var(--color-ink, #17191e); }
+.prt-section--bg-tint  { background-color: var(--color-green-tint, #EEE8FE); }
+.prt-section--bg-green { background-color: var(--color-green, #6C4CF1); }
+.prt-section--bg-ink   { background-color: var(--color-ink, #17151F); }
 
 /* Text colour overrides */
 .prt-section--text-light,
@@ -53,17 +53,17 @@
 .prt-section--text-light h4,
 .prt-section--text-light h5,
 .prt-section--text-light h6,
-.prt-section--text-light p { color: var(--color-paper, #fbfaf7); }
+.prt-section--text-light p { color: var(--color-paper, #FFF9F5); }
 
 .prt-section--text-dark,
 .prt-section--text-dark h1,
 .prt-section--text-dark h2,
-.prt-section--text-dark h3 { color: var(--color-ink, #17191e); }
+.prt-section--text-dark h3 { color: var(--color-ink, #17151F); }
 
 /* Horizontal rule above */
 .rule {
   border: none;
-  border-top: 1px solid var(--color-line, #e6e2d9);
+  border-top: 1px solid var(--color-line, #ECE6FB);
   margin: 0;
 }
 
@@ -94,12 +94,12 @@
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
   line-height: 1;
-  color: var(--color-green, #2f6b4e);
+  color: var(--color-green, #6C4CF1);
 }
 
 .stat-label {
   font-size: .85rem;
-  color: var(--color-muted, #6b6860);
+  color: var(--color-muted, #5A5676);
   text-transform: uppercase;
   letter-spacing: .06em;
 }
@@ -113,7 +113,7 @@
 
 .skill-card {
   background: var(--color-card, #fff);
-  border: 1px solid var(--color-line, #e6e2d9);
+  border: 1px solid var(--color-line, #ECE6FB);
   border-radius: 10px;
   padding: clamp(20px, 3vw, 32px);
   transition: box-shadow .2s ease, transform .2s ease;
@@ -136,12 +136,12 @@
   font-size: 1.05rem;
   font-weight: 600;
   margin: 0 0 8px;
-  color: var(--color-ink, #17191e);
+  color: var(--color-ink, #17151F);
 }
 
 .skill-desc {
   font-size: .875rem;
-  color: var(--color-muted, #6b6860);
+  color: var(--color-muted, #5A5676);
   line-height: 1.6;
   margin: 0;
 }
@@ -149,8 +149,8 @@
 /* ── prt/timeline ─────────────────────────────────────────────────────────── */
 
 .prt-timeline {
-  --line-color: var(--color-line, #e6e2d9);
-  --dot-color: var(--color-green, #2f6b4e);
+  --line-color: var(--color-line, #ECE6FB);
+  --dot-color: var(--color-green, #6C4CF1);
   position: relative;
   padding-left: clamp(32px, 5vw, 56px);
 }
@@ -182,7 +182,7 @@
   height: 12px;
   background: var(--dot-color);
   border-radius: 50%;
-  border: 2px solid var(--color-paper, #fbfaf7);
+  border: 2px solid var(--color-paper, #FFF9F5);
   box-shadow: 0 0 0 2px var(--dot-color);
 }
 
@@ -191,7 +191,7 @@
   font-weight: 600;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--color-green, #2f6b4e);
+  color: var(--color-green, #6C4CF1);
   margin: 0 0 4px;
 }
 
@@ -199,20 +199,20 @@
   font-family: var(--font-display, sans-serif);
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--color-ink, #17191e);
+  color: var(--color-ink, #17151F);
   margin: 0 0 2px;
 }
 
 .timeline-company {
   font-size: .85rem;
-  color: var(--color-muted, #6b6860);
+  color: var(--color-muted, #5A5676);
   margin: 0 0 8px;
 }
 
 .timeline-desc {
   font-size: .9rem;
   line-height: 1.65;
-  color: var(--color-body, #3a3832);
+  color: var(--color-body, #4A4660);
   margin: 0;
 }
 
@@ -225,7 +225,7 @@
 
 .resource-group {
   background: var(--color-card, #fff);
-  border: 1px solid var(--color-line, #e6e2d9);
+  border: 1px solid var(--color-line, #ECE6FB);
   border-radius: 10px;
   padding: clamp(20px, 3vw, 28px);
 }
@@ -234,10 +234,10 @@
   font-family: var(--font-display, sans-serif);
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-ink, #17191e);
+  color: var(--color-ink, #17151F);
   margin: 0 0 12px;
   padding-bottom: 10px;
-  border-bottom: 2px solid var(--color-green, #2f6b4e);
+  border-bottom: 2px solid var(--color-green, #6C4CF1);
 }
 
 .resource-list {
@@ -250,7 +250,7 @@
 }
 
 .resource-list li a {
-  color: var(--color-green, #2f6b4e);
+  color: var(--color-green, #6C4CF1);
   text-decoration: none;
   font-size: .9rem;
   display: flex;
@@ -269,8 +269,8 @@
 /* ── prt/cta-band ─────────────────────────────────────────────────────────── */
 
 .prt-cta-band {
-  background: var(--color-ink, #17191e);
-  color: var(--color-paper, #fbfaf7);
+  background: var(--color-ink, #17151F);
+  color: var(--color-paper, #FFF9F5);
   padding: clamp(40px, 6vw, 72px) clamp(16px, 4vw, 32px);
   text-align: center;
 }
@@ -289,7 +289,7 @@
   font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: 700;
   margin: 0;
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
 }
 
 .cta-band-sub {
@@ -311,7 +311,7 @@
 .prt-project-card-wrap { }
 
 .project-card {
-  border: 1px solid var(--color-line, #e6e2d9);
+  border: 1px solid var(--color-line, #ECE6FB);
   border-radius: 10px;
   overflow: hidden;
   background: var(--color-card, #fff);
@@ -346,12 +346,12 @@
   font-size: 1.05rem;
   font-weight: 700;
   margin: 0;
-  color: var(--color-ink, #17191e);
+  color: var(--color-ink, #17151F);
 }
 
 .project-card-desc {
   font-size: .875rem;
-  color: var(--color-muted, #6b6860);
+  color: var(--color-muted, #5A5676);
   line-height: 1.6;
   margin: 0;
   flex: 1;
@@ -370,8 +370,8 @@
   text-transform: uppercase;
   letter-spacing: .05em;
   padding: 3px 9px;
-  background: var(--color-tint, #eef6f1);
-  color: var(--color-green, #2f6b4e);
+  background: var(--color-tint, #EEE8FE);
+  color: var(--color-green, #6C4CF1);
   border-radius: 999px;
 }
 
@@ -381,7 +381,7 @@
   gap: 6px;
   font-size: .85rem;
   font-weight: 600;
-  color: var(--color-green, #2f6b4e);
+  color: var(--color-green, #6C4CF1);
   text-decoration: none;
   margin-top: 8px;
 }
@@ -401,7 +401,7 @@
 .prt-project-card-wrap a:focus-visible,
 .project-card-link:focus-visible,
 .resource-list a:focus-visible {
-  outline: 2px solid var(--color-green, #2f6b4e);
+  outline: 2px solid var(--color-green, #6C4CF1);
   outline-offset: 3px;
   border-radius: 3px;
   text-decoration: none;

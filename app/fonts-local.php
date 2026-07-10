@@ -96,7 +96,7 @@ function prt_fonts_page()
                 <th><?php esc_html_e('Status', 'pressroot'); ?></th>
                 <td>
                     <?php if ($built) : ?>
-                        <span class="dashicons dashicons-yes-alt" style="color:#2f6b4e"></span>
+                        <span class="dashicons dashicons-yes-alt" style="color:#6C4CF1"></span>
                         <?php printf(esc_html__('%d font files cached, last built %s ago.', 'pressroot'), $count, esc_html(human_time_diff($built))); ?>
                     <?php else : ?>
                         <em><?php esc_html_e('No local fonts yet.', 'pressroot'); ?></em>

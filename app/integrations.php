@@ -180,7 +180,7 @@ add_action('wp_footer', function () {
     $ltxt = esc_html(get_theme_mod('prt_cookie_ltext', ''));
     $link = ($lurl && $ltxt) ? ' <a href="' . $lurl . '">' . $ltxt . '</a>' : '';
     echo '<div class="prt-cookie" role="dialog" aria-label="' . esc_attr__('Cookie notice', 'pressroot') . '"><p>' . $text . $link . '</p><button class="btn prt-cookie-ok">' . $btn . '</button></div>';
-    echo '<style>.prt-cookie{position:fixed;left:16px;right:16px;bottom:16px;max-width:560px;margin:0 auto;background:var(--color-ink,#17191e);color:#fff;padding:14px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;justify-content:space-between;z-index:95;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:14px;}.prt-cookie p{margin:0;}.prt-cookie a{color:#fff;text-decoration:underline;}.prt-cookie.is-hidden{display:none;}</style>';
+    echo '<style>.prt-cookie{position:fixed;left:16px;right:16px;bottom:16px;max-width:560px;margin:0 auto;background:var(--color-ink,#17151F);color:#fff;padding:14px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;justify-content:space-between;z-index:95;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:14px;}.prt-cookie p{margin:0;}.prt-cookie a{color:#fff;text-decoration:underline;}.prt-cookie.is-hidden{display:none;}</style>';
     echo "<script>(function(){var b=document.querySelector('.prt-cookie');if(!b)return;var k='prt-cookie-ok';try{if(localStorage.getItem(k)==='1'){b.classList.add('is-hidden');return;}}catch(e){}var ok=b.querySelector('.prt-cookie-ok');if(ok)ok.addEventListener('click',function(){b.classList.add('is-hidden');try{localStorage.setItem(k,'1');}catch(e){}});})();</script>";
 }, 60);
 
@@ -188,5 +188,5 @@ add_action('wp_footer', function () {
 // prt_head_end (priority 19, earlier than the custom-CSS block's 99) so an
 // admin's Custom CSS can still override these defaults.
 add_action('prt_head_end', function () {
-    echo "\n<style id=\"prt-news-css\">.prt-news{max-width:460px;}.prt-news-h{margin:0 0 10px;}.prt-news-form{display:flex;gap:8px;flex-wrap:wrap;}.prt-news-form input[type=email]{flex:1 1 200px;padding:11px 14px;border:1px solid var(--color-line,#e6e2d9);border-radius:8px;font:inherit;}.prt-news-note{font-size:12px;color:var(--color-muted,#5c636c);margin:8px 0 0;}</style>\n";
+    echo "\n<style id=\"prt-news-css\">.prt-news{max-width:460px;}.prt-news-h{margin:0 0 10px;}.prt-news-form{display:flex;gap:8px;flex-wrap:wrap;}.prt-news-form input[type=email]{flex:1 1 200px;padding:11px 14px;border:1px solid var(--color-line,#ECE6FB);border-radius:8px;font:inherit;}.prt-news-note{font-size:12px;color:var(--color-muted,#5A5676);margin:8px 0 0;}</style>\n";
 }, 19);

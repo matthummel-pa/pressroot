@@ -184,9 +184,9 @@ add_action('enqueue_block_editor_assets', function () {
 [data-type^="prt/bar-"] .social.is-icons a{padding:0;}
 [data-type^="prt/bar-"] .nav{display:flex;flex-wrap:wrap;align-items:center;gap:16px;list-style:none;margin:0;padding:0;font-size:14px;}
 [data-type^="prt/bar-"] .nav li{list-style:none;margin:0;}
-[data-type^="prt/bar-"] .nav a{text-decoration:none;color:#17191e;}
+[data-type^="prt/bar-"] .nav a{text-decoration:none;color:#17151F;}
 [data-type^="prt/bar-"] .header-cta,[data-type^="prt/bar-"] .btn{display:inline-block;font-size:13px;padding:8px 16px;border-radius:6px;background:#1f6f43;color:#fff;text-decoration:none;}
-[data-type^="prt/bar-"] .brand-name{font-weight:600;text-decoration:none;color:#17191e;}
+[data-type^="prt/bar-"] .brand-name{font-weight:600;text-decoration:none;color:#17151F;}
 CSS;
     wp_register_style('prt-bar-editor', false, [], '1');
     wp_enqueue_style('prt-bar-editor');

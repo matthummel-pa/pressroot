@@ -147,10 +147,10 @@ function prt_social_block_render($attrs, $content = '')
     $justify = $align === 'center' ? 'center' : ($align === 'right' ? 'flex-end' : 'flex-start');
 
     // Defaults per style.
-    $baseColor = $color ?: ($chip ? '#2f6b4e' : 'var(--color-muted, #5c636c)');
-    $baseBg    = $chip ? ($bg ?: 'var(--color-green-tint, #eaf1ec)') : 'transparent';
-    $hovColor  = $hc ?: ($chip ? '#ffffff' : 'var(--color-green, #2f6b4e)');
-    $hovBg     = $chip ? ($hb ?: 'var(--color-green, #2f6b4e)') : 'transparent';
+    $baseColor = $color ?: ($chip ? '#6C4CF1' : 'var(--color-muted, #5A5676)');
+    $baseBg    = $chip ? ($bg ?: 'var(--color-green-tint, #EEE8FE)') : 'transparent';
+    $hovColor  = $hc ?: ($chip ? '#ffffff' : 'var(--color-green, #6C4CF1)');
+    $hovBg     = $chip ? ($hb ?: 'var(--color-green, #6C4CF1)') : 'transparent';
 
     $uid = 'prt-sl-' . wp_unique_id();
 
@@ -164,7 +164,7 @@ function prt_social_block_render($attrs, $content = '')
         $css .= "#{$uid} .prt-sl-item:hover{color:{$hovColor};background:{$hovBg};transform:translateY(-2px);}";
     } else {
         // brand: per-item color set inline; chip bg/hover shared
-        $css .= "#{$uid} .prt-sl-item{background:" . ($chip ? ($bg ?: 'var(--color-cream, #f4f2ec)') : 'transparent') . ";}";
+        $css .= "#{$uid} .prt-sl-item{background:" . ($chip ? ($bg ?: 'var(--color-cream, #F3EEFE)') : 'transparent') . ";}";
         $css .= "#{$uid} .prt-sl-item:hover{transform:translateY(-2px);" . ($chip ? "filter:brightness(.92);" : "opacity:.8;") . "}";
     }
 

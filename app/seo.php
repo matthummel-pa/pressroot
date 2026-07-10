@@ -291,5 +291,5 @@ add_shortcode('prt_breadcrumbs', function () {
  * the shortcode works even on installs that strip/replace app.css.
  */
 add_action('prt_head_end', function () {
-    echo "\n<style id=\"prt-breadcrumbs\">.prt-breadcrumbs ol{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0 0 14px;padding:0;font-size:13px;color:var(--color-muted,#5c636c);}.prt-breadcrumbs li:not(:last-child)::after{content:'/';margin-left:6px;opacity:.6;}.prt-breadcrumbs a{color:var(--color-muted,#5c636c);text-decoration:none;}.prt-breadcrumbs a:hover{color:var(--color-green,#2f6b4e);}</style>\n";
+    echo "\n<style id=\"prt-breadcrumbs\">.prt-breadcrumbs ol{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0 0 14px;padding:0;font-size:13px;color:var(--color-muted,#5A5676);}.prt-breadcrumbs li:not(:last-child)::after{content:'/';margin-left:6px;opacity:.6;}.prt-breadcrumbs a{color:var(--color-muted,#5A5676);text-decoration:none;}.prt-breadcrumbs a:hover{color:var(--color-green,#6C4CF1);}</style>\n";
 }, 18);

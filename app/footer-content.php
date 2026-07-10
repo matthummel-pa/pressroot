@@ -254,7 +254,7 @@ add_action('customize_register', function ($wp) {
  */
 add_action('prt_head_end', function () {
     $tb = function_exists('App\\prt_topbar') ? prt_topbar() : ['bg' => 'var(--color-ink)', 'text' => '#fff'];
-    $po = function_exists('App\\prt_popout') ? prt_popout() : ['bg' => '#17191e', 'text' => '#fff'];
+    $po = function_exists('App\\prt_popout') ? prt_popout() : ['bg' => '#17151F', 'text' => '#fff'];
     $ft = prt_footer();
     $css = ':root{'
         . '--prt-topbar-bg:' . $tb['bg'] . ';--prt-topbar-text:' . $tb['text'] . ';'

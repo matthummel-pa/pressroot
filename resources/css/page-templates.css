@@ -239,7 +239,7 @@
 .cta-card h2 {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   margin: 0 0 .55em;
   letter-spacing: -0.025em;
 }
@@ -250,13 +250,13 @@
   line-height: 1.7;
 }
 .cta-card .btn {
-  background: var(--color-paper, #fbfaf7);
+  background: var(--color-paper, #FFF9F5);
   color: var(--color-ink);
-  border-color: var(--color-paper, #fbfaf7);
+  border-color: var(--color-paper, #FFF9F5);
 }
 .cta-card .btn:hover {
-  background: var(--color-cream, #f4f2ec);
-  border-color: var(--color-cream, #f4f2ec);
+  background: var(--color-cream, #F3EEFE);
+  border-color: var(--color-cream, #F3EEFE);
   transform: translateY(-2px);
 }
 .cta-card .btn-outline {
@@ -529,12 +529,12 @@ html.prt-dark .site-header { background: rgba(21, 23, 27, 0.92); }
 ====================================================================== */
 .blog-page-header {
   background: var(--color-ink);
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   padding: clamp(56px, 8vw, 96px) 0 clamp(40px, 6vw, 72px);
 }
 .blog-page-header .eyebrow { color: #6fcf97; text-align: left; }
 .blog-index-title {
-  color: var(--color-paper, #fbfaf7) !important;
+  color: var(--color-paper, #FFF9F5) !important;
   margin: 0.25em 0 0.5em;
   font-size: clamp(2rem, 5vw, 3.5rem) !important;
 }
@@ -655,7 +655,7 @@ html.prt-dark .site-header { background: rgba(21, 23, 27, 0.92); }
 .post-hero-title {
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 700;
-  color: var(--color-paper, #fbfaf7); line-height: 1.12;
+  color: var(--color-paper, #FFF9F5); line-height: 1.12;
   letter-spacing: -0.025em; margin: 0 0 24px;
 }
 .post-hero-meta {
@@ -723,7 +723,7 @@ html.prt-dark .prt-toc             { background: var(--color-cream); }
 
 /* ── Project archive hero ─────────────────────────────────────────── */
 .project-page-hero {
-  background: #17191e; color: var(--color-paper);
+  background: #17151F; color: var(--color-paper);
   padding: clamp(64px, 10vw, 112px) 0 clamp(48px, 7vw, 80px);
   position: relative; overflow: hidden;
 }
@@ -746,7 +746,7 @@ html.prt-dark .prt-toc             { background: var(--color-cream); }
 .project-page-hero h1 {
   font-family: var(--font-display); font-weight: 800;
   font-size: clamp(2.75rem, 8vw, 5.5rem); letter-spacing: -0.035em;
-  color: #fbfaf7; line-height: 1.04; margin: 0 0 20px;
+  color: #FFF9F5; line-height: 1.04; margin: 0 0 20px;
 }
 .project-page-hero .lead {
   color: rgba(251,250,247,.65); font-size: clamp(1rem, 2vw, 1.125rem);
@@ -867,7 +867,7 @@ html.prt-dark .prt-toc             { background: var(--color-cream); }
 
 /* ── Single project hero ──────────────────────────────────────────── */
 .project-single-hero {
-  background: #17191e; color: var(--color-paper);
+  background: #17151F; color: var(--color-paper);
   padding: clamp(56px, 9vw, 104px) 0 clamp(48px, 7vw, 80px);
   position: relative; overflow: hidden;
 }
@@ -890,7 +890,7 @@ html.prt-dark .prt-toc             { background: var(--color-cream); }
 .project-single-title {
   font-family: var(--font-display); font-weight: 800;
   font-size: clamp(2.25rem, 6vw, 4.25rem); letter-spacing: -0.03em;
-  color: #fbfaf7; line-height: 1.07; margin: 0 0 20px;
+  color: #FFF9F5; line-height: 1.07; margin: 0 0 20px;
 }
 .project-single-desc {
   font-size: clamp(.95rem, 1.8vw, 1.1rem); color: rgba(251,250,247,.65);
@@ -1004,7 +1004,7 @@ html.prt-dark .project-card-thumb--placeholder { background: linear-gradient(135
 ====================================================================== */
 .page-hero {
   background: var(--color-ink);
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   padding: clamp(72px, 10vw, 128px) 0 clamp(60px, 8vw, 104px);
   position: relative;
   overflow: hidden;
@@ -1063,7 +1063,7 @@ html.prt-dark .project-card-thumb--placeholder { background: linear-gradient(135
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 6vw, 4.2rem);
   font-weight: 700;
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   line-height: 1.06;
   letter-spacing: -0.035em;
   margin: 0 0 20px;
@@ -1112,7 +1112,7 @@ html.prt-dark .project-card-thumb--placeholder { background: linear-gradient(135
    SHARED PAGE SECTIONS
 ====================================================================== */
 .page-section { padding: clamp(52px, 7vw, 88px) 0; }
-.page-section--cream { background: var(--color-cream, #f4f2ec); }
+.page-section--cream { background: var(--color-cream, #F3EEFE); }
 .page-section--border-top { border-top: 1px solid var(--color-line); }
 
 .page-section-eyebrow {
@@ -1163,7 +1163,7 @@ html.prt-dark .project-card-thumb--placeholder { background: linear-gradient(135
   font-family: var(--font-display);
   font-size: clamp(2rem, 4.5vw, 3.4rem);
   font-weight: 700;
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   letter-spacing: -0.03em;
   line-height: 1.08;
   margin: 0.25em 0 0.55em;
@@ -1211,7 +1211,7 @@ html.prt-dark .project-card-thumb--placeholder { background: linear-gradient(135
   font-family: var(--font-display);
   font-size: clamp(1.9rem, 4.2vw, 3.1rem);
   font-weight: 700;
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   letter-spacing: -0.028em;
   line-height: 1.08;
   margin: 0.25em 0 0.5em;
@@ -1381,7 +1381,7 @@ html.prt-dark .project-card-thumb--placeholder { background: linear-gradient(135
   font-family: var(--font-display);
   font-size: clamp(2.2rem, 5vw, 3.6rem);
   font-weight: 700;
-  color: var(--color-paper, #fbfaf7);
+  color: var(--color-paper, #FFF9F5);
   letter-spacing: -0.035em;
   line-height: 1.06;
   margin: 0.25em 0 0.35em;

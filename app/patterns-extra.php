@@ -160,12 +160,12 @@ HTML,
 /** Helper styles for patterns + the prt-card block style. */
 add_action('prt_head_end', function () {
     echo "\n<style id=\"prt-patterns\">"
-        . '.prt-eyebrow{letter-spacing:.12em;font-size:12px;font-weight:600;text-transform:uppercase;color:var(--color-muted,#5c636c);margin-bottom:10px;}'
+        . '.prt-eyebrow{letter-spacing:.12em;font-size:12px;font-weight:600;text-transform:uppercase;color:var(--color-muted,#5A5676);margin-bottom:10px;}'
         . '.prt-hero{padding:48px 0;}.prt-hero h1{margin:.2em 0;}'
         . '.prt-logo-cloud{padding:24px 0;}'
-        . '.is-style-prt-card{background:var(--color-surface,#fff);border:1px solid var(--color-line,#e6e2d9);border-radius:16px;padding:24px;}'
+        . '.is-style-prt-card{background:var(--color-surface,#fff);border:1px solid var(--color-line,#ECE6FB);border-radius:16px;padding:24px;}'
         . '.prt-pricing .wp-block-column,.prt-testimonials .wp-block-column{padding:24px;}'
-        . '.prt-pricing h2{color:var(--color-green,#2f6b4e);}'
+        . '.prt-pricing h2{color:var(--color-green,#6C4CF1);}'
         . '.prt-feature-grid h3{margin-top:0;}'
         . '.wp-block-prt-icon{margin:8px 0;}'
         . "</style>\n";
