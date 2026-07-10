@@ -61,7 +61,14 @@ add_action('admin_post_prt_save_brand_profile', function () {
     }
     set_theme_mod('prt_brand_name', sanitize_text_field(wp_unslash($_POST['prt_brand_name'] ?? '')));
     set_theme_mod('prt_brand_desc', sanitize_text_field(wp_unslash($_POST['prt_brand_desc'] ?? '')));
+    // A native <input type="color"> can never be empty — it always posts a
+    // value (the default iris when the owner hasn't picked a brand color). Treat
+    // that default as "no override" so each dealt kit keeps its OWN accent, as
+    // the field's help text promises; any other color is a deliberate override.
     $color = sanitize_hex_color(wp_unslash($_POST['prt_brand_color'] ?? ''));
+    if ($color !== null && strtolower($color) === '#6c4cf1') {
+        $color = '';
+    }
     set_theme_mod('prt_brand_color', $color ?: '');
     $mode = sanitize_key($_POST['prt_brand_mode'] ?? 'either');
     set_theme_mod('prt_brand_mode', in_array($mode, ['light', 'dark', 'either'], true) ? $mode : 'either');
