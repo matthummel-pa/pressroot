@@ -43,7 +43,7 @@ namespace App;
  */
 function prt_ai_connectors_defs(): array
 {
-    return apply_filters('matthummel/ai_connectors', [
+    return apply_filters('pressroot/ai_connectors', [
         'pollinations' => [
             'label'         => __('Pollinations (default)', 'pressroot'),
             'needs_key'     => false,
@@ -474,7 +474,7 @@ add_action('wp_ajax_prt_ai_generate_copy', function () {
  */
 function prt_ai_image_connectors_defs(): array
 {
-    return apply_filters('matthummel/ai_image_connectors', [
+    return apply_filters('pressroot/ai_image_connectors', [
         'pollinations_img' => [
             'label'         => __('Pollinations Images (default)', 'pressroot'),
             'needs_key'     => false,
@@ -510,7 +510,7 @@ function prt_ai_image_connectors_defs(): array
  */
 function prt_ai_video_connectors_defs(): array
 {
-    return apply_filters('matthummel/ai_video_connectors', [
+    return apply_filters('pressroot/ai_video_connectors', [
         'luma' => [
             'label'         => __('Luma Dream Machine', 'pressroot'),
             'needs_key'     => true,

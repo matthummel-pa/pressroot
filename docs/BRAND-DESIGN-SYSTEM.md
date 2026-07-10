@@ -1,5 +1,11 @@
 # Matt Hummel — Brand & Design System
 
+> **Historical document.** This describes the original matthummel.com identity
+> ("Paper + green", Space Grotesk). Pressroot's **current** design language — the
+> Repofolio iris spectrum the shipped CSS actually renders — is documented in
+> **[DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)** (with preview boards). The content
+> principles below (§1, "say less, mean more") still apply and carried forward.
+
 **North star (Webflow 2026 trend #3 — Minimalism in copy):** *Say less, mean more.*
 When AI makes endless text cheap, brevity is the bold move. Whitespace and bold
 type carry the message. Every word is load-bearing. This is also an accessibility

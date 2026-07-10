@@ -381,26 +381,10 @@ function prt_theme_settings_tab_html(): void
                 <th scope="row"><label for="prt_brand_industry_sel"><?php esc_html_e('Industry', 'pressroot'); ?></label></th>
                 <td>
                     <?php
-                    $industries = apply_filters('matthummel/brand_industries', [
-                        __('Home services (plumbing, HVAC, electrical)', 'pressroot'),
-                        __('Construction & trades', 'pressroot'),
-                        __('Restaurant, café & food', 'pressroot'),
-                        __('Real estate', 'pressroot'),
-                        __('Health & wellness', 'pressroot'),
-                        __('Fitness & coaching', 'pressroot'),
-                        __('Beauty & salon', 'pressroot'),
-                        __('Legal services', 'pressroot'),
-                        __('Finance & insurance', 'pressroot'),
-                        __('E-commerce & retail', 'pressroot'),
-                        __('SaaS & technology', 'pressroot'),
-                        __('Marketing & creative agency', 'pressroot'),
-                        __('Photography & events', 'pressroot'),
-                        __('Education & courses', 'pressroot'),
-                        __('Travel & hospitality', 'pressroot'),
-                        __('Automotive', 'pressroot'),
-                        __('Nonprofit & community', 'pressroot'),
-                        __('Content publishing & affiliate', 'pressroot'),
-                    ]);
+                    // Shared list (same `pressroot/brand_industries` filter) —
+                    // lives in app/setup-wizard.php so the wizard's step 1 and
+                    // this tab can never drift apart.
+                    $industries = prt_brand_industries();
                     $currentIndustry = (string) ($b['industry'] ?? '');
                     $isListed = in_array($currentIndustry, $industries, true);
                     ?>

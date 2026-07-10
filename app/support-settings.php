@@ -38,12 +38,12 @@ function prt_support_repo(): array
  * Doc pages to link to from the Support tab, resolved against the configured
  * repo's `blob/main/...` URLs so the links stay correct for a fork that's
  * repointed "This theme's repository" at its own copy. Filterable
- * (`matthummel/support_doc_links`) for the same reason prt_style_kits() and
+ * (`pressroot/support_doc_links`) for the same reason prt_style_kits() and
  * prt_site_types() are — a fork may add, remove, or rename its own docs.
  */
 function prt_support_doc_links(string $repoUrl): array
 {
-    return apply_filters('matthummel/support_doc_links', [
+    return apply_filters('pressroot/support_doc_links', [
         ['label' => __('Architecture', 'pressroot'), 'file' => 'docs/ARCHITECTURE.md', 'desc' => __('How the theme is put together.', 'pressroot')],
         ['label' => __('Settings reference', 'pressroot'), 'file' => 'docs/THEME-SETTINGS.md', 'desc' => __('Every setting, where to find it, what it does.', 'pressroot')],
         ['label' => __('Development', 'pressroot'), 'file' => 'docs/DEVELOPMENT.md', 'desc' => __('Local environment, build, deploy.', 'pressroot')],

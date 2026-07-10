@@ -62,7 +62,7 @@ add_action('admin_init', function () {
         update_option('show_on_front', 'page');
     }
     if (! get_posts(['post_type' => 'post', 'numberposts' => 1, 'post_status' => 'publish', 'category' => 0])) {
-        $starter = $pattern('matthummel/single-post');
+        $starter = $pattern('pressroot/single-post');
         $samples = [
             ['Shipping a Sage theme on WASM PHP', 'wasm-php-sage', '-3 days'],
             ['Design tokens that survive a rebrand', 'design-tokens-rebrand', '-10 days'],
@@ -96,7 +96,7 @@ add_action('admin_init', function () {
             wp_delete_post($p->ID, true);
         }
     }
-    $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered('matthummel/single-post');
+    $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered('pressroot/single-post');
     $starter = ($reg && ! empty($reg['content'])) ? $reg['content'] : '';
     $samples = [
         ['Shipping a Sage theme on WASM PHP', 'wasm-php-sage', '-3 days'],
@@ -152,7 +152,7 @@ add_action('admin_init', function () {
         return;
     }
     if (($res = get_page_by_path('resources')) && trim($res->post_content) === '') {
-        $p = \WP_Block_Patterns_Registry::get_instance()->get_registered('matthummel/resources');
+        $p = \WP_Block_Patterns_Registry::get_instance()->get_registered('pressroot/resources');
         if ($p && ! empty($p['content'])) {
             wp_update_post(['ID' => $res->ID, 'post_content' => $p['content']]);
         }
@@ -175,7 +175,7 @@ add_action('admin_init', function () {
     if (! current_user_can('edit_theme_options')) {
         return;
     }
-    $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered('matthummel/resources-full');
+    $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered('pressroot/resources-full');
     if (($res = get_page_by_path('resources')) && $reg && ! empty($reg['content']) && trim(wp_strip_all_tags($res->post_content)) === '') {
         wp_update_post(['ID' => $res->ID, 'post_content' => $reg['content']]);
     }
@@ -199,7 +199,7 @@ add_action('admin_init', function () {
     // content on every fresh database reset. 'resources' isn't an Assistant
     // slug, so it's unaffected.
     $map = [
-        'resources' => 'matthummel/resources-full',
+        'resources' => 'pressroot/resources-full',
     ];
     foreach ($map as $slug => $pat) {
         $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered($pat);
@@ -219,8 +219,8 @@ add_action('admin_init', function () {
         return;
     }
     $map = [
-        'now'                    => 'matthummel/now-full',
-        'privacy-policy-preview' => 'matthummel/legal-full',
+        'now'                    => 'pressroot/now-full',
+        'privacy-policy-preview' => 'pressroot/legal-full',
     ];
     foreach ($map as $slug => $pat) {
         $reg = \WP_Block_Patterns_Registry::get_instance()->get_registered($pat);

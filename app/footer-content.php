@@ -101,10 +101,10 @@ add_action('after_setup_theme', function () {
  * the Blade template stays agnostic of where its default copy comes from
  * and other code can override the CTA by hooking the same filters.
  */
-add_filter('matthummel/cta_heading', function ($d) { $v = get_theme_mod('prt_cta_heading', ''); return $v !== '' ? $v : $d; });
-add_filter('matthummel/cta_text', function ($d) { $v = get_theme_mod('prt_cta_body', ''); return $v !== '' ? $v : $d; });
-add_filter('matthummel/cta_label', function ($d) { $v = get_theme_mod('prt_cta_btn_label', ''); return $v !== '' ? $v : $d; });
-add_filter('matthummel/cta_url', function ($d) { $v = get_theme_mod('prt_cta_btn_url', ''); return $v !== '' ? $v : $d; });
+add_filter('pressroot/cta_heading', function ($d) { $v = get_theme_mod('prt_cta_heading', ''); return $v !== '' ? $v : $d; });
+add_filter('pressroot/cta_text', function ($d) { $v = get_theme_mod('prt_cta_body', ''); return $v !== '' ? $v : $d; });
+add_filter('pressroot/cta_label', function ($d) { $v = get_theme_mod('prt_cta_btn_label', ''); return $v !== '' ? $v : $d; });
+add_filter('pressroot/cta_url', function ($d) { $v = get_theme_mod('prt_cta_btn_url', ''); return $v !== '' ? $v : $d; });
 
 /**
  * Register every Customizer control for the Footer Builder (layout, brand

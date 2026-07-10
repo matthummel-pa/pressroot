@@ -7,8 +7,8 @@
  * The Pressroot AI (app/ai-assistant.php) lets a theme owner pick a
  * site type and get starter pages pre-filled with a full-page block pattern.
  * Until now the "marketing" profile reused the same generic, personal-
- * freelancer-voiced patterns from page-patterns.php (matthummel/home-full,
- * matthummel/contact-full) — built for a multi-page brochure site, not a
+ * freelancer-voiced patterns from page-patterns.php (pressroot/home-full,
+ * pressroot/contact-full) — built for a multi-page brochure site, not a
  * single-focus conversion page.
  *
  * This file gives the "Marketing / Landing page" profile its OWN tailored
@@ -29,7 +29,7 @@
  *   prt-site/marketing-contact-a / -b  — lead-capture Contact page
  *
  * ai-assistant.php's prt_site_types() 'marketing' profile can point its
- * 'pattern' keys at these slugs instead of the generic matthummel/* ones;
+ * 'pattern' keys at these slugs instead of the generic pressroot/* ones;
  * this file only registers the patterns, it doesn't wire that mapping.
  */
 

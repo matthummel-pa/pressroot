@@ -8,7 +8,7 @@
  * site type and get starter pages pre-filled with a full-page block pattern.
  * Until now every site type (including "agency") reused the same generic,
  * personal-freelancer-voiced patterns from page-patterns.php
- * (matthummel/services-full, matthummel/pricing-full, matthummel/contact-full).
+ * (pressroot/services-full, pressroot/pricing-full, pressroot/contact-full).
  *
  * This file gives the "Agency / Studio" profile its OWN tailored patterns —
  * written for a multi-person creative/dev agency selling to business
@@ -24,7 +24,7 @@
  *   prt-site/agency-contact-a  / -b  — Contact page
  *
  * ai-assistant.php's prt_site_types() 'agency' profile can point its
- * 'pattern' keys at these slugs instead of the generic matthummel/* ones;
+ * 'pattern' keys at these slugs instead of the generic pressroot/* ones;
  * this file only registers the patterns, it doesn't wire that mapping.
  */
 

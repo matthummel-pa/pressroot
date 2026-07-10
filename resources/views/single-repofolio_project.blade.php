@@ -17,7 +17,7 @@
   if (have_posts()) { the_post(); }
   $pid     = get_the_ID();
   $hasRepofolio = function_exists('Repofolio\\repofolio_repo_profile');
-  $owner   = get_post_meta($pid, '_repofolio_gh_owner', true) ?: apply_filters('matthummel/github_owner', 'matthummel-pa');
+  $owner   = get_post_meta($pid, '_repofolio_gh_owner', true) ?: apply_filters('pressroot/github_owner', 'matthummel-pa');
   $repo    = get_post_meta($pid, '_repofolio_gh_repo', true) ?: get_post_field('post_name');
   $demoUrl = get_post_meta($pid, '_repofolio_url', true);
   $tech    = get_post_meta($pid, '_repofolio_stack', true);

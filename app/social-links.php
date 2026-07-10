@@ -8,7 +8,7 @@
  * registered together in app/menu.php (prt_socials_map(), which now sources
  * its list from prt_social_platforms() below). That duplicate registration
  * is gone; this file now only defines the platform list + the
- * matthummel/social_platforms filter extension point.
+ * pressroot/social_platforms filter extension point.
  */
 
 namespace App;
@@ -18,13 +18,13 @@ namespace App;
  * social network the theme knows about out of the box. This is the single
  * catalog other modules loop over to build Customizer URL settings/controls
  * (app/menu.php) and to render icons (app/icons.php, prt_social_icon()).
- * Wrapped in the `matthummel/social_platforms` filter so a child theme or
+ * Wrapped in the `pressroot/social_platforms` filter so a child theme or
  * plugin can add/remove/reorder platforms without editing this file —
  * important now that this theme is meant to be reused by other developers.
  */
 function prt_social_platforms(): array
 {
-    return apply_filters('matthummel/social_platforms', [
+    return apply_filters('pressroot/social_platforms', [
         'github'    => ['label' => 'GitHub',      'icon' => 'si-github',    'default' => 'https://github.com/matthummel-pa'],
         'linkedin'  => ['label' => 'LinkedIn',    'icon' => 'si-linkedin',  'default' => ''],
         'devto'     => ['label' => 'Dev.to',      'icon' => 'si-devdotto',  'default' => 'https://dev.to/mattbuildsapps'],

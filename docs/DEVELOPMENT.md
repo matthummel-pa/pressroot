@@ -53,6 +53,13 @@ Open http://localhost:8080. Use `npm run dev` (Vite) in the theme for HMR while 
 ```bash
 composer install --no-dev --optimize-autoloader
 npm install && npm run build
+npm run translate:pot   # regenerate resources/lang/pressroot.pot (needs WP-CLI)
 ```
 
 Upload the theme folder **including** `vendor/` and `public/build/` (or run the two build commands on the host). Never deploy `node_modules/`. Tag the release (`git tag -a vX.Y.Z`) and keep `style.css` `Version:` + `CHANGELOG.md` in sync.
+
+For a **distributable zip** (marketplace/buyer artifact), package respecting the root **`.distignore`** — it excludes `node_modules/`, `.git/`, `.playground/`, `docs/` (the marketing site + internal logs), and dev configs, while keeping `vendor/` + `public/build/` in. WP-CLI reads it natively: `wp dist-archive .`. Pre-flight the result against `docs/MARKETPLACE-READINESS.md`'s submission checklist.
+
+## Extending
+
+All public extension points live under the **`pressroot/*`** hook + pattern namespace (renamed from the pre-release `matthummel/*` in July 2026, before any external consumers existed). `app/hooks-registry.php` is the canonical, self-documenting index — add a row there whenever you add an `apply_filters()`/`do_action()`. The settings-tab registry is filterable via `pressroot/settings_tabs`; addons register through `pressroot/addon_defaults` (see `app/theme-addons.php`).

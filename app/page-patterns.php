@@ -125,7 +125,7 @@ add_action('init', function () {
     $services .= $wrap('<!-- wp:heading {"level":2,"className":"screen-reader-text"} --><h2 class="screen-reader-text">What I do</h2><!-- /wp:heading -->', '0px', '0px') . $dyn('skills-grid', ['cards' => $svcSkills, 'columns' => 3]);
     $services .= $wrap($h(2, "How we'll work together", 'x-large') . $cardGrid('4', $svcProcess), '40px', '20px');
     $services .= $dyn('cta-band', ['heading' => 'Have a project in mind?', 'body' => 'Power Platform apps, WordPress builds, and Microsoft 365 solutions — transparent, fixed-price scopes. Let\'s talk.', 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/services-full'] = ['title' => __('Services — Full page', 'pressroot'), 'content' => $services];
+    $patterns['pressroot/services-full'] = ['title' => __('Services — Full page', 'pressroot'), 'content' => $services];
 
     /* ════════════════════════════ PRICING ═════════════════════════════ */
     $tiers = '';
@@ -162,7 +162,7 @@ add_action('init', function () {
         ['Who owns the code?', 'You do — code, content, and accounts are yours from day one. No lock-in, ever.'],
     ]);
     $pricing .= $dyn('cta-band', ['heading' => 'Ready to start?', 'body' => "Tell me about your project and I'll send a clear, fixed-price proposal.", 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/pricing-full'] = ['title' => __('Pricing — Full page', 'pressroot'), 'content' => $pricing];
+    $patterns['pressroot/pricing-full'] = ['title' => __('Pricing — Full page', 'pressroot'), 'content' => $pricing];
 
     /* ════════════════════════════ ABOUT ═══════════════════════════════ */
     $aboutStats = wp_json_encode([
@@ -185,20 +185,20 @@ add_action('init', function () {
     $about .= $wrap($h(2, 'Latest from the blog', 'x-large'), '40px', '8px');
     $about .= $dyn('post-grid', ['postType' => 'post', 'count' => 3, 'columns' => 3, 'showCategory' => true]);
     $about .= $dyn('cta-band', ['heading' => 'Open to select side projects', 'body' => "I take on a small number of freelance and side projects. If you've got something interesting, I'd genuinely like to hear about it.", 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/about-full'] = ['title' => __('About — Full page', 'pressroot'), 'content' => $about];
+    $patterns['pressroot/about-full'] = ['title' => __('About — Full page', 'pressroot'), 'content' => $about];
 
     /* ════════════════════════════ CONTACT ═════════════════════════════ */
     $contact  = $hero('Contact', 'Let&#8217;s build something delightful.',
         'Tell me a little about your project and I&#8217;ll reply within a day. Fixed-price quotes, no surprises. Based in Gettysburg, PA.',
         [['text' => 'Email me', 'url' => '/contact/'], ['text' => 'GitHub', 'url' => 'https://github.com/matthummel-pa', 'outline' => true]]);
     $contact .= $dyn('cta-band', ['heading' => 'Prefer email or social?', 'body' => 'Find me on LinkedIn, GitHub, or Dev.to — or use the form below. I read everything and reply within about a business day.', 'btnText' => 'Connect on LinkedIn →', 'btnUrl' => 'https://www.linkedin.com/in/matt-hummel-pa/', 'variant' => 'light']);
-    $patterns['matthummel/contact-full'] = ['title' => __('Contact — Full page (above form)', 'pressroot'), 'content' => $contact];
+    $patterns['pressroot/contact-full'] = ['title' => __('Contact — Full page (above form)', 'pressroot'), 'content' => $contact];
 
     /* ════════════════════════════ BLOG (index) ════════════════════════ */
     $blog  = $hero('The Blog', 'Latest writing.',
         'WordPress tutorials, Power Platform guides, and dev notes from Gettysburg, PA.');
     $blog .= $dyn('post-grid', ['postType' => 'post', 'count' => 9, 'columns' => 3, 'showCategory' => true, 'showExcerpt' => true, 'showDate' => true]);
-    $patterns['matthummel/blog-full'] = ['title' => __('Blog — Full page', 'pressroot'), 'content' => $blog];
+    $patterns['pressroot/blog-full'] = ['title' => __('Blog — Full page', 'pressroot'), 'content' => $blog];
 
     /* ════════════════════════════ SINGLE POST starter ═════════════════ */
     $post  = $p('Open with a short, punchy intro that tells the reader exactly what they&#8217;ll learn and why it matters.', 'large', 'body');
@@ -209,7 +209,7 @@ add_action('init', function () {
     $post .= '<!-- wp:list --><ul class="wp-block-list"><!-- wp:list-item --><li>Step one — what to do first.</li><!-- /wp:list-item --><!-- wp:list-item --><li>Step two — the part people usually miss.</li><!-- /wp:list-item --><!-- wp:list-item --><li>Step three — how to verify it worked.</li><!-- /wp:list-item --></ul><!-- /wp:list -->';
     $post .= $p('Wrap up with the key takeaway and a clear next step for the reader.', 'medium', 'body');
     $post .= $dyn('cta-band', ['heading' => 'Found this useful?', 'body' => 'I write practical, beginner-friendly web development and Power Platform tutorials. Get in touch if you&#8217;d like to work together.', 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/single-post'] = ['title' => __('Single Post — Starter', 'pressroot'), 'content' => $post];
+    $patterns['pressroot/single-post'] = ['title' => __('Single Post — Starter', 'pressroot'), 'content' => $post];
 
     /* ════════════════════════════ PROJECTS ════════════════════════════ */
     $projects  = $hero('Work', 'Projects &amp; experiments.',
@@ -223,7 +223,7 @@ add_action('init', function () {
     $projects .= $wrap($h(2, 'Selected Work', 'x-large') . $p('Client websites and WordPress builds — designed, built, and shipped end to end.', 'medium', 'muted'), '50px', '8px');
     $projects .= $dyn('post-grid', ['postType' => 'projects', 'term' => 'selected-work', 'count' => 6, 'columns' => 3, 'showExcerpt' => true, 'showDate' => false]);
     $projects .= $dyn('cta-band', ['heading' => 'Have a project in mind?', 'body' => "Power Platform apps, WordPress builds, and Microsoft 365 solutions — let's talk.", 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/projects-full'] = ['title' => __('Projects — Full page', 'pressroot'), 'content' => $projects];
+    $patterns['pressroot/projects-full'] = ['title' => __('Projects — Full page', 'pressroot'), 'content' => $projects];
 
     /* ════════════════════════════ RÉSUMÉ ══════════════════════════════ */
     $timeline = wp_json_encode([
@@ -246,7 +246,7 @@ add_action('init', function () {
     $resume .= $wrap($h(2, 'Skills', 'x-large'), '40px', '0px');
     $resume .= $dyn('skills-grid', ['cards' => $resumeSkills, 'columns' => 3]);
     $resume .= $dyn('cta-band', ['heading' => 'Looking for a developer?', 'body' => "I take on a small number of freelance and side projects. If you've got something interesting, I'd genuinely like to hear about it.", 'btnText' => 'Get in touch →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/resume-full'] = ['title' => __('Résumé — Full page', 'pressroot'), 'content' => $resume];
+    $patterns['pressroot/resume-full'] = ['title' => __('Résumé — Full page', 'pressroot'), 'content' => $resume];
 
     /* ════════════════════════════ RESOURCES ═══════════════════════════ */
     $resources  = $hero('Resources', 'Things I return to.',
@@ -258,7 +258,7 @@ add_action('init', function () {
         . '<!-- wp:prt/resource-group {"heading":"Dev tools","emoji":"🔧","links":"[{\"label\":\"MDN Web Docs\",\"url\":\"https://developer.mozilla.org/\"},{\"label\":\"web.dev\",\"url\":\"https://web.dev/\"},{\"label\":\"CSS-Tricks\",\"url\":\"https://css-tricks.com/\"},{\"label\":\"Can I Use\",\"url\":\"https://caniuse.com/\"}]"} /-->',
         '30px', '30px');
     $resources .= $dyn('cta-band', ['heading' => 'Want more like this?', 'body' => 'I share what I learn as I build — tutorials, snippets, and honest notes from real projects.', 'btnText' => 'Read the blog →', 'btnUrl' => '/blog/', 'variant' => 'dark']);
-    $patterns['matthummel/resources-full'] = ['title' => __('Resources — Full page', 'pressroot'), 'content' => $resources];
+    $patterns['pressroot/resources-full'] = ['title' => __('Resources — Full page', 'pressroot'), 'content' => $resources];
 
     /* ════════════════════════════ NOW ═════════════════════════════════ */
     $nowList  = '<!-- wp:list --><ul class="wp-block-list">'
@@ -272,7 +272,7 @@ add_action('init', function () {
     $now .= $wrap($h(2, 'Right now', 'x-large') . $nowList, '40px', '8px');
     $now .= $wrap($h(2, 'Up next', 'x-large') . $p('Publishing the theme framework write-up, and turning the GitHub project sync into a standalone mini-plugin.', 'medium', 'muted'), '30px', '40px');
     $now .= $dyn('cta-band', ['heading' => 'Working on something similar?', 'body' => 'Always happy to compare notes on WordPress, Power Platform, or side projects.', 'btnText' => 'Say hello →', 'btnUrl' => '/contact/', 'variant' => 'dark']);
-    $patterns['matthummel/now-full'] = ['title' => __('Now — Full page', 'pressroot'), 'content' => $now];
+    $patterns['pressroot/now-full'] = ['title' => __('Now — Full page', 'pressroot'), 'content' => $now];
 
     /* ════════════════════════════ LEGAL ═══════════════════════════════ */
     $legal  = $hero('Legal', 'Privacy Policy.', 'How this site handles your data — in plain language.');
@@ -284,7 +284,7 @@ add_action('init', function () {
         . $h(2, 'Your rights', 'large')
         . $p('Email hello@example.com to request a copy or deletion of your data at any time.'),
         '20px', '50px');
-    $patterns['matthummel/legal-full'] = ['title' => __('Legal — Full page', 'pressroot'), 'content' => $legal];
+    $patterns['pressroot/legal-full'] = ['title' => __('Legal — Full page', 'pressroot'), 'content' => $legal];
 
     /* ── Register (single "Pressroot" pattern category) ───────────── */
     foreach ($patterns as $slug => $pat) {
@@ -309,16 +309,16 @@ add_action('init', function () {
  * developers/agencies, that's the opposite of what we want — more prebuilt
  * sections is more product value, not clutter. Removed.
  *
- * What's still worth doing here: drop the two "matthummel/about-page" and
- * "matthummel/resume-page" patterns in block-patterns.php — they're an older,
- * simpler draft of what "matthummel/about-full" and "matthummel/resume-full"
+ * What's still worth doing here: drop the two "pressroot/about-page" and
+ * "pressroot/resume-page" patterns in block-patterns.php — they're an older,
+ * simpler draft of what "pressroot/about-full" and "pressroot/resume-full"
  * (above) now do better, so keeping both would just confuse a site owner
  * choosing between two "full About page" options in the inserter. Genuinely
  * superseded duplicates like these are worth unregistering explicitly, by
  * name, rather than via a blanket purge.
  */
 add_action('init', function () {
-    foreach (['matthummel/about-page', 'matthummel/resume-page'] as $superseded) {
+    foreach (['pressroot/about-page', 'pressroot/resume-page'] as $superseded) {
         if (function_exists('unregister_block_pattern')) {
             unregister_block_pattern($superseded);
         }

@@ -18,7 +18,7 @@ add_action('init', function () {
     // a WordPress "doing_it_wrong" notice for a duplicate category — removed.
 
     /* ── 1. Hero — dark with availability badge ────────────────────── */
-    register_block_pattern('matthummel/hero', [
+    register_block_pattern('pressroot/hero', [
         'title'       => __('Hero — dark with badge', 'pressroot'),
         'description' => __('Full-width ink hero: availability badge, oversized headline, lead, terminal code snippet, and two CTA buttons.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -36,7 +36,7 @@ add_action('init', function () {
     ]);
 
     /* ── 2. Hero split — text + terminal box ──────────────────────── */
-    register_block_pattern('matthummel/hero-split', [
+    register_block_pattern('pressroot/hero-split', [
         'title'       => __('Hero split — text + terminal', 'pressroot'),
         'description' => __('Two-column dark hero: intro text left, terminal box right.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -68,7 +68,7 @@ add_action('init', function () {
     ]);
 
     /* ── 3. Stat bento — 4 up ─────────────────────────────────────── */
-    register_block_pattern('matthummel/stats-bento', [
+    register_block_pattern('pressroot/stats-bento', [
         'title'       => __('Stats — bento grid', 'pressroot'),
         'description' => __('Cream background bento with 4 key numbers.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -79,7 +79,7 @@ add_action('init', function () {
     ]);
 
     /* ── 4. About bento — big stat + two smalls ───────────────────── */
-    register_block_pattern('matthummel/about-bento', [
+    register_block_pattern('pressroot/about-bento', [
         'title'       => __('About — bento stats (2fr+1fr+1fr)', 'pressroot'),
         'description' => __('Asymmetric bento: dark wide card + two light cards.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -106,7 +106,7 @@ add_action('init', function () {
     ]);
 
     /* ── 5. Skills grid section ───────────────────────────────────── */
-    register_block_pattern('matthummel/skills', [
+    register_block_pattern('pressroot/skills', [
         'title'       => __('Skills — 3-column grid', 'pressroot'),
         'description' => __('White background, heading + lead, then skills grid.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -120,7 +120,7 @@ add_action('init', function () {
     ]);
 
     /* ── 6. Timeline section ──────────────────────────────────────── */
-    register_block_pattern('matthummel/timeline', [
+    register_block_pattern('pressroot/timeline', [
         'title'       => __('Timeline — experience', 'pressroot'),
         'description' => __('Vertical timeline of roles with year, title, company, and description.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -133,7 +133,7 @@ add_action('init', function () {
     ]);
 
     /* ── 7. CTA band — ink dark ───────────────────────────────────── */
-    register_block_pattern('matthummel/cta', [
+    register_block_pattern('pressroot/cta', [
         'title'       => __('CTA — ink band', 'pressroot'),
         'description' => __('Dark ink call-to-action with headline and button.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -149,7 +149,7 @@ add_action('init', function () {
     ]);
 
     /* ── 8. Projects — bento featured layout ─────────────────────── */
-    register_block_pattern('matthummel/projects-bento', [
+    register_block_pattern('pressroot/projects-bento', [
         'title'       => __('Projects — bento layout', 'pressroot'),
         'description' => __('Featured dark card (2fr) + stack of secondary cards (1fr).', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -192,7 +192,7 @@ add_action('init', function () {
     ]);
 
     /* ── 9. Resources — tabs + groups ────────────────────────────── */
-    register_block_pattern('matthummel/resources', [
+    register_block_pattern('pressroot/resources', [
         'title'       => __('Resources — 3 groups', 'pressroot'),
         'description' => __('Three resource link groups in a grid.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -208,7 +208,7 @@ add_action('init', function () {
     ]);
 
     /* ── 10. Full About page ──────────────────────────────────────── */
-    register_block_pattern('matthummel/about-page', [
+    register_block_pattern('pressroot/about-page', [
         'title'       => __('Full page — About', 'pressroot'),
         'description' => __('Complete About page: split dark hero → cream stats → skills → timeline → CTA.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -268,7 +268,7 @@ add_action('init', function () {
     ]);
 
     /* ── 11. Full Résumé page ─────────────────────────────────────── */
-    register_block_pattern('matthummel/resume-page', [
+    register_block_pattern('pressroot/resume-page', [
         'title'       => __('Full page — Résumé', 'pressroot'),
         'description' => __('Complete résumé: dark name header → experience timeline → skills pills → CTA.', 'pressroot'),
         'categories'  => ['pressroot'],
@@ -312,7 +312,7 @@ add_action('init', function () {
     ]);
 
     /* ── 12. Two-column split — text + image ─────────────────────── */
-    register_block_pattern('matthummel/two-col', [
+    register_block_pattern('pressroot/two-col', [
         'title'       => __('Two columns — text + image', 'pressroot'),
         'description' => __('50/50 vertical-centre split: text left, image right.', 'pressroot'),
         'categories'  => ['pressroot'],

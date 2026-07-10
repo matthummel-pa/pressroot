@@ -23,7 +23,7 @@ header button, footer). Chosen values are emitted as a `:root { â€¦ }` overr
 `<style id="prt-customizer">` block via the `prt_head_end` action â€” which fires **after**
 `@vite` in the layout, so the overrides win without a rebuild. Non-default fonts are
 enqueued from Google Fonts on demand. Header/footer values flow through existing
-`matthummel/*` filters.
+`pressroot/*` filters.
 
 ## Live GitHub engine
 
@@ -82,7 +82,7 @@ so it stays discoverable instead of requiring a grep.
 ## Settings pages (2026-07 cleanup)
 
 There used to be a full tabbed "Theme Settings" admin page (`app/admin-settings.php`,
-`matthummel/admin_schema` filter) mirroring the Customizer's General, Design,
+`pressroot/admin_schema` filter) mirroring the Customizer's General, Design,
 Layout, Header, Footer, and Social Links controls via a separate `set_theme_mod()`
 form. It was pure duplication — same theme mods, second UI — so it's gone. The
 Customizer (Appearance -> Customize -> Theme Options) is now the only place to
@@ -117,10 +117,13 @@ Appearance submenu pages this page originally consolidated, and the top
 `nav-tab-wrapper` it used at first (`prt_settings_render()` now renders a
 `<nav>` list on the left instead; every section still hangs off the same
 `prt_settings_tab_url($tab, $extra)` links, so nothing downstream needed to
-change for the layout swap):
+change for the layout swap). The tab registry (`prt_settings_tabs()`) is
+filterable via `pressroot/settings_tabs`, so addons can register sections
+without editing the file:
 
 | Tab | Source | What it does |
 |---|---|---|
+| Setup | `app/setup-wizard.php` (`prt_setup_wizard_tab_html()`) — tab id `setup`, first tab + default landing tab until completed once | Six-step guided onboarding: business info → connections (AI keys, SEO plugin selector, GA4 Measurement ID) → WordPress settings automation → site generation → review → launch (publishes the generated drafts, sets the front page, re-opens search visibility). Resumable state in option `prt_wizard_progress`; full detail in docs/SETUP-WIZARD.md |
 | Site Types | `app/ai-assistant.php` (`prt_pressroot_ai_tab_html()`) — tab id `ai`, unchanged internally | Site-type picker (which also applies that type's Style Kit), regenerate, hero-copy generator, plus two collapsed Advanced sections: "Connect more AI models" (AI Connectors) and "Backup & restore settings" (Export/Import/Reset, from `app/settings-io.php`'s `prt_settings_backup_fields_html()`) |
 | GitHub | `app/github-settings.php` (`prt_github_tab_html()`) | Default owner, API token, cache hours, OAuth Client ID, Connect with GitHub |
 | Support | `app/support-settings.php` (`prt_support_tab_html()`) | Live status (stats, languages, latest releases, open issues) for "this theme's repository", pulled through the existing `App\Github` class, plus a curated list of links to the theme's own documentation. Always visible — not gated by the Pressroot AI addon toggle, since getting help shouldn't depend on an unrelated feature flag. |
@@ -146,7 +149,7 @@ this theme," used only to drive its live status card and doc links. It
 defaults to the GitHub tab's owner plus `pressroot`, editable inline
 via its own "Edit repository" `<details>`, same pattern as the page header's
 Docs/Support link editor. Doc links themselves are resolved against that
-repo's `blob/main/...` URLs (filterable via `matthummel/support_doc_links`),
+repo's `blob/main/...` URLs (filterable via `pressroot/support_doc_links`),
 so a fork that repoints "this theme's repository" at its own copy gets
 correct links without editing PHP.
 

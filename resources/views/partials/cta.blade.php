@@ -1,8 +1,8 @@
 @php
-  $cta_heading = apply_filters('matthummel/cta_heading', __('Have a project in mind?', 'pressroot'));
-  $cta_text    = apply_filters('matthummel/cta_text', __('Whether it’s a new website, a redesign, or a custom WordPress build, I’d love to help bring it to life.', 'pressroot'));
-  $cta_url     = apply_filters('matthummel/cta_url', home_url('/contact/'));
-  $cta_label   = apply_filters('matthummel/cta_label', __('Start a conversation', 'pressroot'));
+  $cta_heading = apply_filters('pressroot/cta_heading', __('Have a project in mind?', 'pressroot'));
+  $cta_text    = apply_filters('pressroot/cta_text', __('Whether it’s a new website, a redesign, or a custom WordPress build, I’d love to help bring it to life.', 'pressroot'));
+  $cta_url     = apply_filters('pressroot/cta_url', home_url('/contact/'));
+  $cta_label   = apply_filters('pressroot/cta_label', __('Start a conversation', 'pressroot'));
 @endphp
 <aside class="prt-project-cta">
   <div class="cta-card">

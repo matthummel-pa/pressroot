@@ -30,15 +30,15 @@ add_action('init', function () {
     }
 
     wp_register_font_collection($slug, [
-        'name'          => __('Google Fonts', 'sage'),
-        'description'   => __('The full Google Fonts library — browse and filter by type: sans-serif, serif, display, handwriting, and monospace. Installed fonts are self-hosted.', 'sage'),
+        'name'          => __('Google Fonts', 'pressroot'),
+        'description'   => __('The full Google Fonts library — browse and filter by type: sans-serif, serif, display, handwriting, and monospace. Installed fonts are self-hosted.', 'pressroot'),
         'font_families' => 'https://s.w.org/images/fonts/wp-6.5/collections/google-fonts-with-preview.json',
         'categories'    => [
-            ['name' => __('Sans-serif', 'sage'), 'slug' => 'sans-serif'],
-            ['name' => __('Serif', 'sage'),      'slug' => 'serif'],
-            ['name' => __('Display', 'sage'),    'slug' => 'display'],
-            ['name' => __('Handwriting', 'sage'),'slug' => 'handwriting'],
-            ['name' => __('Monospace', 'sage'),  'slug' => 'monospace'],
+            ['name' => __('Sans-serif', 'pressroot'), 'slug' => 'sans-serif'],
+            ['name' => __('Serif', 'pressroot'),      'slug' => 'serif'],
+            ['name' => __('Display', 'pressroot'),    'slug' => 'display'],
+            ['name' => __('Handwriting', 'pressroot'),'slug' => 'handwriting'],
+            ['name' => __('Monospace', 'pressroot'),  'slug' => 'monospace'],
         ],
     ]);
 });

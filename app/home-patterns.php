@@ -34,7 +34,7 @@ add_action('init', function () {
     $patterns = [];
 
     /* ── Hero ──────────────────────────────────────────────────────── */
-    $patterns['matthummel/home-hero'] = [
+    $patterns['pressroot/home-hero'] = [
         'title'   => __('Home — Hero', 'pressroot'),
         'keywords' => ['hero', 'home', 'intro', 'gradient'],
         'html'    => <<<'HTML'
@@ -64,7 +64,7 @@ HTML,
     ];
 
     /* ── Marquee ───────────────────────────────────────────────────── */
-    $patterns['matthummel/home-marquee'] = [
+    $patterns['pressroot/home-marquee'] = [
         'title'   => __('Home — Skills marquee', 'pressroot'),
         'keywords' => ['marquee', 'skills', 'scroll'],
         'html'    => <<<'HTML'
@@ -75,7 +75,7 @@ HTML,
     ];
 
     /* ── Services ──────────────────────────────────────────────────── */
-    $patterns['matthummel/home-services'] = [
+    $patterns['pressroot/home-services'] = [
         'title'   => __('Home — Services (3 cards)', 'pressroot'),
         'keywords' => ['services', 'cards', 'what i do'],
         'html'    => <<<'HTML'
@@ -94,7 +94,7 @@ HTML,
     ];
 
     /* ── Why me ────────────────────────────────────────────────────── */
-    $patterns['matthummel/home-why-me'] = [
+    $patterns['pressroot/home-why-me'] = [
         'title'   => __('Home — Why work with me', 'pressroot'),
         'keywords' => ['why', 'value', 'cards'],
         'html'    => <<<'HTML'
@@ -114,7 +114,7 @@ HTML,
     ];
 
     /* ── Risk reversal ─────────────────────────────────────────────── */
-    $patterns['matthummel/home-risk-reversal'] = [
+    $patterns['pressroot/home-risk-reversal'] = [
         'title'   => __('Home — Risk reversal panel', 'pressroot'),
         'keywords' => ['risk', 'reassurance', 'dark panel'],
         'html'    => <<<'HTML'
@@ -137,7 +137,7 @@ HTML,
     ];
 
     /* ── CTA ───────────────────────────────────────────────────────── */
-    $patterns['matthummel/home-cta'] = [
+    $patterns['pressroot/home-cta'] = [
         'title'   => __('Home — Closing CTA', 'pressroot'),
         'keywords' => ['cta', 'contact', 'call to action'],
         'html'    => <<<'HTML'
@@ -206,9 +206,9 @@ HTML,
         return isset($patterns[$slug]) ? "<!-- wp:html -->\n{$patterns[$slug]['html']}\n<!-- /wp:html -->\n\n" : '';
     };
 
-    $full  = $section('matthummel/home-hero');
-    $full .= $section('matthummel/home-marquee');
-    $full .= $section('matthummel/home-services');
+    $full  = $section('pressroot/home-hero');
+    $full .= $section('pressroot/home-marquee');
+    $full .= $section('pressroot/home-services');
 
     // Selected builds → projects CPT via prt/post-grid
     $full .= $header('Selected builds', 'Real, open-source code you can read line by line — themes, plugins &amp; apps.');
@@ -218,16 +218,16 @@ HTML,
     $full .= $header('Building in the open', '16 repositories · contributor to the Microsoft 365 PnP community.');
     $full .= $dynamic('<!-- wp:prt/repo-grid {"username":"matthummel-pa","count":3,"columns":3} /-->');
 
-    $full .= $section('matthummel/home-why-me');
-    $full .= $section('matthummel/home-risk-reversal');
+    $full .= $section('pressroot/home-why-me');
+    $full .= $section('pressroot/home-risk-reversal');
 
     // Latest writing → recent posts via prt/post-grid
     $full .= $header('Latest writing');
     $full .= $dynamic('<!-- wp:prt/post-grid {"postType":"post","count":3,"columns":3,"showCategory":true} /-->');
 
-    $full .= $section('matthummel/home-cta');
+    $full .= $section('pressroot/home-cta');
 
-    register_block_pattern('matthummel/home-full', [
+    register_block_pattern('pressroot/home-full', [
         'title'      => __('Home — Full page (dynamic)', 'pressroot'),
         'description' => __('Full homepage as editable blocks. Selected builds, repos and latest writing use the live dynamic blocks (projects CPT, GitHub, recent posts).', 'pressroot'),
         'categories' => ['pressroot'],

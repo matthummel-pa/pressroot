@@ -25,6 +25,10 @@ design, pages, copy, images, navigation, header, and footer — all on core Gute
 
 ## How it works
 
+**New: the Setup wizard.** Appearance → Pressroot now opens on a six-step guided flow — **Business info → Connections → WordPress settings → Generate → Review → Launch** — that takes a blank install to a launched site: business facts (contact, hours, mission) that feed the AI brief, AI provider keys, an SEO plugin selector, Google Analytics (paste a GA4 ID, gtag injected) with GA + Google Business Profile walkthroughs, one-click WordPress settings, site generation, a review screen, and a real launch button that publishes the drafts. Progress saves per step; every step stays revisitable. ([docs/SETUP-WIZARD.md](docs/SETUP-WIZARD.md))
+
+Under the hood it sequences the same engines:
+
 1. **Tell it your brand** — Theme Settings + the Brand questionnaire are the *core prompt for your entire site*: name, one-liner, industry (dropdown), audience, voice, goal, imagery, density, design trend, plus free-form **AI instructions** (WYSIWYG, 1,000-word cap) and uploadable **`.md` instruction files**. Everything compiles into one saved **CORE SITE BRIEF** prepended to every AI call.
 2. **Save — it builds** — the status bar runs the pipeline: compile the brief → deal a design (kit + trend filtered by your answers) → generate pages on core blocks → build the **site chrome** (nav menu, goal-driven header CTA, brand-driven footer) → prime smart-block copy.
 3. **Refresh until you love it** — every 🎲 deals a genuinely different theme (never repeating the current one); your brand color and content survive every deal.
@@ -58,9 +62,19 @@ The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio
 - **Repofolio addon** — live GitHub repo grid, project case-study post type, OAuth connect; yields to the standalone plugin automatically.
 - **Reading UX, forms, performance, SEO** — auto TOC, reading progress, plugin-free contact form, newsletter, cookie notice, split block CSS, critical CSS, local fonts (1,500+ Google families), OG/Twitter/JSON-LD (auto-off under Rank Math/Yoast), white-label + onboarding checklist.
 
+### Setup wizard (new)
+- **Six guided steps** — Business info → Connections → WordPress settings → Generate → Review → Launch — resumable per step, overall progress bar, and an animated per-form status bar so long AI runs never look frozen.
+- **Business facts feed the AI** — mission, what-you-do, contact, per-day hours, and media uploads all compile into the CORE SITE BRIEF, so generated copy quotes real facts.
+- **Google Analytics in one paste** — validated GA4 Measurement ID, official gtag.js auto-injected (with GA + Google Business Profile walkthroughs built in).
+- **SEO plugin selector** — built-in SEO layer by default, or Yoast / Rank Math / All in One SEO with live status, one-click install/activate, and a beginner's SEO primer.
+- **WordPress settings, handled** — timezone, pretty permalinks, site icon, search visibility, and comment defaults explained and applied in one click.
+- **A real launch** — pre-flight checklist, publish all generated drafts, set the front page, open the doors to search engines.
+
 ### Settings, developer tools & support
-- **Appearance → Pressroot** — one page, five tabs in the Repofolio docs-site design: **AI Models → Theme Settings → Site Types → GitHub → Support**, with build status bars on every generate.
+- **Appearance → Pressroot** — one page, six tabs in the Repofolio docs-site design: **Setup → AI Models → Theme Settings → Site Types → GitHub → Support**, with build status bars on every generate.
 - **Export / Import / Reset**, **WP-CLI suite** (`wp pressroot ...`), **Hook Registry**, **Dev Mode** debug panel.
+- **Extensible by design** — every public filter and pattern lives under the `pressroot/*` namespace (indexed in `app/hooks-registry.php`); the settings-tab registry is filterable (`pressroot/settings_tabs`) so addons can register their own sections.
+- **Hardened & disclosed** — capability + nonce checks on every action, SSRF-guarded image imports, API keys never exported or sent to the browser, per-IP contact-form throttling, focus-managed navigation and reduced-motion support (WCAG 2.1 AA effort), and a complete [third-party services & privacy disclosure](docs/THIRD-PARTY-SERVICES.md).
 
 ## Brand & theme colors
 
@@ -82,7 +96,7 @@ The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio
 | **Brand gradient** | `135° iris → pink → coral` | Buttons, logo mark, badges |
 | **Spectrum** | 6-stop, all of the above accents | Top bars, card tops, progress bars |
 
-All tokens live as Tailwind v4 `@theme` variables in [`resources/css/app.css`](resources/css/app.css) and in [`theme.json`](theme.json); the full spec is in [BRAND-DESIGN-SYSTEM.md](docs/BRAND-DESIGN-SYSTEM.md). Style Kits and the design generator recolor *on top of* these — the Repofolio palette is the theme's own identity.
+All tokens live as Tailwind v4 `@theme` variables in [`resources/css/app.css`](resources/css/app.css) and in [`theme.json`](theme.json); the full spec — voice, palette, gradients, type, card anatomy, motion — is in **[DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)**, with visual previews of how the theme looks: the [design language sheet](docs/brand/design-language-sheet.svg) and [theme preview boards](docs/mockups/theme-previews.svg) (marketing site · generated business site · Setup wizard). Style Kits and the design generator recolor *on top of* these — the Repofolio palette is the theme's own identity.
 
 ## Requirements
 
@@ -102,12 +116,16 @@ npm run build      # or: npm run dev  (Vite HMR)
 npm run wp         # zero-Docker local WordPress (Playground) at 127.0.0.1:8881
 ```
 
-Activate **Pressroot**, open **Appearance → Pressroot**: pick AI models (the free defaults work with no keys), fill Theme Settings + Brand, save, apply a Site Type, then ✨ AI-write and 🖼 generate. Full walkthrough in the [documentation](https://matthummel-pa.github.io/pressroot/documentation.html); a field-by-field worked example lives in the [restaurant build recipe](docs/BUILD-RECIPE-RESTAURANT.md).
+Activate **Pressroot** and open **Appearance → Pressroot** — it lands on the **Setup wizard**, which walks you from blank install to launched site in six steps (business info, connections, WordPress settings, generation, review, launch). The free keyless AI defaults work with zero configuration. Power users can skip the wizard and drive Theme Settings + Site Types directly. Full walkthrough in the [documentation](https://matthummel-pa.github.io/pressroot/documentation.html); a field-by-field worked example lives in the [restaurant build recipe](docs/BUILD-RECIPE-RESTAURANT.md).
 
 ## Docs & history
 
 - [Documentation site](https://matthummel-pa.github.io/pressroot/) — marketing site, docs, tester program, feedback form (served from [`docs/`](docs/))
+- [SETUP-WIZARD.md](docs/SETUP-WIZARD.md) — the six-step onboarding flow, every handler and key
+- [DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) — the design language, with visual theme previews
 - [THEME-SETTINGS.md](docs/THEME-SETTINGS.md) — every control, cataloged
+- [THIRD-PARTY-SERVICES.md](docs/THIRD-PARTY-SERVICES.md) — privacy & external-services disclosure
+- [MARKETPLACE-READINESS.md](docs/MARKETPLACE-READINESS.md) — audit report + submission checklist
 - [ARCHITECTURE.md](docs/ARCHITECTURE.md) · [DEVELOPMENT.md](docs/DEVELOPMENT.md) · [BRAND-DESIGN-SYSTEM.md](docs/BRAND-DESIGN-SYSTEM.md)
 - [BUILD-NOTES.md](docs/BUILD-NOTES.md) — the chronological build log (root cause → fix → takeaway)
 - [CHANGELOG.md](CHANGELOG.md) — versioned release notes

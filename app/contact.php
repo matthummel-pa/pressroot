@@ -60,19 +60,39 @@ add_action('init', function () {
         $redirect('error');
     }
 
+    // Rate limit: the endpoint is nonce-protected, but nonces are page-scoped
+    // rather than per-submission, so a scraped page could still be replayed
+    // as a spam relay. One message per IP per 30 seconds is invisible to
+    // humans and fatal to scripts. Fails open when REMOTE_ADDR is missing —
+    // no key means no throttle, never a lockout.
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+    if ($ip !== '') {
+        $throttleKey = 'prt_contact_' . md5($ip);
+        if (get_transient($throttleKey)) {
+            $redirect('error');
+        }
+        set_transient($throttleKey, 1, 30);
+    }
+
     // Sent to the site admin email rather than a configurable address — there's
     // no Customizer/settings field for a custom recipient, so admin_email is
     // the only destination.
     $to      = get_option('admin_email');
     $subject = $subject !== '' ? $subject : __('New contact form message', 'pressroot');
-    $body    = "Name: {$name}\nEmail: {$email}\n\n{$message}";
+    $body    = sprintf(
+        /* translators: 1: sender name, 2: sender email, 3: message */
+        __("Name: %1\$s\nEmail: %2\$s\n\n%3\$s", 'pressroot'),
+        $name,
+        $email,
+        $message
+    );
     $headers = ['Reply-To: ' . $name . ' <' . $email . '>'];
 
-    // NOTE(audit): '[matthummel.com]' is hardcoded rather than derived from
-    // get_bloginfo('name') / home_url(), so every install using this theme
-    // unmodified would send email subjects branded for matthummel.com instead
-    // of their own site. Worth parameterizing before distributing the theme.
-    wp_mail($to, '[matthummel.com] ' . $subject, $body, $headers);
+    // Subject prefix comes from the SITE, not the theme author — this was a
+    // hardcoded '[matthummel.com]' before, which branded every install's
+    // outgoing mail for the author's own site.
+    $prefix = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
+    wp_mail($to, ($prefix !== '' ? '[' . $prefix . '] ' : '') . $subject, $body, $headers);
 
     $redirect('success');
 });

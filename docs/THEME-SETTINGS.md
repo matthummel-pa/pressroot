@@ -11,9 +11,11 @@ where noted) and render with no build step.
 Two places hold settings:
 
 1. **Customize â†’ Theme Options** â€” the live, preview-as-you-edit panel.
-2. **Appearance â†’ Pressroot** â€” one consolidated settings page (Site Types,
-   GitHub, Support) for everything that isn't a live visual preview, plus
-   **Appearance â†’ Local Fonts**, which stayed separate.
+2. **Appearance â†’ Pressroot** â€” one consolidated settings page (Setup wizard,
+   AI Models, Theme Settings, Site Types, GitHub, Support) for everything that
+   isn't a live visual preview, plus **Appearance â†’ Local Fonts**, which
+   stayed separate. New installs land on the **Setup** tab â€” a six-step
+   guided wizard (see [SETUP-WIZARD.md](SETUP-WIZARD.md)).
 
 ---
 
@@ -138,6 +140,34 @@ remained was four separate Appearance submenu pages (Theme Tools, Starter
 Sites, Pressroot AI, GitHub); those are now one page, **Appearance â†’
 Pressroot**, navigated with a left-sidebar menu (one section per area) and
 the active section's content on the right:
+
+### Setup (tab)
+The six-step guided onboarding wizard (`app/setup-wizard.php`) — the first
+tab, and the default landing tab until it has been completed once. Progress
+is saved per step (option `prt_wizard_progress`), the tab resumes where the
+owner left off, and every step stays revisitable afterwards.
+
+1. **Business info** — identity, business/website type dropdown, industry,
+   brand & voice, colors/fonts, logo + photo/video uploads, and the
+   business-fact fields (`prt_biz_mission`, `prt_biz_about`, `prt_biz_email`,
+   `prt_biz_phone`, `prt_biz_address`, `prt_biz_hours`) that compile into the
+   CORE SITE BRIEF so the AI states real facts.
+2. **Connections** — AI provider keys, an SEO plugin selector (built-in /
+   Yoast / Rank Math / All in One SEO, with one-click install/activate and a
+   beginner's SEO primer; stored as `prt_seo_choice`), a validated **GA4
+   Measurement ID** (`prt_ga4_id`, auto-injects gtag.js) with Google
+   Analytics + Google Business Profile walkthroughs, and addon toggles.
+3. **WordPress settings** — timezone, pretty permalinks, site icon, search
+   visibility (hidden while building), and comment defaults, applied in one
+   click with plain-English explanations.
+4. **Generate your website** — runs the site-type generator, the "AI-write
+   all pages" pass, and the brand-image generator, in labeled stages.
+5. **Review** — homepage preview, per-page preview/edit table, and a
+   "where to change what" map.
+6. **Launch** — pre-flight checklist, publish all generated drafts, set the
+   static front page, and re-open the site to search engines.
+
+Full detail: [SETUP-WIZARD.md](SETUP-WIZARD.md).
 
 ### Site Types (tab)
 The default tab, and the one-click way to set the site's whole look and starter

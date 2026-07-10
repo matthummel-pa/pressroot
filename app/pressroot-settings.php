@@ -84,10 +84,24 @@ function prt_settings_tab_url(string $tab, array $extra = []): string
     ], $extra), admin_url('themes.php'));
 }
 
-/** The tabs, in display order. Each maps to a render callback (no args, echoes HTML). */
+/**
+ * The tabs, in display order. Each maps to a render callback (no args,
+ * echoes HTML). Filterable (`pressroot/settings_tabs`) so addons and forks
+ * can register their own sections without editing this file — the registry
+ * used to be hardcoded, which forced exactly that.
+ */
 function prt_settings_tabs(): array
 {
-    return [
+    return apply_filters('pressroot/settings_tabs', [
+        'setup' => [
+            'label'    => __('Setup', 'pressroot'),
+            'render'   => __NAMESPACE__ . '\\prt_setup_wizard_tab_html',
+            // The six-step guided onboarding wizard (app/setup-wizard.php):
+            // business info → connections → WP settings → generate → review
+            // → launch. First tab AND the default landing tab until the
+            // wizard has been completed once (see prt_settings_render()).
+            'visible'  => function_exists('App\\prt_setup_wizard_tab_html'),
+        ],
         'models' => [
             'label'    => __('AI Models', 'pressroot'),
             'render'   => __NAMESPACE__ . '\\prt_ai_models_tab_html',
@@ -128,7 +142,7 @@ function prt_settings_tabs(): array
             // render function (edit_theme_options), same as every tab.
             'visible'  => true,
         ],
-    ];
+    ]);
 }
 
 /** Single admin page registration, replacing the four it consolidates. */
@@ -275,7 +289,10 @@ function prt_settings_render(): void
         return;
     }
     $tabs   = prt_settings_tabs();
-    $active = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'ai';
+    // Default landing tab: the Setup wizard until it's been completed once,
+    // then Site Types (the primary day-to-day tab) as before.
+    $default = (function_exists('App\\prt_wizard_is_complete') && ! prt_wizard_is_complete()) ? 'setup' : 'ai';
+    $active  = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : $default;
     if (! isset($tabs[$active]) || empty($tabs[$active]['visible'])) {
         $active = '';
         foreach ($tabs as $id => $t) {

@@ -27,7 +27,7 @@ namespace App;
  *  already had Pressroot AI working don't lose it silently on update. */
 function prt_addon_defaults(): array
 {
-    return apply_filters('matthummel/addon_defaults', [
+    return apply_filters('pressroot/addon_defaults', [
         'pressroot_ai' => true,
         // Repofolio — the GitHub portfolio subsystem (repo grid block, OAuth
         // connect, repofolio_project CPT), packaged back into the theme from

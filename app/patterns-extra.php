@@ -13,12 +13,12 @@ add_action('init', function () {
     }
 
     // Slug is "hero-simple" (not "hero") because block-patterns.php already
-    // registers a richer "matthummel/hero" pattern (dark ink hero with a
+    // registers a richer "pressroot/hero" pattern (dark ink hero with a
     // terminal-style code accent). Reusing that slug here silently lost this
     // pattern to a WordPress "doing_it_wrong" duplicate-registration notice —
     // renamed instead of removed, since this simpler centered version is
     // still a useful, distinct starting point.
-    register_block_pattern('matthummel/hero-simple', [
+    register_block_pattern('pressroot/hero-simple', [
         'title'      => __('Hero — simple centered', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -44,7 +44,7 @@ add_action('init', function () {
 HTML,
     ]);
 
-    register_block_pattern('matthummel/pricing', [
+    register_block_pattern('pressroot/pricing', [
         'title'      => __('Pricing (3 tiers)', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -95,7 +95,7 @@ HTML,
 HTML,
     ]);
 
-    register_block_pattern('matthummel/testimonials', [
+    register_block_pattern('pressroot/testimonials', [
         'title'      => __('Testimonials', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -114,7 +114,7 @@ HTML,
 HTML,
     ]);
 
-    register_block_pattern('matthummel/logo-cloud', [
+    register_block_pattern('pressroot/logo-cloud', [
         'title'      => __('Logo cloud', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -129,7 +129,7 @@ HTML,
 HTML,
     ]);
 
-    register_block_pattern('matthummel/feature-grid', [
+    register_block_pattern('pressroot/feature-grid', [
         'title'      => __('Feature grid', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'

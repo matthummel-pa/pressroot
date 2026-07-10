@@ -6,10 +6,10 @@
  * On theme activation (and once for already-active installs), pre-fills the key
  * pages with their designed block patterns so they're ready to view and edit:
  *
- *   Home      → matthummel/home-full       (set as the static front page)
- *   About     → matthummel/about-full      (Canvas template)
- *   Résumé    → matthummel/resume-full     (Canvas template)
- *   Resources → matthummel/resources  (Canvas template)
+ *   Home      → pressroot/home-full       (set as the static front page)
+ *   About     → pressroot/about-full      (Canvas template)
+ *   Résumé    → pressroot/resume-full     (Canvas template)
+ *   Resources → pressroot/resources  (Canvas template)
  *
  * NON-DESTRUCTIVE: an existing page is only filled if its content is empty, and
  * its template is only changed when we fill it — so real content and settings
@@ -26,7 +26,7 @@ namespace App;
  * registered on 'init' by home-patterns.php / pattern-library.php and this
  * function is only ever invoked later, from 'admin_init' callbacks below.
  *
- * @param string $slug Registered pattern name, e.g. 'matthummel/home-full'.
+ * @param string $slug Registered pattern name, e.g. 'pressroot/home-full'.
  * @return string Pattern content HTML, or '' if the pattern isn't registered.
  */
 function prt_seed_pattern_content(string $slug): string
@@ -85,23 +85,23 @@ function prt_seed_pages_now(): void
         'home' => [
             'slugs'    => ['home'],
             'title'    => __('Home', 'pressroot'),
-            'pattern'  => 'matthummel/home-full',
+            'pattern'  => 'pressroot/home-full',
             'front'    => true,
         ],
         'about' => [
             'slugs'    => ['about'],
             'title'    => __('About', 'pressroot'),
-            'pattern'  => 'matthummel/about-full',
+            'pattern'  => 'pressroot/about-full',
         ],
         'resume' => [
             'slugs'    => ['resume'],
             'title'    => __('Résumé', 'pressroot'),
-            'pattern'  => 'matthummel/resume-full',
+            'pattern'  => 'pressroot/resume-full',
         ],
         'resources' => [
             'slugs'    => ['resources', 'power-platform-learning-resources'],
             'title'    => __('Resources', 'pressroot'),
-            'pattern'  => 'matthummel/resources-full',
+            'pattern'  => 'pressroot/resources-full',
         ],
     ];
 
@@ -188,7 +188,7 @@ add_action('admin_init', function () {
     if ($about) {
         $content = (string) $about->post_content;
         if (strpos($content, 'wp:prt/stat-strip') !== false && strpos($content, 'wp:prt/post-grid') === false) {
-            $fresh = prt_seed_pattern_content('matthummel/about-full');
+            $fresh = prt_seed_pattern_content('pressroot/about-full');
             if ($fresh !== '') {
                 wp_update_post(['ID' => (int) $about->ID, 'post_content' => wp_slash($fresh)]);
             }
@@ -211,10 +211,10 @@ add_action('admin_init', function () {
         return;
     }
     $targets = [
-        ['slugs' => ['about'],                                       'pattern' => 'matthummel/about-full',     'sig' => 'wp:prt/stat-strip'],
-        ['slugs' => ['resume'],                                      'pattern' => 'matthummel/resume-full',     'sig' => 'wp:prt/timeline'],
-        ['slugs' => ['resources', 'power-platform-learning-resources'], 'pattern' => 'matthummel/resources-full', 'sig' => 'wp:prt/resource-group'],
-        ['slugs' => ['home'],                                        'pattern' => 'matthummel/home-full',       'sig' => 'wp:prt/repo-grid'],
+        ['slugs' => ['about'],                                       'pattern' => 'pressroot/about-full',     'sig' => 'wp:prt/stat-strip'],
+        ['slugs' => ['resume'],                                      'pattern' => 'pressroot/resume-full',     'sig' => 'wp:prt/timeline'],
+        ['slugs' => ['resources', 'power-platform-learning-resources'], 'pattern' => 'pressroot/resources-full', 'sig' => 'wp:prt/resource-group'],
+        ['slugs' => ['home'],                                        'pattern' => 'pressroot/home-full',       'sig' => 'wp:prt/repo-grid'],
     ];
     foreach ($targets as $t) {
         $page = prt_seed_find_page($t['slugs']);
@@ -282,8 +282,8 @@ add_action('admin_init', function () {
         return;
     }
     $map = [
-        ['slugs' => ['projects'], 'title' => __('Projects', 'pressroot'), 'pattern' => 'matthummel/projects-full'],
-        ['slugs' => ['resume'],   'title' => __('Résumé', 'pressroot'),   'pattern' => 'matthummel/resume-full'],
+        ['slugs' => ['projects'], 'title' => __('Projects', 'pressroot'), 'pattern' => 'pressroot/projects-full'],
+        ['slugs' => ['resume'],   'title' => __('Résumé', 'pressroot'),   'pattern' => 'pressroot/resume-full'],
     ];
     foreach ($map as $def) {
         $body = prt_seed_pattern_content($def['pattern']);
@@ -322,8 +322,8 @@ add_action('admin_init', function () {
         return;
     }
     $map = [
-        ['slugs' => ['about'],  'pattern' => 'matthummel/about-full'],
-        ['slugs' => ['resume'], 'pattern' => 'matthummel/resume-full'],
+        ['slugs' => ['about'],  'pattern' => 'pressroot/about-full'],
+        ['slugs' => ['resume'], 'pattern' => 'pressroot/resume-full'],
     ];
     foreach ($map as $def) {
         $page = prt_seed_find_page($def['slugs']);
@@ -351,7 +351,7 @@ add_action('admin_init', function () {
     if (! current_user_can('edit_theme_options') || ! post_type_exists('projects') || ! taxonomy_exists('project_categories')) {
         return;
     }
-    $owner = apply_filters('matthummel/github_owner', 'matthummel-pa');
+    $owner = apply_filters('pressroot/github_owner', 'matthummel-pa');
     $repos = \App\Github::fetchRepos($owner, 12, 'updated');
     if (empty($repos)) {
         return; // GitHub not reachable right now — don't set the flag, try again next load.
@@ -400,14 +400,14 @@ add_action('admin_init', function () {
     }
 
     $map = [
-        'home'      => ['slugs' => ['home'],                                        'pattern' => 'matthummel/home-full'],
-        'projects'  => ['slugs' => ['projects'],                                    'pattern' => 'matthummel/projects-full'],
-        'about'     => ['slugs' => ['about'],                                       'pattern' => 'matthummel/about-full'],
-        'resume'    => ['slugs' => ['resume'],                                      'pattern' => 'matthummel/resume-full'],
-        'services'  => ['slugs' => ['services'],                                    'pattern' => 'matthummel/services-full'],
-        'pricing'   => ['slugs' => ['pricing'],                                     'pattern' => 'matthummel/pricing-full'],
-        'contact'   => ['slugs' => ['contact'],                                     'pattern' => 'matthummel/contact-full'],
-        'resources' => ['slugs' => ['resources', 'power-platform-learning-resources'], 'pattern' => 'matthummel/resources-full'],
+        'home'      => ['slugs' => ['home'],                                        'pattern' => 'pressroot/home-full'],
+        'projects'  => ['slugs' => ['projects'],                                    'pattern' => 'pressroot/projects-full'],
+        'about'     => ['slugs' => ['about'],                                       'pattern' => 'pressroot/about-full'],
+        'resume'    => ['slugs' => ['resume'],                                      'pattern' => 'pressroot/resume-full'],
+        'services'  => ['slugs' => ['services'],                                    'pattern' => 'pressroot/services-full'],
+        'pricing'   => ['slugs' => ['pricing'],                                     'pattern' => 'pressroot/pricing-full'],
+        'contact'   => ['slugs' => ['contact'],                                     'pattern' => 'pressroot/contact-full'],
+        'resources' => ['slugs' => ['resources', 'power-platform-learning-resources'], 'pattern' => 'pressroot/resources-full'],
     ];
 
     $which = sanitize_key((string) $_GET['prt_reseed']);

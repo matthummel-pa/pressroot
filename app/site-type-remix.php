@@ -120,7 +120,7 @@ add_action('admin_post_prt_save_brand_profile', function () {
 /** Which style kits each site type may be dealt. First entry = the classic default. */
 function prt_site_type_kit_pools(): array
 {
-    return apply_filters('matthummel/site_type_kit_pools', [
+    return apply_filters('pressroot/site_type_kit_pools', [
         'agency'     => ['paper_space', 'iris_dark', 'pink_pop', 'cyan_sky'],
         'freelance'  => ['editorial', 'coral_cream', 'mint_fresh', 'paper_space'],
         'saas'       => ['midnight', 'iris_dark', 'cyan_sky', 'mono_slate'],
@@ -205,7 +205,7 @@ function prt_refresh_branding(): void
  */
 function prt_design_trends(): array
 {
-    return apply_filters('matthummel/design_trends', [
+    return apply_filters('pressroot/design_trends', [
         'bento'     => ['label' => __('Bento spectrum', 'pressroot'),  'vibes' => ['bold', 'playful'],   'desc' => __('The Repofolio signature: spectrum-topped cards, gradient pills.', 'pressroot')],
         'glass'     => ['label' => __('Glassmorphism', 'pressroot'),   'vibes' => ['minimal', 'playful'], 'desc' => __('Frosted translucent cards with soft depth.', 'pressroot')],
         'brutalist' => ['label' => __('Neo-brutalist', 'pressroot'),   'vibes' => ['bold'],               'desc' => __('Chunky ink borders, hard offset shadows, zero blur.', 'pressroot')],
@@ -266,7 +266,7 @@ add_filter('body_class', function (array $classes): array {
  */
 function prt_site_type_questions(): array
 {
-    return apply_filters('matthummel/site_type_questions', [
+    return apply_filters('pressroot/site_type_questions', [
         'marketing' => [
             ['offer',     __('The offer, in one line', 'pressroot'),           __('e.g. 20% off first service for new customers', 'pressroot')],
             ['proof',     __('Best proof number', 'pressroot'),                __('e.g. 2,300 customers · 4.9★ on Google · $1.2M saved', 'pressroot')],
@@ -376,7 +376,7 @@ function prt_type_questions_html(string $typeId, string $typeLabel): void
  * designs per page instead of two. Runs through the existing site_types
  * filter — no site-type file needs editing to participate.
  */
-add_filter('matthummel/site_types', function (array $types): array {
+add_filter('pressroot/site_types', function (array $types): array {
     foreach ($types as $typeId => &$type) {
         foreach ($type['pages'] as &$page) {
             $page['pattern_c'] = 'prt-site/' . $typeId . '-' . $page['role'] . '-c';
@@ -535,6 +535,34 @@ function prt_core_ai_instructions(): string
     $lines[] = '- Primary goal of every page: ' . ($goalMap[$b['goal']] ?? $goalMap['leads']);
     $lines[] = '- Visual direction: ' . ($b['mode'] === 'dark' ? 'dark' : 'light') . ' UI, ' . $b['vibe'] . ' personality, "' . $trend . '" design trend' . ($kit !== '' ? ', "' . $kit . '" style kit' : '') . ', imagery style: ' . $b['imagery'] . '.';
     $lines[] = '- Copy density: ' . $b['density'] . '. Never overpromise. No jargon. Plain language.';
+
+    // Business facts from the Setup wizard's step 1 (app/setup-wizard.php):
+    // mission, description, contact, hours. Included so the AI states real
+    // facts instead of inventing them; each line only appears when set.
+    $mission = trim((string) get_theme_mod('prt_biz_mission', ''));
+    if ($mission !== '') {
+        $lines[] = '- Mission: ' . sanitize_text_field($mission);
+    }
+    $about = trim((string) get_theme_mod('prt_biz_about', ''));
+    if ($about !== '') {
+        $lines[] = '- What the business does (owner\'s own words — quote facts from here, never invent): ' . sanitize_text_field($about);
+    }
+    $contactBits = array_filter([
+        get_theme_mod('prt_biz_email', '') ? 'email ' . sanitize_text_field((string) get_theme_mod('prt_biz_email')) : '',
+        get_theme_mod('prt_biz_phone', '') ? 'phone ' . sanitize_text_field((string) get_theme_mod('prt_biz_phone')) : '',
+        get_theme_mod('prt_biz_address', '') ? 'location/service area: ' . sanitize_text_field((string) get_theme_mod('prt_biz_address')) : '',
+    ]);
+    if ($contactBits) {
+        $lines[] = '- Contact: ' . implode('; ', $contactBits);
+    }
+    $bizHours = get_theme_mod('prt_biz_hours', []);
+    if (is_array($bizHours) && array_filter($bizHours)) {
+        $hourBits = [];
+        foreach (array_filter($bizHours) as $d => $h) {
+            $hourBits[] = ucfirst((string) $d) . ' ' . sanitize_text_field((string) $h);
+        }
+        $lines[] = '- Hours: ' . implode('; ', $hourBits);
+    }
 
     // Per-site-type marketing answers, all applied types.
     if (function_exists('App\\prt_get_site_type_pages')) {
@@ -964,7 +992,7 @@ function prt_brand_tab_html(): void
                 <th scope="row"><label for="prt_brand_industry_sel"><?php esc_html_e('Industry', 'pressroot'); ?></label></th>
                 <td>
                     <?php
-                    $industries = apply_filters('matthummel/brand_industries', [
+                    $industries = apply_filters('pressroot/brand_industries', [
                         __('Home services (plumbing, HVAC, electrical)', 'pressroot'),
                         __('Construction & trades', 'pressroot'),
                         __('Restaurant, café & food', 'pressroot'),

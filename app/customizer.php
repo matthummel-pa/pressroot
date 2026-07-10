@@ -53,7 +53,7 @@ function prt_ensure_theme_options_panel($wp): void
  */
 function prt_defaults()
 {
-    return apply_filters('matthummel/theme_defaults', [
+    return apply_filters('pressroot/theme_defaults', [
         'prt_color_action' => '#6C4CF1',
         'prt_color_paper'  => '#FFF9F5',
         'prt_color_ink'    => '#17151F',
@@ -86,7 +86,7 @@ function prt_mod($key)
  */
 function prt_fonts()
 {
-    return apply_filters('matthummel/fonts', [
+    return apply_filters('pressroot/fonts', [
 
         /* ── Modern Sans ───────────────────────────────────────────────── */
         'Geist'               => ['Geist:wght@400;500;600;700',                        '"Geist", system-ui, sans-serif'],
@@ -231,12 +231,12 @@ add_action('customize_register', function ($wp) {
 
 /* Wire Theme Options values into the theme's existing filter hooks, so header/
    footer templates stay decoupled from the Customizer and just call a filter
-   (e.g. apply_filters('matthummel/header_cta_url', ...)) without knowing or
+   (e.g. apply_filters('pressroot/header_cta_url', ...)) without knowing or
    caring that the value happens to come from a theme_mod. */
-add_filter('matthummel/header_cta_label', fn () => prt_mod('prt_cta_text'));
-add_filter('matthummel/header_cta_url', fn () => prt_mod('prt_cta_url'));
-add_filter('matthummel/show_header_cta', fn () => (bool) prt_mod('prt_show_cta'));
-add_filter('matthummel/footer_text', fn () => prt_mod('prt_footer_text'));
+add_filter('pressroot/header_cta_label', fn () => prt_mod('prt_cta_text'));
+add_filter('pressroot/header_cta_url', fn () => prt_mod('prt_cta_url'));
+add_filter('pressroot/show_header_cta', fn () => (bool) prt_mod('prt_show_cta'));
+add_filter('pressroot/footer_text', fn () => prt_mod('prt_footer_text'));
 
 /**
  * Load the selected heading + body fonts from Google Fonts.
@@ -414,5 +414,5 @@ function prt_width_options($include_preset = false)
         '1440' => '1440px (extra wide)',
         '1600' => '1600px (max)',
     ];
-    return apply_filters('matthummel/width_options', $opts);
+    return apply_filters('pressroot/width_options', $opts);
 }

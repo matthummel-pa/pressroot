@@ -39,13 +39,13 @@ function prt_icon($name, $class = '', $attrs = [])
  * Map a social network key (e.g. "github", "x") to a Blade icon name.
  * Brand glyphs come from Simple Icons (prefix "simpleicon"); non-brands use Heroicons.
  *
- * Filterable via `matthummel/social_icon_names` so a child theme/plugin can add
+ * Filterable via `pressroot/social_icon_names` so a child theme/plugin can add
  * new networks or swap icon sets without editing this file — needed once this
  * theme is a distributed product other developers extend.
  */
 function prt_social_icon_name($key)
 {
-    $map = apply_filters('matthummel/social_icon_names', [
+    $map = apply_filters('pressroot/social_icon_names', [
         'linkedin'  => 'prt-linkedin',
         'github'    => 'si-github',
         'devto'     => 'si-devdotto',
@@ -69,7 +69,7 @@ function prt_social_icon_name($key)
  */
 function prt_social_color($key)
 {
-    $c = apply_filters('matthummel/social_colors', [
+    $c = apply_filters('pressroot/social_colors', [
         'linkedin'  => '#0A66C2',
         'github'    => '#181717',
         'devto'     => '#0A0A0A',

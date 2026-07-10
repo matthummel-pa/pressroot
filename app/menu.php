@@ -17,8 +17,8 @@ namespace App;
  * list of networks, not two — that file used to also register its own
  * (identical) set of prt_social_{key} settings with no controls attached,
  * shadowing the real ones registered below; that duplicate registration was
- * removed, and matthummel/social_platforms is now the actual extension point
- * for this list (matthummel/socials_map still runs after, for back-compat).
+ * removed, and pressroot/social_platforms is now the actual extension point
+ * for this list (pressroot/socials_map still runs after, for back-compat).
  */
 function prt_socials_map()
 {
@@ -26,7 +26,7 @@ function prt_socials_map()
     foreach (prt_social_platforms() as $key => $p) {
         $out[$key] = [$p['label'], $p['default']];
     }
-    return apply_filters('matthummel/socials_map', $out);
+    return apply_filters('pressroot/socials_map', $out);
 }
 
 /**

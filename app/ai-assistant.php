@@ -87,13 +87,13 @@ add_action('init', function () {
  * and TWO pattern slugs (variant A/B) registered in this site type's
  * dedicated site-type-*.php file.
  *
- * Filterable (`matthummel/site_types`) so a fork of this theme aimed at a
+ * Filterable (`pressroot/site_types`) so a fork of this theme aimed at a
  * different niche can add, remove, or re-map profiles without editing this
  * file directly — the same extensibility convention prt_style_kits() uses.
  */
 function prt_site_types()
 {
-    return apply_filters('matthummel/site_types', [
+    return apply_filters('pressroot/site_types', [
         'agency' => [
             'label' => __('Agency / Studio', 'pressroot'),
             'desc'  => __('Multi-service shop selling to clients: Services, Pricing, Contact.', 'pressroot'),
@@ -870,7 +870,9 @@ add_action('admin_post_prt_apply_site_type', function () {
     }
     prt_flush_design_caches();
 
-    wp_safe_redirect(prt_settings_tab_url('ai', [
+    // Honors a posted prt_return_tab/prt_return_step (the Setup wizard posts
+    // these so its stage-A form comes back to step 4); defaults unchanged.
+    wp_safe_redirect(prt_settings_return_url('ai', [
         'prt_site_type_result'  => $id,
         'prt_created'           => rawurlencode(implode(', ', $created)),
         'prt_refreshed'         => rawurlencode(implode(', ', $refreshed)),

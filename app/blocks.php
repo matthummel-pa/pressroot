@@ -15,7 +15,7 @@ add_action('init', function () {
         return;
     }
 
-    register_block_pattern('matthummel/callout', [
+    register_block_pattern('pressroot/callout', [
         'title'      => __('Callout', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -27,7 +27,7 @@ add_action('init', function () {
 HTML,
     ]);
 
-    register_block_pattern('matthummel/cta-band', [
+    register_block_pattern('pressroot/cta-band', [
         'title'      => __('CTA band', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -47,7 +47,7 @@ HTML,
 HTML,
     ]);
 
-    register_block_pattern('matthummel/stat-strip', [
+    register_block_pattern('pressroot/stat-strip', [
         'title'      => __('Stat strip', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'
@@ -80,7 +80,7 @@ HTML,
 HTML,
     ]);
 
-    register_block_pattern('matthummel/faq', [
+    register_block_pattern('pressroot/faq', [
         'title'      => __('FAQ', 'pressroot'),
         'categories' => ['pressroot'],
         'content'    => <<<'HTML'

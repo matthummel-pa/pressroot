@@ -1,5 +1,11 @@
 # Mockups & Branding
 
+> **Looking for how Pressroot looks today?** The current identity (Repofolio iris
+> spectrum) lives in **[DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)** with theme preview
+> boards: [design-language-sheet.svg](brand/design-language-sheet.svg) and
+> [theme-previews.svg](mockups/theme-previews.svg). Everything below documents the
+> **original matthummel.com direction** ("Paper + green") and is kept as history.
+
 Design references for the matthummel.com Sage theme. These were drafted as the design
 direction and the built theme matches them.
 

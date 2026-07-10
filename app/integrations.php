@@ -179,7 +179,10 @@ add_action('wp_footer', function () {
     $lurl = esc_url(get_theme_mod('prt_cookie_lurl', ''));
     $ltxt = esc_html(get_theme_mod('prt_cookie_ltext', ''));
     $link = ($lurl && $ltxt) ? ' <a href="' . $lurl . '">' . $ltxt . '</a>' : '';
-    echo '<div class="prt-cookie" role="dialog" aria-label="' . esc_attr__('Cookie notice', 'pressroot') . '"><p>' . $text . $link . '</p><button class="btn prt-cookie-ok">' . $btn . '</button></div>';
+    // role="region" (not "dialog"): this is a passive, non-modal banner with
+    // no focus management — role="dialog" would promise AT behavior (focus
+    // move/trap) that a cookie strip doesn't and shouldn't implement.
+    echo '<div class="prt-cookie" role="region" aria-label="' . esc_attr__('Cookie notice', 'pressroot') . '"><p>' . $text . $link . '</p><button class="btn prt-cookie-ok">' . $btn . '</button></div>';
     echo '<style>.prt-cookie{position:fixed;left:16px;right:16px;bottom:16px;max-width:560px;margin:0 auto;background:var(--color-ink,#17191e);color:#fff;padding:14px 16px;border-radius:12px;display:flex;gap:14px;align-items:center;justify-content:space-between;z-index:95;box-shadow:0 10px 30px rgba(0,0,0,.25);font-size:14px;}.prt-cookie p{margin:0;}.prt-cookie a{color:#fff;text-decoration:underline;}.prt-cookie.is-hidden{display:none;}</style>';
     echo "<script>(function(){var b=document.querySelector('.prt-cookie');if(!b)return;var k='prt-cookie-ok';try{if(localStorage.getItem(k)==='1'){b.classList.add('is-hidden');return;}}catch(e){}var ok=b.querySelector('.prt-cookie-ok');if(ok)ok.addEventListener('click',function(){b.classList.add('is-hidden');try{localStorage.setItem(k,'1');}catch(e){}});})();</script>";
 }, 60);

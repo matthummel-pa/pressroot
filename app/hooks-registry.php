@@ -36,43 +36,43 @@ function prt_hook_registry(): array
 {
     return [
         'filters' => [
-            'matthummel/style_kits' => [
+            'pressroot/style_kits' => [
                 'file' => 'app/settings-io.php',
                 'desc' => 'Add or override one-click Style Kit presets (Appearance -> Theme Tools).',
             ],
-            'matthummel/theme_defaults' => [
+            'pressroot/theme_defaults' => [
                 'file' => 'app/customizer.php',
                 'desc' => 'Override the theme-wide default colors, fonts, container width, and header/footer copy before any theme_mod is applied.',
             ],
-            'matthummel/fonts' => [
+            'pressroot/fonts' => [
                 'file' => 'app/customizer.php',
                 'desc' => 'Add, remove, or re-map the Google Fonts available in Typography controls.',
             ],
-            'matthummel/width_options' => [
+            'pressroot/width_options' => [
                 'file' => 'app/customizer.php',
                 'desc' => 'Add custom content-width presets to the "Content width" / "Top bar width" etc. select controls.',
             ],
-            'matthummel/font_weights' => [
+            'pressroot/font_weights' => [
                 'file' => 'app/typography.php',
                 'desc' => 'Change the weight choices offered for headings, body, nav, and buttons.',
             ],
-            'matthummel/socials_map' => [
+            'pressroot/socials_map' => [
                 'file' => 'app/menu.php',
                 'desc' => 'Add or rename social networks available for the popout menu / social URL fields.',
             ],
-            'matthummel/social_platforms' => [
+            'pressroot/social_platforms' => [
                 'file' => 'app/social-links.php',
                 'desc' => 'Add social platforms available for the Menu & Popout social URL fields (label + default URL).',
             ],
-            'matthummel/social_icon_names' => [
+            'pressroot/social_icon_names' => [
                 'file' => 'app/icons.php',
                 'desc' => 'Map a social network key to a different Blade Icons name.',
             ],
-            'matthummel/social_colors' => [
+            'pressroot/social_colors' => [
                 'file' => 'app/icons.php',
                 'desc' => 'Override a social network\'s official brand color (used by "Brand colors" icon style).',
             ],
-            'matthummel/github_owner' => [
+            'pressroot/github_owner' => [
                 'file' => 'app/seed-pages.php',
                 'desc' => 'Override the default GitHub username used when seeding demo project content.',
             ],

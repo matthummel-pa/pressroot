@@ -167,7 +167,16 @@ function prt_img_import_rest($req)
     if ($url === '') {
         return new \WP_REST_Response(['error' => 'No URL'], 200);
     }
-    $resp = wp_remote_get($url, ['timeout' => 40]);
+    // SSRF guard: the URL comes from the client, so (1) core's
+    // wp_http_validate_url() rejects loopback/private/link-local hosts and
+    // non-http(s) schemes, and (2) wp_safe_remote_get() applies
+    // reject_unsafe_urls to the request itself (covering redirects too). A
+    // strict host allowlist isn't viable here — Openverse results point at
+    // arbitrary source hosts (Wikimedia, Flickr, museum archives…) by design.
+    if (! wp_http_validate_url($url)) {
+        return new \WP_REST_Response(['error' => 'URL not allowed'], 200);
+    }
+    $resp = wp_safe_remote_get($url, ['timeout' => 40]);
     if (is_wp_error($resp)) {
         return new \WP_REST_Response(['error' => $resp->get_error_message()], 200);
     }
@@ -179,6 +188,9 @@ function prt_img_import_rest($req)
         return new \WP_REST_Response(['error' => 'Empty response'], 200);
     }
     $ctype = (string) wp_remote_retrieve_header($resp, 'content-type');
+    if (stripos($ctype, 'image/') !== 0) {
+        return new \WP_REST_Response(['error' => 'Not an image'], 200);
+    }
     $ext   = strpos($ctype, 'png') !== false ? 'png' : (strpos($ctype, 'webp') !== false ? 'webp' : (strpos($ctype, 'gif') !== false ? 'gif' : 'jpg'));
     $name  = 'prt-hero-' . wp_generate_password(8, false) . '.' . $ext;
 

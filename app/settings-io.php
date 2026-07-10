@@ -87,7 +87,7 @@ function prt_apply_style_kit(string $slug): bool
 /** One-click design presets (palette + fonts + radius). */
 function prt_style_kits()
 {
-    return apply_filters('matthummel/style_kits', [
+    return apply_filters('pressroot/style_kits', [
         'paper_space' => [
             'mode'  => 'light', 'vibes' => ['bold', 'playful'],
             'label' => __('Paper + Space', 'pressroot'),
@@ -285,18 +285,30 @@ function prt_settings_backup_fields_html()
     <?php
 }
 
-/** Export all prt_* theme mods as JSON download. */
+/**
+ * Export all prt_* theme mods as JSON download — EXCEPT secrets. API keys
+ * (prt_ai_key_*, anything *_key/*_token/*_secret) never leave the server:
+ * the AI connectors' design promise is "keys stay server-side", and a
+ * plaintext key inside a downloadable backup breaks that promise the moment
+ * the file lands in Dropbox or an email attachment.
+ */
 add_action('admin_post_prt_export_settings', function () {
     prt_require_admin_post('prt_export_settings');
+    $mods = prt_owned_mods();
+    foreach (array_keys($mods) as $k) {
+        if (preg_match('/(^prt_ai_key_|_key$|_token$|_secret$)/', (string) $k)) {
+            unset($mods[$k]);
+        }
+    }
     $payload = [
         'theme'   => 'pressroot',
         'version' => wp_get_theme()->get('Version'),
         'date'    => gmdate('c'),
-        'mods'    => prt_owned_mods(),
+        'mods'    => $mods,
     ];
     nocache_headers();
     header('Content-Type: application/json; charset=utf-8');
-    header('Content-Disposition: attachment; filename=matthummel-settings-' . gmdate('Ymd-His') . '.json');
+    header('Content-Disposition: attachment; filename=pressroot-settings-' . gmdate('Ymd-His') . '.json');
     echo wp_json_encode($payload, JSON_PRETTY_PRINT);
     exit;
 });
@@ -309,8 +321,17 @@ add_action('admin_post_prt_import_settings', function () {
         $raw  = file_get_contents($_FILES['prt_import_file']['tmp_name']);
         $data = json_decode($raw, true);
         if (is_array($data) && isset($data['mods']) && is_array($data['mods'])) {
+            // The code-injection mods (prt_code_head/body/footer) are echoed
+            // RAW on the front end; the Customizer gates them through
+            // prt_sanitize_code() (kses for users without unfiltered_html).
+            // Import must apply the same gate, or an uploaded JSON becomes an
+            // unfiltered-HTML bypass (e.g. multisite admins lack that cap).
+            $codeMods = ['prt_code_head', 'prt_code_body', 'prt_code_footer'];
             foreach ($data['mods'] as $k => $v) {
                 if (is_string($k) && strpos($k, 'prt_') === 0 && (is_scalar($v) || is_array($v))) {
+                    if (in_array($k, $codeMods, true) && function_exists('App\\prt_sanitize_code')) {
+                        $v = prt_sanitize_code((string) $v);
+                    }
                     set_theme_mod($k, $v);
                 }
             }

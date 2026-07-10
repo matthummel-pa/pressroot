@@ -16,7 +16,7 @@ add_action('template_redirect', function () {
         ] : null;
     }
     foreach (\WP_Block_Patterns_Registry::get_instance()->get_all_registered() as $pat) {
-        if (str_starts_with($pat['name'], 'matthummel/')) {
+        if (str_starts_with($pat['name'], 'pressroot/')) {
             $out['patterns'][] = $pat['name'] . ':' . strlen($pat['content'] ?? '');
         }
     }

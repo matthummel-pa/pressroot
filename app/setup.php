@@ -142,6 +142,13 @@ add_filter('theme_file_path', function ($path, $file) {
  */
 add_action('after_setup_theme', function () {
     /**
+     * Load the translation catalog. Ships as resources/lang/pressroot.pot
+     * (generate/update via `npm run translate:pot`); .mo files for each
+     * locale live alongside it.
+     */
+    load_theme_textdomain('pressroot', get_template_directory() . '/resources/lang');
+
+    /**
      * Disable full-site editing support.
      *
      * @link https://wptavern.com/gutenberg-10-5-embeds-pdfs-adds-verse-block-color-options-and-introduces-new-patterns
@@ -154,7 +161,7 @@ add_action('after_setup_theme', function () {
      * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
      */
     register_nav_menus([
-        'primary_navigation' => __('Primary Navigation', 'sage'),
+        'primary_navigation' => __('Primary Navigation', 'pressroot'),
     ]);
 
     /**
@@ -222,12 +229,12 @@ add_action('widgets_init', function () {
     ];
 
     register_sidebar([
-        'name' => __('Primary', 'sage'),
+        'name' => __('Primary', 'pressroot'),
         'id' => 'sidebar-primary',
     ] + $config);
 
     register_sidebar([
-        'name' => __('Footer', 'sage'),
+        'name' => __('Footer', 'pressroot'),
         'id' => 'sidebar-footer',
     ] + $config);
 });

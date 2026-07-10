@@ -302,3 +302,248 @@
   .prt-rf-nav { width: 100%; }
   .prt-rf-nav ul { flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ----------------------------------------------------------------------
+   Setup wizard (app/setup-wizard.php) — the six-step onboarding flow.
+   Same design language: spectrum accents, pill chips, .prt-rf-card base.
+---------------------------------------------------------------------- */
+
+/* Stepper: numbered chips joined by a soft rail */
+.prt-wiz-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 18px 0 22px;
+  padding: 0;
+}
+.prt-wiz-steps li { margin: 0; }
+.prt-wiz-step a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--card-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--slate);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: border-color .15s ease, color .15s ease;
+}
+.prt-wiz-step a:hover { border-color: var(--iris); color: var(--iris); }
+.prt-wiz-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #efeafd;
+  color: var(--iris);
+  font-size: 12px;
+  font-weight: 700;
+}
+.prt-wiz-step.is-done .prt-wiz-step-num { background: #e7f8ee; color: #1e7a34; }
+.prt-wiz-step.is-done a { color: var(--ink); }
+.prt-wiz-step.is-current a {
+  border-color: transparent;
+  background: var(--grad);
+  color: #fff;
+}
+.prt-wiz-step.is-current .prt-wiz-step-num { background: rgba(255, 255, 255, .25); color: #fff; }
+
+/* Overall progress bar under the stepper */
+.prt-wiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 860px;
+  margin: -8px 0 20px;
+}
+.prt-wiz-progress-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #ece6fb;
+  overflow: hidden;
+}
+.prt-wiz-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--spectrum);
+  transition: width .5s ease;
+}
+.prt-wiz-progress-text {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate);
+}
+
+/* Per-form "working…" status bar (armed by prtWizStart on submit) */
+.prt-wiz-saving {
+  position: sticky;
+  top: 32px;
+  z-index: 9;
+  max-width: 720px;
+  margin: 0 0 14px;
+  padding: 12px 18px;
+  border: 1.5px solid var(--card-line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(23, 21, 31, .06);
+}
+.prt-wiz-saving-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #ece6fb;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.prt-wiz-saving-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--spectrum);
+  transition: width .8s ease;
+}
+
+/* Step card + section rhythm */
+.prt-wiz-card { padding: 22px 26px; max-width: 860px; }
+.prt-wiz-card h4 { margin: 26px 0 6px; font-size: 15px; }
+.prt-wiz-card .required { color: var(--pink); }
+
+/* Status badges (Connected / Active / Draft…) */
+.prt-wiz-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #f1eefb;
+  color: var(--slate);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.prt-wiz-badge.is-ok { background: #e7f8ee; color: #1e7a34; }
+
+/* Business hours + social URL grids */
+.prt-wiz-hours,
+.prt-wiz-social {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px 18px;
+  max-width: 680px;
+}
+.prt-wiz-hours label,
+.prt-wiz-social label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.prt-wiz-hours label span,
+.prt-wiz-social label span { flex: 0 0 84px; font-weight: 600; }
+.prt-wiz-hours input,
+.prt-wiz-social input { flex: 1; }
+
+/* SEO plugin selector cards */
+.prt-wiz-seo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 10px 0 6px;
+}
+.prt-wiz-seo-card {
+  position: relative;
+  display: block;
+  padding: 14px 16px;
+  border: 1.5px solid var(--card-line);
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.prt-wiz-seo-card:hover { border-color: var(--iris); }
+.prt-wiz-seo-card.is-selected,
+.prt-wiz-seo-card:has(input:checked) {
+  border-color: var(--iris);
+  box-shadow: 0 0 0 3px rgba(108, 76, 241, .14);
+}
+.prt-wiz-seo-card input { position: absolute; top: 14px; right: 12px; }
+.prt-wiz-seo-card p { margin: 6px 0 10px; font-size: 12px; color: var(--slate); }
+
+/* Collapsible guides (SEO 101, GA walkthrough, WP settings map) */
+.prt-wiz-guide {
+  margin: 10px 0;
+  border: 1.5px solid var(--card-line);
+  border-radius: 12px;
+  background: #faf8ff;
+  max-width: 720px;
+}
+.prt-wiz-guide summary {
+  cursor: pointer;
+  padding: 10px 16px;
+  font-weight: 600;
+  color: var(--iris);
+}
+.prt-wiz-guide > div { padding: 0 18px 14px; font-size: 13px; }
+.prt-wiz-guide ol li,
+.prt-wiz-guide ul li { margin-bottom: 6px; }
+
+/* Generation stages */
+.prt-wiz-stage {
+  margin: 14px 0;
+  padding: 16px 18px;
+  border: 1.5px solid var(--card-line);
+  border-radius: 14px;
+  background: #fff;
+}
+.prt-wiz-stage h4 { margin: 0 0 4px; }
+
+/* Review: homepage preview frame + "where to edit" map */
+.prt-wiz-frame-wrap {
+  border: 1.5px solid var(--card-line);
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 820px;
+  background: #fff;
+}
+.prt-wiz-frame-wrap .prt-preview-frame {
+  display: block;
+  width: 100%;
+  height: 420px;
+  border: 0;
+}
+.prt-wiz-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  max-width: 820px;
+}
+.prt-wiz-map > div {
+  padding: 14px 16px;
+  border: 1.5px solid var(--card-line);
+  border-radius: 14px;
+  background: #fff;
+}
+.prt-wiz-map p { margin: 6px 0 0; font-size: 12.5px; color: var(--slate); }
+
+/* Launch checklist */
+.prt-wiz-checklist {
+  list-style: none;
+  margin: 8px 0 18px;
+  padding: 0;
+  max-width: 560px;
+}
+.prt-wiz-checklist li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--card-line);
+  font-size: 13.5px;
+}
+.prt-wiz-checklist li a { margin-left: auto; font-weight: 600; }
+.prt-wiz-checklist li.is-ok { color: var(--slate); }

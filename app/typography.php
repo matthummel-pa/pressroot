@@ -58,12 +58,12 @@ add_action('customize_register', function ($wp) {
     $sel($wp, 'prt_font_nav', __('Navigation font', 'pressroot'), $fontChoices, 'Default');
     $sel($wp, 'prt_font_button', __('Button font', 'pressroot'), $fontChoices, 'Default');
 
-    // NOTE(audit): filter tag uses the 'matthummel/' vendor prefix while every
+    // NOTE(audit): filter tag uses the 'pressroot/' vendor prefix while every
     // other extension point in this theme uses 'prt_'/'pressroot' naming
     // (e.g. prt_full_block_supports, prt-* CSS classes). Likely a leftover
     // from before the theme was renamed to Pressroot — worth aligning if this
     // becomes a public filter other developers are expected to hook into.
-    $weights = apply_filters('matthummel/font_weights', ['300' => '300 Light', '400' => '400 Regular', '500' => '500 Medium', '600' => '600 Semibold', '700' => '700 Bold', '800' => '800 Extrabold']);
+    $weights = apply_filters('pressroot/font_weights', ['300' => '300 Light', '400' => '400 Regular', '500' => '500 Medium', '600' => '600 Semibold', '700' => '700 Bold', '800' => '800 Extrabold']);
     $sel($wp, 'prt_weight_heading', __('Heading weight', 'pressroot'), $weights, '600');
     $sel($wp, 'prt_weight_body', __('Body weight', 'pressroot'), ['300' => '300 Light', '400' => '400 Regular', '500' => '500 Medium'], '400');
     $sel($wp, 'prt_weight_nav', __('Nav weight', 'pressroot'), $weights, '500');

@@ -295,7 +295,9 @@ add_action('admin_post_prt_ai_fill_all', function () {
         $res = prt_ai_fill_page((int) $sp->ID, $model);
         $res['ok'] ? $total += $res['replaced'] : $errors++;
     }
-    wp_safe_redirect(prt_settings_tab_url('ai', ['prt_ai_filled' => $total, 'prt_ai_fill_errors' => $errors]));
+    // prt_settings_return_url(): the Setup wizard posts prt_return_tab/step
+    // so its "AI-write all pages" run lands back on wizard step 4.
+    wp_safe_redirect(prt_settings_return_url('ai', ['prt_ai_filled' => $total, 'prt_ai_fill_errors' => $errors]));
     exit;
 });
 
@@ -345,6 +347,15 @@ add_action('admin_post_prt_ai_page_image', function () {
         wp_safe_redirect(prt_settings_tab_url('ai', ['prt_ai_fill_error' => rawurlencode($attachId->get_error_message())]));
         exit;
     }
+    // Accessibility: media_handle_sideload's third arg is only the attachment
+    // description — alt text must be set explicitly or every generated image
+    // ships with empty alt (WCAG 1.1.1).
+    update_post_meta($attachId, '_wp_attachment_image_alt', sprintf(
+        /* translators: 1: page title, 2: industry/business description */
+        __('%1$s — illustrative image for %2$s', 'pressroot'),
+        $page->post_title,
+        $brand['industry'] ?: ($brand['desc'] ?: get_bloginfo('name'))
+    ));
     set_post_thumbnail($pageId, $attachId);
     $back = prt_ai_builder_back_url($pageId);
     wp_safe_redirect($back !== '' ? $back : prt_settings_tab_url('ai', ['prt_ai_img_done' => '1']));
@@ -378,7 +389,7 @@ add_action('admin_post_prt_ai_brand_image', function () {
         ? prt_ai_generate_image($prompt, 900, 1140)
         : ['ok' => false, 'file' => '', 'error' => __('Image providers unavailable.', 'pressroot')];
     if (empty($gen['ok'])) {
-        wp_safe_redirect(prt_settings_tab_url('settings', ['prt_img_error' => rawurlencode($gen['error'] ?? 'error')]));
+        wp_safe_redirect(prt_settings_return_url('settings', ['prt_img_error' => rawurlencode($gen['error'] ?? 'error')]));
         exit;
     }
     $tmp = $gen['file'];
@@ -388,14 +399,23 @@ add_action('admin_post_prt_ai_brand_image', function () {
     ], 0, __('AI-generated brand hero image', 'pressroot'));
     if (is_wp_error($attachId)) {
         @unlink($tmp);
-        wp_safe_redirect(prt_settings_tab_url('settings', ['prt_img_error' => rawurlencode($attachId->get_error_message())]));
+        wp_safe_redirect(prt_settings_return_url('settings', ['prt_img_error' => rawurlencode($attachId->get_error_message())]));
         exit;
     }
 
+    // Accessibility: give the generated hero a real alt (see note in the
+    // per-page handler above).
+    update_post_meta($attachId, '_wp_attachment_image_alt', sprintf(
+        /* translators: %s: industry or business description */
+        __('Brand hero image for %s', 'pressroot'),
+        $brand['industry'] ?: ($brand['desc'] ?: get_bloginfo('name'))
+    ));
     set_theme_mod('prt_hero_portrait', wp_get_attachment_url($attachId));
     if (function_exists('App\\prt_flush_design_caches')) {
         prt_flush_design_caches();
     }
-    wp_safe_redirect(prt_settings_tab_url('settings', ['prt_img_done' => '1']));
+    // Setup-wizard runs return to step 4 (posted prt_return_tab/step);
+    // Theme Settings runs keep landing on the settings tab as before.
+    wp_safe_redirect(prt_settings_return_url('settings', ['prt_img_done' => '1']));
     exit;
 });

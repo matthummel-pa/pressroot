@@ -6,11 +6,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Settings export no longer includes API keys (`prt_ai_key_*` and all `*_key/_token/_secret` mods redacted); export filename de-branded to `pressroot-settings-*.json`.
+- Settings import now runs the code-injection mods (`prt_code_head/body/footer`) through `prt_sanitize_code()`, closing an unfiltered-HTML bypass.
+- Hero image importer hardened against SSRF: `wp_http_validate_url()` + `wp_safe_remote_get()` + `image/*` content-type check.
+- Contact form: per-IP rate limit (30s), and the hardcoded `[matthummel.com]` subject prefix now uses the site name.
+
+### Accessibility
+- Off-canvas menu: `inert`/`aria-hidden` when closed, focus trap while open, focus returned to the toggle on close; toggle button now toggles closed too.
+- AI-generated images (per-page + brand hero) get real alt text via `_wp_attachment_image_alt`.
+- Cookie notice corrected from `role="dialog"` to `role="region"`.
+
 ### Added
+- **Marketplace readiness**: full security/accessibility/marketplace audit report (`docs/MARKETPLACE-READINESS.md`), third-party services & privacy disclosure (`docs/THIRD-PARTY-SERVICES.md`) with an AI privacy note in the Setup wizard, `.distignore` for release packaging, and bundled-font license inventory (`resources/fonts/LICENSES.md`).
+- **Setup wizard** (`app/setup-wizard.php`): six-step guided onboarding on Appearance → Pressroot — Business info → Connections → WordPress settings → Generate → Review → Launch. First tab and default landing tab until completed once; resumable per-step progress (`prt_wizard_progress`); dashboard/themes welcome notice. Full reference in `docs/SETUP-WIZARD.md`.
+  - **Business info step**: business type + industry dropdowns, brand & voice, colors/fonts, logo + photo/video uploads to the Media Library, and new business-fact fields — mission, what-the-business-does, public email/phone/address, per-day business hours (`prt_biz_*` mods) — all compiled into the CORE SITE BRIEF so the AI quotes real facts instead of inventing them.
+  - **Connections step**: AI provider keys inline, an SEO plugin selector (built-in / Yoast / Rank Math / All in One SEO, `prt_seo_choice`) with live install/active status, one-click install/activate links, and a beginner's SEO primer; **Google Analytics via GA4 Measurement ID** (`prt_ga4_id`, validated, official gtag.js auto-injected, double-count guard against the manual head-code field) with step-by-step GA and Google Business Profile walkthroughs; addon toggles.
+  - **WordPress settings step**: timezone, pretty permalinks, site icon, search-engine visibility (hidden while building), and comment defaults — explained in plain English and applied in one click.
+  - **Generate step**: the site-type generator, "AI-write all pages", and brand-image generation sequenced as labeled stages, all returning to the wizard.
+  - **Review step**: homepage preview, per-page preview/edit table, and a "where to change what" map (words / images / whole design / chrome).
+  - **Launch step**: pre-flight checklist with Fix→ links, then one click publishes every generated draft, promotes a home page to static front page if none is set, and re-opens the site to search engines (`prt_wizard_launched`).
+  - **Status bars everywhere**: an overall completion bar under the stepper, plus a per-form animated "working…" bar with step-specific labels on every wizard submit (business save, connections, WP settings, design/pages, AI-write-all, brand image, launch) — sticky, spectrum-filled, parks at 92% until the server finishes, so long AI runs never look frozen.
+- `prt_settings_tabs()` registry is now filterable (`pressroot/settings_tabs`); generation handlers honor posted `prt_return_tab`/`prt_return_step` via the new `prt_settings_return_url()` so any surface can reuse them and get its users back.
+- Industry list extracted to a shared `prt_brand_industries()` (same `pressroot/brand_industries` filter) used by both the wizard and the Theme Settings tab.
+
 - **Beta program on the docs site**: Friends & Family concierge path (free domain for testers, site free to keep), tester feedback form (`docs/feedback.html`) that emails directly via FormSubmit and generates a pre-filled GitHub tracker issue, branded 1200×630 `og:image` share card on every page, and a Beta badge in the site nav.
 - README rewritten around the v1.6 product story: AI site-builder positioning, docs-site links, beta program, and the full model/provider matrix.
+- **Design documentation with theme previews** (`docs/DESIGN-SYSTEM.md`): the current Repofolio-iris design language transcribed from the Pressroot Design System Claude Design project — voice, palette, gradients, language bar, type, card anatomy, motion, iconography — plus two SVG preview boards so users can see how the theme looks before installing: `docs/brand/design-language-sheet.svg` (palette/gradients/type/components) and `docs/mockups/theme-previews.svg` (marketing site · generated business site · Setup wizard). Old "Paper + green" docs (BRAND-DESIGN-SYSTEM.md, MOCKUPS.md) banner-marked as historical; linked from README and the docs site.
+- Documentation refresh across the board: README gains Setup-wizard and hardening/extensibility feature sections plus links to the new docs; the docs site (`documentation.html`) gains a full Setup-wizard walkthrough with a privacy note; `DEVELOPMENT.md` gains dist-zip packaging (`.distignore` / `wp dist-archive`) and an Extending section documenting the `pressroot/*` namespace; `THEME-SETTINGS.md` intro reflects the six-tab settings page.
+
+### Changed
+- **BREAKING (pre-release): the entire public hook + pattern namespace renamed `matthummel/*` → `pressroot/*`** — every `apply_filters()` (site_types, style_kits, fonts, brand_industries, settings_tabs, addon_defaults, cta_*, social_platforms, github_owner, design_trends, …) and every registered pattern slug (`pressroot/home-full` etc.). `app/hooks-registry.php` remains the canonical index. Any child theme/mu-plugin hooking the old names must update; done now, before first sale, precisely because this API becomes permanent once buyers exist.
 
 ### Fixed
+- All 21 remaining `'sage'` text-domain strings switched to `'pressroot'`; `load_theme_textdomain('pressroot')` now loads `resources/lang/`; pot script renamed `sage.pot` → `pressroot.pot`.
+- `style.css` header: added `Tags:` and `Tested up to:`.
 - Documented the Playground SQLite corruption recovery ("Could not insert post into the database" → `database disk image is malformed` → iterdump rebuild) in BUILD-NOTES.
 
 ## [1.6.0] - 2026-07-08

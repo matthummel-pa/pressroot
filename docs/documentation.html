@@ -44,6 +44,7 @@
     <aside class="docs-side">
       <div class="group">Start here</div>
       <a href="#install">Install</a>
+      <a href="#setup-wizard">Setup wizard</a>
       <a href="#quickstart">10-minute quick start</a>
       <a href="#local-dev">Local dev (Playground)</a>
       <div class="group">Core concepts</div>
@@ -56,6 +57,7 @@
       <a href="#faq">FAQ</a>
       <div class="group">Reference</div>
       <a href="THEME-SETTINGS.html">Settings reference ↗</a>
+      <a href="https://github.com/matthummel-pa/pressroot/blob/main/docs/DESIGN-SYSTEM.md" target="_blank" rel="noopener">Design system ↗</a>
       <a href="https://github.com/matthummel-pa/pressroot/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture ↗</a>
       <a href="https://github.com/matthummel-pa/pressroot/blob/main/docs/DEVELOPMENT.md" target="_blank" rel="noopener">Development ↗</a>
     </aside>
@@ -72,7 +74,20 @@ npm install
 npm run build</code></pre>
       <p>Activate it under <strong>Appearance → Themes</strong>, then open <strong>Appearance → Pressroot</strong>. Requires PHP 8.3+ and WordPress 6.6+.</p>
 
-      <h2 id="quickstart">10-minute quick start</h2>
+      <h2 id="setup-wizard">Setup wizard — blank install to launched site</h2>
+      <p><strong>Appearance → Pressroot</strong> opens on a six-step guided wizard until you've completed it once. Progress saves per step, every step stays revisitable, and each long-running action shows a live status bar.</p>
+      <ol>
+        <li><strong>Business info</strong> — name, type, industry, brand &amp; voice, colors/fonts, logo &amp; photo uploads, plus mission, contact details, and per-day business hours. All of it compiles into the AI's site brief, so generated copy quotes <em>your</em> facts.</li>
+        <li><strong>Connections</strong> — optional AI provider keys (the free keyless default is pre-connected), an SEO plugin selector (built-in layer, Yoast, Rank Math, or All in One SEO — with one-click installs and a beginner's SEO primer), and Google Analytics: paste a GA4 Measurement ID and the official tracking snippet is injected for you, with step-by-step GA and Google Business Profile walkthroughs.</li>
+        <li><strong>WordPress settings</strong> — timezone, pretty permalinks, site icon, search-engine visibility (hidden while you build), and comment defaults, explained in plain English and applied in one click.</li>
+        <li><strong>Generate</strong> — design &amp; pages, ✨ AI-written copy, 🖼 brand imagery, run as labeled stages.</li>
+        <li><strong>Review</strong> — homepage preview, every page's preview/edit links, and a map of exactly where to change words, images, design, and navigation.</li>
+        <li><strong>Launch</strong> — pre-flight checklist, then one click publishes your draft pages, sets the front page, and opens the site to search engines. 🚀</li>
+      </ol>
+      <div class="note lime"><strong>Privacy:</strong> AI generation sends your business details to the provider you choose (the free default needs no account). Nothing is sent until you run a generate action, and one switch turns all AI off. Full inventory: <a href="https://github.com/matthummel-pa/pressroot/blob/main/docs/THIRD-PARTY-SERVICES.md" target="_blank" rel="noopener">Third-party services &amp; privacy</a>.</div>
+
+      <h2 id="quickstart">10-minute quick start (manual route)</h2>
+      <p>Prefer to skip the wizard? The tabs drive everything directly:</p>
       <ol>
         <li><strong>AI Models tab</strong> — pick a text and image model. The free keyless defaults work with zero setup; add a key only if you want a specific provider.</li>
         <li><strong>Theme Settings tab</strong> — fill in Identity (name + one-liner) and the Brand questionnaire, add AI instructions (up to 1,000 words, or upload <code>.md</code> instruction files), and hit <em>Save</em>. The status bar runs the build: core brief → design deal → nav/header/footer → smart copy.</li>

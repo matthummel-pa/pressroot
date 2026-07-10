@@ -25,7 +25,7 @@ add_action('init', function () {
 
     $patterns = [];
 
-    $patterns['matthummel/hero-centered-minimal'] = ['title' => __('Hero — centered minimal', 'pressroot'), 'categories' => ['prt-heroes', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/hero-centered-minimal'] = ['title' => __('Hero — centered minimal', 'pressroot'), 'categories' => ['prt-heroes', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:group {"className":"prt-hero","layout":{"type":"constrained"}} -->
 <div class="wp-block-group prt-hero"><!-- wp:heading {"textAlign":"center","level":1} -->
 <h1 class="wp-block-heading has-text-align-center">A short, bold statement about what you do</h1>
@@ -39,7 +39,7 @@ add_action('init', function () {
 <!-- /wp:group -->
 HTML];
 
-    $patterns['matthummel/hero-dev'] = ['title' => __('Hero — developer (with repos)', 'pressroot'), 'categories' => ['prt-heroes', 'prt-dev', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/hero-dev'] = ['title' => __('Hero — developer (with repos)', 'pressroot'), 'categories' => ['prt-heroes', 'prt-dev', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:group {"className":"prt-hero","layout":{"type":"constrained"}} -->
 <div class="wp-block-group prt-hero"><!-- wp:paragraph {"align":"center","className":"prt-eyebrow"} -->
 <p class="has-text-align-center prt-eyebrow">OPEN SOURCE · BUILDING IN PUBLIC</p>
@@ -51,7 +51,7 @@ HTML];
 <!-- /wp:group -->
 HTML];
 
-    $patterns['matthummel/cta-split'] = ['title' => __('CTA — split', 'pressroot'), 'categories' => ['prt-cta', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/cta-split'] = ['title' => __('CTA — split', 'pressroot'), 'categories' => ['prt-cta', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:group {"className":"prt-cta-band","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
 <div class="wp-block-group prt-cta-band"><!-- wp:heading {"level":2} -->
 <h2 class="wp-block-heading">Ready to start your project?</h2>
@@ -60,7 +60,7 @@ HTML];
 <!-- /wp:group -->
 HTML];
 
-    $patterns['matthummel/about-two-col'] = ['title' => __('About — two column', 'pressroot'), 'categories' => ['prt-content', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/about-two-col'] = ['title' => __('About — two column', 'pressroot'), 'categories' => ['prt-content', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:columns {"verticalAlignment":"center","className":"prt-about"} -->
 <div class="wp-block-columns are-vertically-aligned-center prt-about"><!-- wp:column {"verticalAlignment":"center","width":"40%"} -->
 <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:40%"><!-- wp:image {"className":"is-style-rounded"} -->
@@ -77,7 +77,7 @@ HTML];
 <!-- /wp:columns -->
 HTML];
 
-    $patterns['matthummel/services-three'] = ['title' => __('Services — three cards', 'pressroot'), 'categories' => ['prt-content', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/services-three'] = ['title' => __('Services — three cards', 'pressroot'), 'categories' => ['prt-content', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:columns {"className":"prt-feature-grid"} -->
 <div class="wp-block-columns prt-feature-grid"><!-- wp:column {"className":"is-style-prt-card"} -->
 <div class="wp-block-column is-style-prt-card"><!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Web design</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Clean, fast, accessible sites built to last.</p><!-- /wp:paragraph --></div>
@@ -91,7 +91,7 @@ HTML];
 <!-- /wp:columns -->
 HTML];
 
-    $patterns['matthummel/stats-four'] = ['title' => __('Stats — four up', 'pressroot'), 'categories' => ['prt-socialproof', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/stats-four'] = ['title' => __('Stats — four up', 'pressroot'), 'categories' => ['prt-socialproof', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:columns {"className":"prt-stat-strip"} -->
 <div class="wp-block-columns prt-stat-strip"><!-- wp:column --><div class="wp-block-column"><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="wp-block-heading has-text-align-center">12+</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Years</p><!-- /wp:paragraph --></div><!-- /wp:column -->
 <!-- wp:column --><div class="wp-block-column"><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="wp-block-heading has-text-align-center">40+</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Projects</p><!-- /wp:paragraph --></div><!-- /wp:column -->
@@ -100,7 +100,7 @@ HTML];
 <!-- /wp:columns -->
 HTML];
 
-    $patterns['matthummel/testimonial-single'] = ['title' => __('Testimonial — single large', 'pressroot'), 'categories' => ['prt-socialproof', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/testimonial-single'] = ['title' => __('Testimonial — single large', 'pressroot'), 'categories' => ['prt-socialproof', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:group {"className":"prt-quote-lg","layout":{"type":"constrained","contentSize":"720px"}} -->
 <div class="wp-block-group prt-quote-lg"><!-- wp:quote {"className":"is-style-prt-card"} -->
 <blockquote class="wp-block-quote is-style-prt-card"><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">"A genuinely standout testimonial that's specific about the result and easy to believe."</p><!-- /wp:paragraph --><cite>Client name — Company</cite></blockquote>
@@ -108,7 +108,7 @@ HTML];
 <!-- /wp:group -->
 HTML];
 
-    $patterns['matthummel/contact-cta'] = ['title' => __('Contact CTA — with socials', 'pressroot'), 'categories' => ['prt-cta', 'pressroot'], 'content' => <<<'HTML'
+    $patterns['pressroot/contact-cta'] = ['title' => __('Contact CTA — with socials', 'pressroot'), 'categories' => ['prt-cta', 'pressroot'], 'content' => <<<'HTML'
 <!-- wp:group {"className":"prt-cta-band","layout":{"type":"constrained"}} -->
 <div class="wp-block-group prt-cta-band"><!-- wp:heading {"textAlign":"center","level":2} -->
 <h2 class="wp-block-heading has-text-align-center">Let's build something</h2>
