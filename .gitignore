@@ -15,3 +15,7 @@ Thumbs.db
 # Playground CLI dev site data
 .playground/database/
 .playground/uploads/
+.playground/site-db/
+.playground/site-uploads/
+.playground/site-seed.wxr
+.playground/site-seed-slim.wxr
