@@ -533,6 +533,23 @@
   html.prt-dark .pill { background: var(--color-card); border-color: var(--color-line); color: var(--color-ink); }
   html.prt-dark body.prt-sticky-header .banner { background: rgba(21,23,27,.95); backdrop-filter: blur(12px); }
 
+  /* Block-editor palette utility classes hardcode their hex values from
+     theme.json, so dark mode's CSS-variable remap never reaches them —
+     white "surface" cards kept their light background while the headings
+     inside flipped to light text (light-on-light, fails WCAG). Flip the
+     light background utilities to their dark equivalents and pin the dark
+     text utilities to the dark-mode palette. !important is required to
+     out-rank WP's generated preset rules and inline block styles. */
+  html.prt-dark .has-paper-background-color { background-color: #15171b !important; }
+  html.prt-dark .has-surface-background-color { background-color: #1e2228 !important; }
+  html.prt-dark .has-cream-background-color { background-color: #1c1f24 !important; }
+  html.prt-dark .has-green-tint-background-color { background-color: #1f2a24 !important; }
+  html.prt-dark .has-line-background-color { background-color: #2c2f36 !important; }
+  html.prt-dark .has-ink-color { color: #f3f1ea !important; }
+  html.prt-dark .has-body-color { color: #d4d2cb !important; }
+  html.prt-dark .has-muted-color { color: #9a978d !important; }
+  html.prt-dark .has-ink-background-color { background-color: #0b0d11 !important; }
+
   .prt-theme-toggle { background: none; border: 0; cursor: pointer; color: var(--color-ink); font-size: 18px; line-height: 1; padding: 6px; display: inline-flex; align-items: center; }
   .prt-theme-toggle:hover { color: var(--color-green); }
   .prt-theme-toggle .prt-icon-light { display: none; }

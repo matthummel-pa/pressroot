@@ -34,9 +34,28 @@
   $chip1     = get_theme_mod('prt_hero_chip1', __('⚡ Fast by default', 'pressroot'));
   $chip2     = get_theme_mod('prt_hero_chip2', __('♿ Accessible first', 'pressroot'));
   $portrait  = get_theme_mod('prt_hero_portrait'); // attachment URL
+
+  // Real-photo background (Customizer → Hero, or the setup wizard's Design
+  // step). A dark overlay is layered over the image so the white headline
+  // stays WCAG-AA readable on any photo; the gradient ground remains the
+  // no-image fallback. Overlay is clamped to a floor of 35% whenever an
+  // image is present — below that, white-on-photo contrast can't be
+  // guaranteed on bright images.
+  $heroBg      = get_theme_mod('prt_home_hero_bg', '');
+  $heroOverlay = min(90, max($heroBg ? 35 : 0, absint(get_theme_mod('prt_home_hero_overlay', 60))));
+  $heroGround  = $heroBg
+      ? 'linear-gradient(180deg, rgba(16,12,32,' . ($heroOverlay / 100) . '), rgba(16,12,32,' . min(0.95, $heroOverlay / 100 + 0.12) . ")), url('" . esc_url($heroBg) . "') center/cover no-repeat"
+      : 'radial-gradient(1200px 500px at 80% -10%, rgba(108,76,241,.35), transparent 60%), radial-gradient(900px 500px at 10% 10%, rgba(255,77,157,.22), transparent 55%), linear-gradient(180deg,#201B3A,#15122a)';
+
+  // Transparent-overlay header ("nav over image"): when active on the front
+  // page the fixed header floats above this hero, so give the hero enough
+  // top padding that the headline clears the bar instead of hiding under it.
+  $trMode     = get_theme_mod('prt_header_transparent', 'none');
+  $overlayNav = $trMode === 'all' || ($trMode === 'front' && is_front_page());
+  $padTop     = $overlayNav ? 140 : 70;
 @endphp
 
-<section style="position:relative; overflow:hidden; padding:70px 32px 80px; color:#fff; background:radial-gradient(1200px 500px at 80% -10%, rgba(108,76,241,.35), transparent 60%), radial-gradient(900px 500px at 10% 10%, rgba(255,77,157,.22), transparent 55%), linear-gradient(180deg,#201B3A,#15122a);">
+<section style="position:relative; overflow:hidden; padding:{{ $padTop }}px 32px 80px; color:#fff; background:{!! $heroGround !!};">
   <div class="prt-wrap" style="position:relative; padding:0;">
     <div style="display:grid; grid-template-columns:1.3fr 0.9fr; gap:40px; align-items:center;">
       <div style="animation:prt-fadeUp .7s ease both;">
@@ -70,7 +89,9 @@
           <div style="position:absolute; top:8px; right:14px; background:#37E29A; color:#17151F; padding:12px 16px; border-radius:16px; font-weight:800; font-size:15px; transform:rotate(8deg); box-shadow:0 8px 22px rgba(0,0,0,.35); animation:prt-floatA 5s ease-in-out infinite; font-family:var(--font-display);">{{ $chip1 }}</div>
         @endif
         @if($chip2 !== '')
-          <div style="position:absolute; bottom:24px; left:0; background:#FF7A3D; color:#fff; padding:12px 16px; border-radius:16px; font-weight:800; font-size:15px; transform:rotate(-6deg); box-shadow:0 8px 22px rgba(0,0,0,.35); animation:prt-floatB 6s ease-in-out infinite; font-family:var(--font-display);">{{ $chip2 }}</div>
+          {{-- Dark ink text on the orange chip: white-on-#FF7A3D was ~2.5:1,
+               well under WCAG AA; ink (#17151F) on the same orange is ~7:1. --}}
+          <div style="position:absolute; bottom:24px; left:0; background:#FF7A3D; color:#17151F; padding:12px 16px; border-radius:16px; font-weight:800; font-size:15px; transform:rotate(-6deg); box-shadow:0 8px 22px rgba(0,0,0,.35); animation:prt-floatB 6s ease-in-out infinite; font-family:var(--font-display);">{{ $chip2 }}</div>
         @endif
         <div style="position:absolute; bottom:90px; right:-6px; width:54px; height:54px; border-radius:50%; background:#22CFEE; animation:prt-floatA 7s ease-in-out infinite;"></div>
       </div>

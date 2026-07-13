@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Header & Footer designer (Kadence-style presets)
+- **`app/design-presets.php`** — new module: six header layout presets (Classic bar, Top bar + nav, three-row Banner stack, Centered logo banner, Transparent over hero, Minimal) and four footer presets (Column grid, Centered, Mega, Minimal strip), each a batch of existing theme mods with schematic SVG preview cards. Presets are applied from a shared designer UI surfaced in two places: a new **"Design" step 4 in the Setup wizard** and a standalone **Appearance → Pressroot → Header & Footer** tab. Picking a header preset live-syncs the fine-tune fields (sticky, scrim, transparent scope, text scheme) so stale values can't override the preset on save.
+- **Transparent overlay header** is now a true overlay: fixed positioning over the hero (admin-bar aware), light text with AA-safe hover states while see-through, optional scrim gradient for readability on any hero image, and a palette-derived solid bar on scroll (replacing the previously hardcoded warm-white).
+- **Homepage hero real-image support** — `prt_home_hero_bg` + `prt_home_hero_overlay` mods (Customizer → Hero, wizard Design step with Media Library picker): a photo background behind the hero with a dark overlay clamped to ≥35% so the white headline keeps WCAG AA contrast on any image; gradient ground remains the no-image fallback.
+- New Customizer controls in Header Layout: header text scheme (auto/dark/light), scrim toggle, centered-logo banner, minimal header.
+
+### Fixed — WCAG AA contrast guard (light-on-light repair)
+- **Palette contrast guard** (`prt_head_end` priority 17): heading/body colors that fail 4.5:1 on the actual page background are overridden at render time with a readable color — auto-repairing broken palettes from kits, AI generation, or bad saves without touching the database.
+- **Header bar follows the palette**: bar background now derives from `prt_color_paper` (was hardcoded warm-white) and its text color is always derived from the real bar background; explicitly-set nav colors failing 3:1 are ignored.
+- **Block palette utilities follow the palette**: `has-surface/paper/cream-background-color` (baked as fixed light hex by theme.json) are re-derived on dark-paper palettes, and flipped to dark equivalents in dark mode (`resources/css/app.css`) — fixes light headings on white cards in both modes.
+- **Top bar / footer pairs contrast-checked**: bg/text combinations that miss AA get their text variable overridden; footer brand name pinned to the footer text variable (was invisible on light footers under inverted palettes).
+- **Setup wizard step 1**: the four color pickers now carry per-field defaults (background/headings/body no longer display the brand purple), preventing an untouched save from collapsing the palette into same-on-same.
+- Homepage hero orange chip: dark ink text (was white at ~2.5:1; now ~7:1).
+- Fine-grained heading/link color mods (`prt_color_h1..h6/link/eyebrow`) guarded against the page background.
+
+### Changed
+- Setup wizard is now **seven steps** (Design inserted at 4; Generate/Review/Launch shifted to 5/6/7) with a one-time progress migration so previously completed steps stay completed.
+
 ### Security
 - Settings export no longer includes API keys (`prt_ai_key_*` and all `*_key/_token/_secret` mods redacted); export filename de-branded to `pressroot-settings-*.json`.
 - Settings import now runs the code-injection mods (`prt_code_head/body/footer`) through `prt_sanitize_code()`, closing an unfiltered-HTML bypass.

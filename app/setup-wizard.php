@@ -92,11 +92,37 @@ function prt_wizard_steps(): array
         1 => ['label' => __('Business info', 'pressroot'),   'icon' => '🏪'],
         2 => ['label' => __('Connections', 'pressroot'),     'icon' => '🔌'],
         3 => ['label' => __('WP settings', 'pressroot'),     'icon' => '⚙️'],
-        4 => ['label' => __('Generate site', 'pressroot'),   'icon' => '✨'],
-        5 => ['label' => __('Review', 'pressroot'),          'icon' => '👀'],
-        6 => ['label' => __('Launch', 'pressroot'),          'icon' => '🚀'],
+        4 => ['label' => __('Design', 'pressroot'),          'icon' => '🎨'],
+        5 => ['label' => __('Generate site', 'pressroot'),   'icon' => '✨'],
+        6 => ['label' => __('Review', 'pressroot'),          'icon' => '👀'],
+        7 => ['label' => __('Launch', 'pressroot'),          'icon' => '🚀'],
     ];
 }
+
+/**
+ * One-time progress migration: the Design step was inserted at position 4
+ * (v2 layout), pushing Generate/Review/Launch from 4/5/6 to 5/6/7. Remap
+ * previously-recorded completions so owners who already finished those steps
+ * don't see them reset — only the new Design step shows as pending.
+ */
+add_action('after_setup_theme', function () {
+    if (get_option('prt_wizard_layout_v') >= 2) {
+        return;
+    }
+    $p = get_option('prt_wizard_progress', []);
+    if (is_array($p) && ! empty($p['done'])) {
+        $done = $p['done'];
+        foreach ([6 => 7, 5 => 6, 4 => 5] as $old => $new) { // high→low, no clobber
+            if (isset($done[$old])) {
+                $done[$new] = $done[$old];
+                unset($done[$old]);
+            }
+        }
+        $p['done'] = $done;
+        update_option('prt_wizard_progress', $p, false);
+    }
+    update_option('prt_wizard_layout_v', 2, false);
+}, 20);
 
 /** Progress state: ['done' => [stepNumber => timestamp]]. */
 function prt_wizard_progress(): array
@@ -145,7 +171,7 @@ function prt_wizard_resume_step(): int
             return $n;
         }
     }
-    return 6;
+    return 7;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -169,7 +195,7 @@ function prt_setup_wizard_tab_html(): void
     }
     ?>
     <h2 style="margin-top:0"><?php esc_html_e('Set up your website', 'pressroot'); ?></h2>
-    <p class="description" style="max-width:680px"><?php esc_html_e('Six guided steps from blank install to launched site. Your progress is saved as you go — leave anytime and this tab reopens where you stopped. Every step stays editable after you finish it.', 'pressroot'); ?></p>
+    <p class="description" style="max-width:680px"><?php esc_html_e('Seven guided steps from blank install to launched site. Your progress is saved as you go — leave anytime and this tab reopens where you stopped. Every step stays editable after you finish it.', 'pressroot'); ?></p>
 
     <?php prt_wizard_stepper($current); ?>
     <?php prt_wizard_progress_bar(); ?>
@@ -187,12 +213,15 @@ function prt_setup_wizard_tab_html(): void
             prt_wizard_step_wpsettings();
             break;
         case 4:
-            prt_wizard_step_generate();
+            prt_wizard_step_design();
             break;
         case 5:
-            prt_wizard_step_review();
+            prt_wizard_step_generate();
             break;
         case 6:
+            prt_wizard_step_review();
+            break;
+        case 7:
             prt_wizard_step_launch();
             break;
     }
@@ -360,7 +389,7 @@ function prt_wizard_step_business(): void
                                 <option value="<?php echo esc_attr($slug); ?>" <?php selected(get_option('prt_wizard_site_type'), $slug); ?>><?php echo esc_html($t['label'] . ' — ' . $t['desc']); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <p class="description"><?php esc_html_e('Decides which starter pages and layouts get generated in step 4.', 'pressroot'); ?></p>
+                        <p class="description"><?php esc_html_e('Decides which starter pages and layouts get generated in step 5.', 'pressroot'); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -424,18 +453,23 @@ function prt_wizard_step_business(): void
                 <tr>
                     <th scope="row"><?php esc_html_e('Colors', 'pressroot'); ?></th>
                     <td style="display:flex;gap:18px;flex-wrap:wrap">
-                        <?php foreach ([
-                            'prt_color_action' => __('Brand color', 'pressroot'),
-                            'prt_color_paper'  => __('Background', 'pressroot'),
-                            'prt_color_ink'    => __('Headings', 'pressroot'),
-                            'prt_color_body'   => __('Body text', 'pressroot'),
-                        ] as $modKey => $label) : ?>
+                        <?php
+                        // Per-field defaults MUST match prt_defaults() — a single
+                        // shared default here once collapsed background/headings/
+                        // body toward the brand purple on an untouched save,
+                        // producing same-on-same (inaccessible) pages.
+                        foreach ([
+                            'prt_color_action' => [__('Brand color', 'pressroot'), '#6C4CF1'],
+                            'prt_color_paper'  => [__('Background', 'pressroot'), '#FFF9F5'],
+                            'prt_color_ink'    => [__('Headings', 'pressroot'), '#17151F'],
+                            'prt_color_body'   => [__('Body text', 'pressroot'), '#4A4660'],
+                        ] as $modKey => [$label, $fieldDefault]) : ?>
                             <label style="display:flex;flex-direction:column;gap:4px;font-size:12px">
                                 <?php echo esc_html($label); ?>
-                                <input type="color" name="<?php echo esc_attr($modKey); ?>" value="<?php echo esc_attr($mod($modKey, '#6C4CF1')); ?>" style="width:56px;height:34px;padding:2px">
+                                <input type="color" name="<?php echo esc_attr($modKey); ?>" value="<?php echo esc_attr($mod($modKey, $fieldDefault)); ?>" style="width:56px;height:34px;padding:2px">
                             </label>
                         <?php endforeach; ?>
-                        <p class="description" style="flex-basis:100%;margin:2px 0 0"><?php esc_html_e('Optional — leave as-is and the design generator picks a matching palette in step 4. Your brand color survives every re-deal.', 'pressroot'); ?></p>
+                        <p class="description" style="flex-basis:100%;margin:2px 0 0"><?php esc_html_e('Optional — leave as-is and the design generator picks a matching palette in step 5. Your brand color survives every re-deal.', 'pressroot'); ?></p>
                     </td>
                 </tr>
                 <tr>
@@ -473,7 +507,7 @@ function prt_wizard_step_business(): void
                     <th scope="row"><label for="prt_wiz_media"><?php esc_html_e('Photos & video', 'pressroot'); ?></label></th>
                     <td>
                         <input type="file" id="prt_wiz_media" name="prt_wiz_media[]" accept="image/*,video/mp4,video/webm" multiple>
-                        <p class="description"><?php esc_html_e('Optional: upload your own photos/videos now — they land in the Media Library ready to swap into any page. No photos? Step 4 can generate brand images with AI (free by default). AI video generation ships in a future release.', 'pressroot'); ?></p>
+                        <p class="description"><?php esc_html_e('Optional: upload your own photos/videos now — they land in the Media Library ready to swap into any page. No photos? Step 5 can generate brand images with AI (free by default). AI video generation ships in a future release.', 'pressroot'); ?></p>
                     </td>
                 </tr>
             </table>
@@ -1039,7 +1073,7 @@ function prt_wizard_step_wpsettings(): void
                 <div>
                     <ul>
                         <li><?php printf(wp_kses(__('<a href="%s">General</a> — site title & tagline (step 1 already set these), admin email, timezone.', 'pressroot'), ['a' => ['href' => []]]), esc_url(admin_url('options-general.php'))); ?></li>
-                        <li><?php printf(wp_kses(__('<a href="%s">Reading</a> — homepage display. The generator sets your front page automatically in step 4.', 'pressroot'), ['a' => ['href' => []]]), esc_url(admin_url('options-reading.php'))); ?></li>
+                        <li><?php printf(wp_kses(__('<a href="%s">Reading</a> — homepage display. The generator sets your front page automatically in step 5.', 'pressroot'), ['a' => ['href' => []]]), esc_url(admin_url('options-reading.php'))); ?></li>
                         <li><?php printf(wp_kses(__('<a href="%s">Permalinks</a> — URL structure, handled above.', 'pressroot'), ['a' => ['href' => []]]), esc_url(admin_url('options-permalink.php'))); ?></li>
                         <li><?php printf(wp_kses(__('<a href="%s">Discussion</a> — comment rules, handled above.', 'pressroot'), ['a' => ['href' => []]]), esc_url(admin_url('options-discussion.php'))); ?></li>
                         <li><?php printf(wp_kses(__('<a href="%s">Media</a> and <a href="%s">Writing</a> — the defaults are fine for almost everyone.', 'pressroot'), ['a' => ['href' => []]]), esc_url(admin_url('options-media.php')), esc_url(admin_url('options-writing.php'))); ?></li>
@@ -1101,7 +1135,39 @@ add_action('admin_post_prt_wizard_save_wpsettings', function () {
 });
 
 /* ──────────────────────────────────────────────────────────────────────────
- * Step 4 — Generate the website
+ * Step 4 — Design (header / hero / footer designer)
+ * ────────────────────────────────────────────────────────────────────── */
+
+/**
+ * The header & footer designer as a wizard step. The actual fields, presets,
+ * and save handler live in app/design-presets.php (shared with the
+ * standalone "Header & Footer" settings tab); this wrapper just frames them
+ * in wizard chrome and routes the save through the step-completion flow via
+ * the hidden prt_wizard_step field.
+ */
+function prt_wizard_step_design(): void
+{
+    wp_enqueue_media(); // hero image picker
+    ?>
+    <div class="prt-rf-card">
+        <h3 style="margin-top:0">🎨 <?php esc_html_e('Design your header, hero & footer', 'pressroot'); ?></h3>
+        <p class="description" style="max-width:680px"><?php esc_html_e('Pick layout presets — single bar, multi-row banner stacks, a centered logo banner, or a transparent nav floating over a full hero image. Every preset keeps text contrast at WCAG AA automatically, and everything stays adjustable later under Appearance → Pressroot → Header & Footer or in the Customizer.', 'pressroot'); ?></p>
+
+        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+            <input type="hidden" name="action" value="prt_save_design">
+            <input type="hidden" name="prt_wizard_step" value="4">
+            <?php wp_nonce_field('prt_save_design'); ?>
+            <?php if (function_exists('App\\prt_design_designer_fields')) {
+                prt_design_designer_fields();
+            } ?>
+            <?php prt_wizard_nav(4, __('Save design — continue →', 'pressroot')); ?>
+        </form>
+    </div>
+    <?php
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * Step 5 — Generate the website
  * ────────────────────────────────────────────────────────────────────── */
 
 function prt_wizard_step_generate(): void
@@ -1156,7 +1222,7 @@ function prt_wizard_step_generate(): void
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap" onsubmit="return prtWizStart('prt-wiz-bar-design')">
                 <input type="hidden" name="action" value="prt_apply_site_type">
                 <input type="hidden" name="prt_return_tab" value="setup">
-                <input type="hidden" name="prt_return_step" value="4">
+                <input type="hidden" name="prt_return_step" value="5">
                 <?php wp_nonce_field('prt_apply_site_type'); ?>
                 <select name="site_type" required>
                     <option value=""><?php esc_html_e('— business type —', 'pressroot'); ?></option>
@@ -1185,7 +1251,7 @@ function prt_wizard_step_generate(): void
                     <input type="hidden" name="action" value="prt_ai_fill_all">
                     <input type="hidden" name="site_type" value="<?php echo esc_attr((string) reset($appliedTypes)); ?>">
                     <input type="hidden" name="prt_return_tab" value="setup">
-                    <input type="hidden" name="prt_return_step" value="4">
+                    <input type="hidden" name="prt_return_step" value="5">
                     <?php wp_nonce_field('prt_ai_fill_all'); ?>
                     <select name="model">
                         <?php foreach ($writers as $slug => $def) : ?>
@@ -1216,7 +1282,7 @@ function prt_wizard_step_generate(): void
                 <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" onsubmit="return prtWizStart('prt-wiz-bar-image')">
                     <input type="hidden" name="action" value="prt_ai_brand_image">
                     <input type="hidden" name="prt_return_tab" value="setup">
-                    <input type="hidden" name="prt_return_step" value="4">
+                    <input type="hidden" name="prt_return_step" value="5">
                     <?php wp_nonce_field('prt_ai_brand_image'); ?>
                     <button class="button button-primary">🖼 <?php esc_html_e('Generate brand image', 'pressroot'); ?></button>
                 </form>
@@ -1227,16 +1293,16 @@ function prt_wizard_step_generate(): void
 
         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
             <input type="hidden" name="action" value="prt_wizard_mark">
-            <input type="hidden" name="step" value="4">
+            <input type="hidden" name="step" value="5">
             <?php wp_nonce_field('prt_wizard_mark'); ?>
-            <?php prt_wizard_nav(4, __('Continue to Review →', 'pressroot')); ?>
+            <?php prt_wizard_nav(5, __('Continue to Review →', 'pressroot')); ?>
         </form>
     </div>
     <?php
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
- * Step 5 — Review & fine-tune
+ * Step 6 — Review & fine-tune
  * ────────────────────────────────────────────────────────────────────── */
 
 function prt_wizard_step_review(): void
@@ -1280,7 +1346,7 @@ function prt_wizard_step_review(): void
             </table>
         <?php else : ?>
             <p class="description"><em><?php printf(
-                wp_kses(__('No generated pages yet — run <a href="%s">step 4</a> first.', 'pressroot'), ['a' => ['href' => []]]),
+                wp_kses(__('No generated pages yet — run <a href="%s">step 5</a> first.', 'pressroot'), ['a' => ['href' => []]]),
                 esc_url(prt_wizard_url(4))
             ); ?></em></p>
         <?php endif; ?>
@@ -1301,7 +1367,7 @@ function prt_wizard_step_review(): void
             <div>
                 <strong>🎨 <?php esc_html_e('Whole design', 'pressroot'); ?></strong>
                 <p><?php printf(
-                    wp_kses(__('Don’t tweak — re-deal. <a href="%s">Step 4</a> regenerates the entire look; the <a href="%s">Site Types</a> tab re-rolls single pages (🎲). Colors & fonts: step 1 or Theme Settings.', 'pressroot'), ['a' => ['href' => []]]),
+                    wp_kses(__('Don’t tweak — re-deal. <a href="%s">Step 5</a> regenerates the entire look; the <a href="%s">Site Types</a> tab re-rolls single pages (🎲). Colors & fonts: step 1 or Theme Settings.', 'pressroot'), ['a' => ['href' => []]]),
                     esc_url(prt_wizard_url(4)),
                     esc_url(prt_settings_tab_url('ai'))
                 ); ?></p>
@@ -1309,7 +1375,8 @@ function prt_wizard_step_review(): void
             <div>
                 <strong>🧭 <?php esc_html_e('Header, menu & footer', 'pressroot'); ?></strong>
                 <p><?php printf(
-                    wp_kses(__('Generated automatically from your pages and goal. Fine-tune with live preview in the <a href="%s">Customizer</a> (Header layout, Navigation, Footer builder sections).', 'pressroot'), ['a' => ['href' => []]]),
+                    wp_kses(__('Pick layout presets in the <a href="%s">Header & Footer designer</a> (step 4), or fine-tune with live preview in the <a href="%s">Customizer</a> (Header layout, Navigation, Footer builder sections).', 'pressroot'), ['a' => ['href' => []]]),
+                    esc_url(prt_wizard_url(4)),
                     esc_url(admin_url('customize.php'))
                 ); ?></p>
             </div>
@@ -1317,16 +1384,16 @@ function prt_wizard_step_review(): void
 
         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
             <input type="hidden" name="action" value="prt_wizard_mark">
-            <input type="hidden" name="step" value="5">
+            <input type="hidden" name="step" value="6">
             <?php wp_nonce_field('prt_wizard_mark'); ?>
-            <?php prt_wizard_nav(5, __('Looks good — continue to Launch →', 'pressroot')); ?>
+            <?php prt_wizard_nav(6, __('Looks good — continue to Launch →', 'pressroot')); ?>
         </form>
     </div>
     <?php
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
- * Step 6 — Launch
+ * Step 7 — Launch
  * ────────────────────────────────────────────────────────────────────── */
 
 /** The pre-flight checklist rows: [ok, label, fix-URL or '']. */
@@ -1490,7 +1557,7 @@ add_action('admin_post_prt_wizard_launch', function () {
     }
 
     update_option('prt_wizard_launched', time(), false);
-    prt_wizard_mark_done(6);
+    prt_wizard_mark_done(7);
     wp_safe_redirect(prt_wizard_url(6, ['prt_wiz_launched' => '1']));
     exit;
 });
