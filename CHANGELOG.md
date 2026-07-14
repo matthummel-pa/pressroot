@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Pressroots Reserve (bookings & reservations addon)
+- **New Theme Addon: Pressroots Reserve** (`app/bookings-addon.php` + `app/Bookings/`) — appointments and table/seat reservations for restaurants, hotels, and meetings, bundled the same way as Repofolio: gated on the Add-ons toggle (Customizer → Theme Options → Theme Addons), classes under `app/Bookings/includes/` with plain `require_once` loading, booted through a `PrtBookings\Plugin` object, and settings surfaced as the **Bookings** tab on Appearance → Pressroot via the `pressroot/settings_tabs` filter. Built end to end in Claude Cowork. Full reference in `docs/PRESSROOTS-RESERVE.md`.
+  - **Services** CPT (`prt_service`): duration, buffer, price label, and capacity — capacity `1` behaves like a one-on-one appointment (Calendly-style), capacity `>1` behaves like seats-per-slot with a party-size field (OpenTable-style).
+  - **Availability engine** (`Bookings/includes/class-engine.php`): weekly schedule + blackout dates + minimum notice + booking window, all computed in the **site timezone** and stored as UTC timestamps so DST/timezone edits can't corrupt bookings. Slot lists subtract booked seats from capacity and re-check at insert time, so a slot can never double-book.
+  - **Front-end booking form** — a `prt/booking` block **and** a `[prt_booking]` shortcode: service → date → time → details flow, protected by a nonce, honeypot, and per-IP rate limit (mirrors `app/contact.php`). Availability is never computed in the browser — the widget only renders what the engine returns.
+  - **Emails** — customer confirmation with an `.ics` calendar attachment and a tokenized cancel link that opens a confirm screen (so mail scanners can't auto-cancel), plus owner notifications on book and cancel.
+  - **Admin calendar** — a **Month / Week / Day / List** calendar (Bookings → Calendar) driven by a REST feed, plus a bookings list with one-click confirm/cancel row actions and a per-booking detail panel.
+  - **Opt-in in the Setup wizard** — an addon checkbox in the Connections step writes `prt_addon_bookings_enabled`.
+  - Also ships as a standalone WordPress plugin — [pressroots-reserve](https://github.com/matthummel-pa/pressroots-reserve) — sharing the same `includes/` and assets; the plugin defines `PRT_BOOKINGS_VERSION` at load so the bundled theme addon steps aside, exactly like Repofolio's dual-mode arrangement. Option keys (`prt_bookings_options`) and post types (`prt_service`, `prt_booking`) are identical either way, so data carries over.
+
+### Fixed
+- **Bookings addon boot order**: the addon's boot check (`prt_addon_enabled('bookings')`) runs at include time — *before* any `add_filter('pressroot/addon_defaults', …)` later in the same file would register. So the `bookings` default is declared directly in `prt_addon_defaults()` (`app/theme-addons.php`), not via the filter; declared via the filter it would read as unknown and the addon would silently never boot on the first request. Also registered `'bookings-addon'` in the `functions.php` module `collect()` list.
+
+## [1.7.0] - 2026-07-13
+
 ### Added — Header & Footer designer (Kadence-style presets)
 - **`app/design-presets.php`** — new module: six header layout presets (Classic bar, Top bar + nav, three-row Banner stack, Centered logo banner, Transparent over hero, Minimal) and four footer presets (Column grid, Centered, Mega, Minimal strip), each a batch of existing theme mods with schematic SVG preview cards. Presets are applied from a shared designer UI surfaced in two places: a new **"Design" step 4 in the Setup wizard** and a standalone **Appearance → Pressroot → Header & Footer** tab. Picking a header preset live-syncs the fine-tune fields (sticky, scrim, transparent scope, text scheme) so stale values can't override the preset on save.
 - **Transparent overlay header** is now a true overlay: fixed positioning over the hero (admin-bar aware), light text with AA-safe hover states while see-through, optional scrim gradient for readability on any hero image, and a palette-derived solid bar on scroll (replacing the previously hardcoded warm-white).

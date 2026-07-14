@@ -605,6 +605,80 @@ Four related asks in one pass:
 
 ---
 
+## Pressroots Reserve — bookings & reservations addon (Claude Cowork)
+- Built a full appointments/reservations subsystem as a Repofolio-style Theme
+  Addon: Services CPT, availability engine, front-end booking widget (block +
+  shortcode), `.ics` + tokenized-cancel emails, and a multi-view admin calendar.
+  Restarted mid-build — four classes (Settings/Services/Engine/Emails) already
+  existed and were complete; the missing pieces were class-rest/class-block/
+  class-admin/class-plugin, the JS/CSS assets, the theme wiring, and the wizard
+  opt-in. Full reference: docs/PRESSROOTS-RESERVE.md.
+- Naming kept deliberately split: user-facing brand **Pressroots Reserve** vs.
+  stable internal `PrtBookings` namespace + `prt_service`/`prt_booking` CPTs +
+  `prt_bookings_options` option — renaming the brand never churns code.
+
+## Bookings addon booted but never appeared
+- **Cause:** `app/bookings-addon.php` checks `prt_addon_enabled('bookings')` at
+  include time, at the top of the file — but the
+  `add_filter('pressroot/addon_defaults', …)` that would register the `bookings`
+  default sat *lower* in the same file, so it hadn't run yet.
+  `prt_addon_enabled()` treats unknown slugs as disabled, so the addon skipped
+  its own boot on every request.
+- **Fix:** declare the `bookings` default directly in `prt_addon_defaults()`
+  (`app/theme-addons.php`) alongside `pressroot_ai`/`repofolio`, and drop the
+  late filter. Register `'bookings-addon'` in the `functions.php` `collect()`.
+- **Takeaway:** a boot-time capability check can't depend on a filter registered
+  later in the same file — put addon defaults in the shared registry, not in the
+  addon's own late `add_filter`.
+
+## No double-booking without a real lock
+- **Cause:** vanilla WP post storage has no row lock, so two visitors can pass
+  the "seats left" check for the same slot at once and oversell it.
+- **Fix:** optimistic guard — `Engine::slots()` subtracts booked seats from
+  capacity, `create()` re-validates the posted timestamp against the freshly
+  computed slot list, and after insert it re-counts seats; if the slot is now
+  oversold, the highest-ID booking withdraws itself. The race window shrinks
+  from "however long the visitor fills the form" to milliseconds around insert.
+- **Takeaway:** with no DB lock, validate → insert → recheck (loser self-removes)
+  is the pragmatic no-double-book strategy the big booking apps use.
+
+## Cancel links a mail scanner can't trigger
+- **Cause:** a plain GET cancel URL in a confirmation email gets fetched by
+  link-preview bots and corporate mail scanners — which would silently cancel
+  the booking.
+- **Fix:** the tokenized cancel link (`?prt_bk=cancel&bk_token=…`, handled on
+  `template_redirect`) only *renders a confirm screen* on GET; the actual
+  cancellation happens on the nonce-guarded POST that screen submits.
+- **Takeaway:** never let a GET perform a state change reachable from email —
+  gate it behind a POST + nonce confirm.
+
+## Multi-view admin calendar, no library, no build step
+- Bookings → Calendar is a dependency-free vanilla-JS calendar
+  (Month/Week/Day/List) over an `edit_theme_options`-gated REST feed, matching
+  the theme's "hand-written admin JS, no build" convention. Times are read as
+  the site's wall-clock from the feed's ISO strings, so the view matches the
+  site timezone regardless of the browser's zone; the Week/Day time-grid lays
+  overlapping bookings into lanes.
+
+## Release & GitHub-over-browser gotchas (Cowork session)
+- **v1.7.0 tagged + published** off `main`. The sandbox GitHub token is scoped
+  to already-configured repos: reads (clone / ls-remote) work everywhere, but
+  `POST /user/repos` and pushes to a *new* repo return 403 /
+  "Invalid username or token". Creating the standalone `pressroots-reserve` repo
+  and publishing the release were therefore done through the browser.
+- **GitHub web editor, for next time:** the file editor is a CodeMirror6
+  contenteditable `<div>` (not a `<textarea>`, so a form-set can't populate it);
+  typing a large markdown blob triggers auto-continuation of `>` blockquote and
+  `-` list markers, corrupting a full paste — do *surgical* edits (single-word
+  swaps, table rows that start with `|`) instead. A stray `/` when focus isn't
+  in the editor opens the global search. The release-notes field, by contrast,
+  is a real `<textarea>` and accepts a full paste cleanly.
+- **Takeaway:** for GitHub-over-browser, prefer real `<textarea>` fields and
+  surgical edits; never paste large list/quote-heavy markdown into the
+  CodeMirror file editor.
+
+---
+
 ## Recurring bug patterns
 - **Dead selector rot** — renamed markup breaks every CSS file still
   targeting the old class names, silently.

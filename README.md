@@ -17,7 +17,7 @@ design, pages, copy, images, navigation, header, and footer — all on core Gute
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-<p align="center">Stack: Sage 11 · Blade · Tailwind CSS v4 · Vite · Acorn (Laravel-in-WordPress) · PHP 8.3 · v1.6.0 · MIT</p>
+<p align="center">Stack: Sage 11 · Blade · Tailwind CSS v4 · Vite · Acorn (Laravel-in-WordPress) · PHP 8.3 · v1.7.0 · MIT</p>
 
 ---
 
@@ -60,6 +60,7 @@ The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio
 - **Footer builder** — 1–4 columns, palettes, tagline, author credit.
 - **Blocks & patterns** — Social Icons, Icon (Blade), Post Grid, GitHub repo blocks, 22 starter patterns + ~50 generated remix patterns, Pattern Library admin page.
 - **Repofolio addon** — live GitHub repo grid, project case-study post type, OAuth connect; yields to the standalone plugin automatically.
+- **Pressroots Reserve addon** — bookings & reservations for restaurants, hotels, and meetings: a `prt_service` post type (appointment or seats-per-slot with party size), a timezone-aware availability engine that never double-books, a front-end booking form (`prt/booking` block + `[prt_booking]` shortcode), confirmation emails with an `.ics` attachment and a tokenized cancel link, and a **Month/Week/Day/List admin calendar**. Opt-in in the Setup wizard; also ships standalone as [pressroots-reserve](https://github.com/matthummel-pa/pressroots-reserve). ([docs/PRESSROOTS-RESERVE.md](docs/PRESSROOTS-RESERVE.md))
 - **Reading UX, forms, performance, SEO** — auto TOC, reading progress, plugin-free contact form, newsletter, cookie notice, split block CSS, critical CSS, local fonts (1,500+ Google families), OG/Twitter/JSON-LD (auto-off under Rank Math/Yoast), white-label + onboarding checklist.
 
 ### Setup wizard (new)
@@ -128,6 +129,7 @@ Activate **Pressroot** and open **Appearance → Pressroot** — it lands on the
 - [MARKETPLACE-READINESS.md](docs/MARKETPLACE-READINESS.md) — audit report + submission checklist
 - [ARCHITECTURE.md](docs/ARCHITECTURE.md) · [DEVELOPMENT.md](docs/DEVELOPMENT.md) · [BRAND-DESIGN-SYSTEM.md](docs/BRAND-DESIGN-SYSTEM.md)
 - [BUILD-NOTES.md](docs/BUILD-NOTES.md) — the chronological build log (root cause → fix → takeaway)
+- [PRESSROOTS-RESERVE.md](docs/PRESSROOTS-RESERVE.md) — the bookings & reservations addon (services, engine, widget, calendar, hooks)
 - [CHANGELOG.md](CHANGELOG.md) — versioned release notes
 
 ## Contributing & testing

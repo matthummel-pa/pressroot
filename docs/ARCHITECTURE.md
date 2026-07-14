@@ -37,6 +37,24 @@ cached in a 6-hour transient. `app/filters.php` exposes it as `[prt_github owner
 honeypot, sanitizes + validates fields, sends via `wp_mail`, and redirects back with a
 `?contact=success|error` flag the template reads. No third-party form plugin.
 
+## Bookings (Pressroots Reserve addon)
+
+`app/bookings-addon.php` boots the **Pressroots Reserve** subsystem (`app/Bookings/`)
+when the `bookings` addon is enabled — the same Repofolio-style pattern
+(`prt_addon_enabled('bookings')`, classes under `Bookings/includes/` loaded with
+`require_once`, a `PrtBookings\Plugin` booted on `after_setup_theme`, settings
+registered through the `pressroot/settings_tabs` filter). It adds two post types
+(`prt_service`, `prt_booking`), a timezone-aware slot engine that stores UTC
+timestamps and never double-books, a `prt/booking` block + `[prt_booking]`
+shortcode, `.ics` + tokenized-cancel emails, REST routes under `prt-bookings/v1`,
+and a **Month/Week/Day/List** admin calendar. Because the addon's boot check runs
+at include time, the `bookings` default is declared in `prt_addon_defaults()`
+(`app/theme-addons.php`), not via a late `pressroot/addon_defaults` filter. The
+same `includes/` + assets ship standalone as the
+[pressroots-reserve](https://github.com/matthummel-pa/pressroots-reserve) plugin,
+which defines `PRT_BOOKINGS_VERSION` at load so the bundled addon steps aside.
+Full detail in docs/PRESSROOTS-RESERVE.md.
+
 ## Template hierarchy
 
 Standard WordPress hierarchy, in Blade:
@@ -127,6 +145,7 @@ without editing the file:
 | Site Types | `app/ai-assistant.php` (`prt_pressroot_ai_tab_html()`) — tab id `ai`, unchanged internally | Site-type picker (which also applies that type's Style Kit), regenerate, hero-copy generator, plus two collapsed Advanced sections: "Connect more AI models" (AI Connectors) and "Backup & restore settings" (Export/Import/Reset, from `app/settings-io.php`'s `prt_settings_backup_fields_html()`) |
 | GitHub | `app/github-settings.php` (`prt_github_tab_html()`) | Default owner, API token, cache hours, OAuth Client ID, Connect with GitHub |
 | Support | `app/support-settings.php` (`prt_support_tab_html()`) | Live status (stats, languages, latest releases, open issues) for "this theme's repository", pulled through the existing `App\Github` class, plus a curated list of links to the theme's own documentation. Always visible — not gated by the Pressroot AI addon toggle, since getting help shouldn't depend on an unrelated feature flag. |
+| Bookings | `app/bookings-addon.php` (`App\prt_bookings_tab_html()`) — visible only while the Pressroots Reserve addon is booted | Weekly availability, booking rules (minimum notice, booking window, slot interval), blackout dates, auto-confirm vs. pending, and the notification email. Services are edited under Bookings → Services; the visual overview is Bookings → Calendar. Full detail in docs/PRESSROOTS-RESERVE.md |
 
 Site Types was previously two separate tabs: "Style Kits" (a manual swatch
 grid to apply a palette/font/radius preset by itself) and "Pressroot AI" (the

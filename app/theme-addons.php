@@ -35,6 +35,13 @@ function prt_addon_defaults(): array
         // sites that relied on the plugin's features keep them when the
         // plugin is deactivated in favor of the addon.
         'repofolio'    => true,
+        // Pressroots Reserve — the bookings & reservations subsystem
+        // (services CPT, availability engine, booking widget, admin calendar).
+        // See app/bookings-addon.php. Declared here rather than via the
+        // pressroot/addon_defaults filter so prt_addon_enabled('bookings') is
+        // already true at the top of bookings-addon.php's boot check on the
+        // very first request (the filter would register too late for that).
+        'bookings'     => true,
     ]);
 }
 

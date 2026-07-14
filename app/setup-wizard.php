@@ -915,11 +915,21 @@ function prt_wizard_step_connect(): void
                     <th scope="row"><?php esc_html_e('Theme addons', 'pressroot'); ?></th>
                     <td>
                         <label style="display:block;margin-bottom:6px"><input type="checkbox" name="prt_addon_pressroot_ai_enabled" value="1" <?php checked((bool) get_theme_mod('prt_addon_pressroot_ai_enabled', true)); ?>> <?php esc_html_e('Pressroot AI (site types, generator, AI tools)', 'pressroot'); ?></label>
-                        <label style="display:block"><input type="checkbox" name="prt_addon_repofolio_enabled" value="1" <?php checked((bool) get_theme_mod('prt_addon_repofolio_enabled', true)); ?>> <?php printf(
+                        <label style="display:block;margin-bottom:6px"><input type="checkbox" name="prt_addon_repofolio_enabled" value="1" <?php checked((bool) get_theme_mod('prt_addon_repofolio_enabled', true)); ?>> <?php printf(
                             /* translators: %s: link to the GitHub tab */
                             esc_html__('Repofolio — GitHub portfolio addon (connect your account on the %s tab)', 'pressroot'),
                             '<a href="' . esc_url(prt_settings_tab_url('github')) . '">' . esc_html__('GitHub', 'pressroot') . '</a>'
                         ); ?></label>
+                        <label style="display:block"><input type="checkbox" name="prt_addon_bookings_enabled" value="1" <?php checked((bool) get_theme_mod('prt_addon_bookings_enabled', prt_addon_defaults()['bookings'] ?? true)); ?>> <?php
+                            esc_html_e('Pressroots Reserve — take reservations & bookings (restaurants, hotels, meetings): a booking form block plus an admin calendar', 'pressroot');
+                        ?></label>
+                        <p class="description" style="margin:6px 0 0"><?php
+                            printf(
+                                /* translators: %s: link to the Bookings settings tab */
+                                esc_html__('Turn this on to add bookable services and set your availability under Bookings. Configure it on the %s tab.', 'pressroot'),
+                                '<a href="' . esc_url(prt_settings_tab_url('bookings')) . '">' . esc_html__('Bookings', 'pressroot') . '</a>'
+                            );
+                        ?></p>
                     </td>
                 </tr>
             </table>
@@ -969,6 +979,7 @@ add_action('admin_post_prt_wizard_save_connect', function () {
     // Addons.
     set_theme_mod('prt_addon_pressroot_ai_enabled', ! empty($_POST['prt_addon_pressroot_ai_enabled']));
     set_theme_mod('prt_addon_repofolio_enabled', ! empty($_POST['prt_addon_repofolio_enabled']));
+    set_theme_mod('prt_addon_bookings_enabled', ! empty($_POST['prt_addon_bookings_enabled']));
 
     prt_wizard_mark_done(2);
     wp_safe_redirect(prt_wizard_url(3, ['prt_wiz_saved' => '1']));
