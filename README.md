@@ -25,7 +25,7 @@ design, pages, copy, images, navigation, header, and footer — all on core Gute
 
 ## How it works
 
-**New: the Setup wizard.** Appearance → Pressroot now opens on a six-step guided flow — **Business info → Connections → WordPress settings → Generate → Review → Launch** — that takes a blank install to a launched site: business facts (contact, hours, mission) that feed the AI brief, AI provider keys, an SEO plugin selector, Google Analytics (paste a GA4 ID, gtag injected) with GA + Google Business Profile walkthroughs, one-click WordPress settings, site generation, a review screen, and a real launch button that publishes the drafts. Progress saves per step; every step stays revisitable. ([docs/SETUP-WIZARD.md](docs/SETUP-WIZARD.md))
+**New: the Setup wizard.** Appearance → Pressroot now opens on a seven-step guided flow — **Business info → Connections → WordPress settings → Design → Generate → Review → Launch** — that takes a blank install to a launched site: business facts (contact, hours, mission) that feed the AI brief, AI provider keys, an SEO plugin selector, Google Analytics (paste a GA4 ID, gtag injected) with GA + Google Business Profile walkthroughs, one-click WordPress settings, site generation, a review screen, and a real launch button that publishes the drafts. Progress saves per step; every step stays revisitable. ([docs/SETUP-WIZARD.md](docs/SETUP-WIZARD.md))
 
 Under the hood it sequences the same engines:
 
@@ -58,13 +58,20 @@ The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio
 - **Hero builder** — fully generic base-theme hero (every string a Customizer mod), 1–3 columns, media, background modes, entrance animation; built-in image finder (Openverse/Unsplash/Pexels/AI-generate) imports straight to the hero.
 - **Header & nav** — sticky/shrink/transparent behaviors, flexbox nav control, off-canvas popout, mega menu, scheduled announcement bar.
 - **Footer builder** — 1–4 columns, palettes, tagline, author credit.
+- **Header & Footer designer** — six header presets and four footer presets with live SVG previews; picking a preset live-syncs the fine-tune fields (sticky, scrim, transparent scope, text scheme). Includes a true transparent-over-hero header and a real-image hero, both kept AA-contrast-safe by a render-time palette guard.
 - **Blocks & patterns** — Social Icons, Icon (Blade), Post Grid, GitHub repo blocks, 22 starter patterns + ~50 generated remix patterns, Pattern Library admin page.
-- **Repofolio addon** — live GitHub repo grid, project case-study post type, OAuth connect; yields to the standalone plugin automatically.
-- **Pressroots Reserve addon** — bookings & reservations for restaurants, hotels, and meetings: a `prt_service` post type (appointment or seats-per-slot with party size), a timezone-aware availability engine that never double-books, a front-end booking form (`prt/booking` block + `[prt_booking]` shortcode), confirmation emails with an `.ics` attachment and a tokenized cancel link, and a **Month/Week/Day/List admin calendar**. Opt-in in the Setup wizard; also ships standalone as [pressroots-reserve](https://github.com/matthummel-pa/pressroots-reserve). ([docs/PRESSROOTS-RESERVE.md](docs/PRESSROOTS-RESERVE.md))
 - **Reading UX, forms, performance, SEO** — auto TOC, reading progress, plugin-free contact form, newsletter, cookie notice, split block CSS, critical CSS, local fonts (1,500+ Google families), OG/Twitter/JSON-LD (auto-off under Rank Math/Yoast), white-label + onboarding checklist.
 
+### Addons
+
+Three optional feature modules, each toggled under **Customizer → Theme Options → Theme Addons** and each also shipping as a standalone WordPress plugin — the theme edition and the plugin share the same data, post types, and settings, so you can run either and migrate in either direction.
+
+- **[Repofolio](https://github.com/matthummel-pa/repofolio)** — turn your GitHub repos into a living portfolio: a server-rendered repo-grid block, "Connect with GitHub" OAuth, and a project case-study post type. Steps aside automatically when the standalone Repofolio plugin is active.
+- **[Pressroot Blockifier](https://github.com/matthummel-pa/pressroot-blockifier)** — design in HTML, ship in blocks: write a Custom HTML block freely, then convert it to native Gutenberg blocks with one click — per block from the toolbar, or a whole-document Blockify.
+- **[Pressroots Reserve](https://github.com/matthummel-pa/pressroots-reserve)** — bookings & reservations for restaurants, hotels, and meetings: a `prt_service` post type (appointment or seats-per-slot with party size), a timezone-aware availability engine that never double-books, a booking form (`prt/booking` block + `[prt_booking]` shortcode), confirmation emails with an `.ics` attachment and a tokenized cancel link, and a **Month/Week/Day/List admin calendar**. Opt-in in the Setup wizard. ([docs/PRESSROOTS-RESERVE.md](docs/PRESSROOTS-RESERVE.md))
+
 ### Setup wizard (new)
-- **Six guided steps** — Business info → Connections → WordPress settings → Generate → Review → Launch — resumable per step, overall progress bar, and an animated per-form status bar so long AI runs never look frozen.
+- **Seven guided steps** — Business info → Connections → WordPress settings → Design → Generate → Review → Launch — resumable per step, overall progress bar, and an animated per-form status bar so long AI runs never look frozen.
 - **Business facts feed the AI** — mission, what-you-do, contact, per-day hours, and media uploads all compile into the CORE SITE BRIEF, so generated copy quotes real facts.
 - **Google Analytics in one paste** — validated GA4 Measurement ID, official gtag.js auto-injected (with GA + Google Business Profile walkthroughs built in).
 - **SEO plugin selector** — built-in SEO layer by default, or Yoast / Rank Math / All in One SEO with live status, one-click install/activate, and a beginner's SEO primer.
@@ -72,7 +79,7 @@ The whole theme wears the [Repofolio](https://github.com/matthummel-pa/repofolio
 - **A real launch** — pre-flight checklist, publish all generated drafts, set the front page, open the doors to search engines.
 
 ### Settings, developer tools & support
-- **Appearance → Pressroot** — one page, six tabs in the Repofolio docs-site design: **Setup → AI Models → Theme Settings → Site Types → GitHub → Support**, with build status bars on every generate.
+- **Appearance → Pressroot** — one page, tabbed in the Repofolio docs-site design: **Setup → AI Models → Theme Settings → Site Types → GitHub → Support** (plus a **Bookings** tab when Pressroots Reserve is enabled), with build status bars on every generate.
 - **Export / Import / Reset**, **WP-CLI suite** (`wp pressroot ...`), **Hook Registry**, **Dev Mode** debug panel.
 - **Extensible by design** — every public filter and pattern lives under the `pressroot/*` namespace (indexed in `app/hooks-registry.php`); the settings-tab registry is filterable (`pressroot/settings_tabs`) so addons can register their own sections.
 - **Hardened & disclosed** — capability + nonce checks on every action, SSRF-guarded image imports, API keys never exported or sent to the browser, per-IP contact-form throttling, focus-managed navigation and reduced-motion support (WCAG 2.1 AA effort), and a complete [third-party services & privacy disclosure](docs/THIRD-PARTY-SERVICES.md).
@@ -117,12 +124,12 @@ npm run build      # or: npm run dev  (Vite HMR)
 npm run wp         # zero-Docker local WordPress (Playground) at 127.0.0.1:8881
 ```
 
-Activate **Pressroot** and open **Appearance → Pressroot** — it lands on the **Setup wizard**, which walks you from blank install to launched site in six steps (business info, connections, WordPress settings, generation, review, launch). The free keyless AI defaults work with zero configuration. Power users can skip the wizard and drive Theme Settings + Site Types directly. Full walkthrough in the [documentation](https://matthummel-pa.github.io/pressroot/documentation.html); a field-by-field worked example lives in the [restaurant build recipe](docs/BUILD-RECIPE-RESTAURANT.md).
+Activate **Pressroot** and open **Appearance → Pressroot** — it lands on the **Setup wizard**, which walks you from blank install to launched site in seven steps (business info, connections, WordPress settings, design, generation, review, launch). The free keyless AI defaults work with zero configuration. Power users can skip the wizard and drive Theme Settings + Site Types directly. Full walkthrough in the [documentation](https://matthummel-pa.github.io/pressroot/documentation.html); a field-by-field worked example lives in the [restaurant build recipe](docs/BUILD-RECIPE-RESTAURANT.md).
 
 ## Docs & history
 
 - [Documentation site](https://matthummel-pa.github.io/pressroot/) — marketing site, docs, tester program, feedback form (served from [`docs/`](docs/))
-- [SETUP-WIZARD.md](docs/SETUP-WIZARD.md) — the six-step onboarding flow, every handler and key
+- [SETUP-WIZARD.md](docs/SETUP-WIZARD.md) — the seven-step onboarding flow, every handler and key
 - [DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) — the design language, with visual theme previews
 - [THEME-SETTINGS.md](docs/THEME-SETTINGS.md) — every control, cataloged
 - [THIRD-PARTY-SERVICES.md](docs/THIRD-PARTY-SERVICES.md) — privacy & external-services disclosure
